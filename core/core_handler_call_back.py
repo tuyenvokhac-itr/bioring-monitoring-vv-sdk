@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from bleak import BleakClient
 
+from core.models.device_info import DeviceInfo
+from core.models.acc_data import AccData
+
 class CoreHandlerCallBack(ABC):
     # Listener - BLE
     @abstractmethod
@@ -17,13 +20,13 @@ class CoreHandlerCallBack(ABC):
     
     # Listener - Device Info
     @abstractmethod
-    def on_device_info_received():
+    def on_device_info_received(device_info: DeviceInfo):
         pass
     
     # Listener - Data
     
     @abstractmethod
-    def on_acc_data_received():
+    def on_acc_data_received(acc : AccData):
         pass
     
     @abstractmethod
@@ -35,5 +38,5 @@ class CoreHandlerCallBack(ABC):
         pass
     
     @abstractmethod
-    def on_temp_data_received():
+    def on_temp_data_received(_sender, temp):
         pass

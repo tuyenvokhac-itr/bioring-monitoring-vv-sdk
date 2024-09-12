@@ -1,8 +1,19 @@
 from PyQt6.QtWidgets import QApplication
 from qt_gui import QTGuideWindow
 from core.core_handler import CoreHandler
-from core.core_handler_call_back import CoreHandlerCallBack
 from bleak import BleakClient
+from core.core_handler_call_back import CoreHandlerCallBack
+from ble.ble_constant import BleConstant
+from core.command import (
+    GetDeviceInfoCommand,
+    LiveAccDataCommand,
+    LiveEcgDataCommand,
+    LivePpgDataCommand,
+    LiveTempDataCommand,
+)
+from core.models.device_info import DeviceInfo
+from core.models.acc_data import AccData
+
 
 class BioRingTool(CoreHandlerCallBack):
     def __init__(self):
@@ -11,10 +22,20 @@ class BioRingTool(CoreHandlerCallBack):
         window = QTGuideWindow()
         window.scanBtn.clicked.connect(self.start_scan)
         window.connectBtn.clicked.connect(self.connect)
-        
+        window.disconnectBtn.clicked.connect(self.disconnect)
+        window.getInfoBtn.clicked.connect(self.get_device_info)
+        window.start_live_acc.clicked.connect(self.start_live_acc_data)
+        window.stop_live_acc.clicked.connect(self.stop_live_acc_data)
+        window.start_live_ecg.clicked.connect(self.start_live_ecg_data)
+        window.stop_live_ecg.clicked.connect(self.stop_live_ecg_data)
+        window.start_live_ppg.clicked.connect(self.start_live_ppg_data)
+        window.stop_live_ppg.clicked.connect(self.stop_live_ppg_data)
+        window.start_live_temp.clicked.connect(self.stop_live_temp_data)
+        window.stop_live_temp.clicked.connect(self.stop_live_temp_data)
+
         window.show()
         app.exec()
-        
+
     def is_bluetooth_enabled(self):
         pass
 
@@ -28,47 +49,60 @@ class BioRingTool(CoreHandlerCallBack):
         self.core_handler.connect()
 
     def disconnect(self):
-        pass
+        self.core_handler.disconnect()
 
     # Command functions - Device info
 
     def get_device_info(self):
-        pass
+        self.core_handler.get_device_info()
 
     # Command functions - Data
 
-    def live_acc_data(self):
-        pass
+    def start_live_acc_data(self):
+        self.core_handler.live_acc_data()
+    
+    def stop_live_acc_data(self):
+        self.core_handler.live_acc_data(isStart=False)
 
-    def live_ecg_data(self):
-        pass
+    def start_live_ecg_data(self):
+        self.core_handler.live_ecg_data()
+    
+    def stop_live_ecg_data(self):
+        self.core_handler.live_ecg_data(isStart=False)
 
-    def live_ppg_data(self):
-        pass
+    def start_live_ppg_data(self):
+        self.core_handler.live_ppg_data()
+    
+    def stop_live_ppg_data(self):
+        self.core_handler.live_ppg_data(isStart=False)
 
-    def live_temp_data(self):
-        pass
+    def start_live_temp_data(self):
+        self.core_handler.live_temp_data()
         
+    def stop_live_temp_data(self):
+        self.core_handler.live_temp_data(isStart=False)
+
     # Listener - BLE
 
     def on_device_found(self):
         pass
 
     def on_device_connected(self, device: BleakClient):
-        print('connected thoi')
+        # self.core_handler.start_notify()
+        pass
 
     def on_device_disconnected(self):
         pass
 
     # Listener - Device Info
 
-    def on_device_info_received(self):
-        pass
+    def on_device_info_received(self, device: DeviceInfo):
+        print(device)
 
     # Listener - Data
 
-    def on_acc_data_received(self):
-        pass
+    def on_acc_data_received(self, acc : AccData):
+        print(acc)
 
     def on_ecg_data_received(self):
         pass
@@ -76,5 +110,6 @@ class BioRingTool(CoreHandlerCallBack):
     def on_ppg_data_received(self):
         pass
 
-    def on_temp_data_received(self):
+    def on_temp_data_received(self, temp):
+        print(temp)
         pass
