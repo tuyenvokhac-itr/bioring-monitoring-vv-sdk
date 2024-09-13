@@ -288,18 +288,18 @@ class CoreHandler:
     }
 
     def handle_noti_charging_status_changed(self, pkt: brp.Packet):
-        print(f"[NT] Charging status: {pkt.notification.charging}")
-        logging.info(f"[NT] Charging status: {pkt.notification.charging}")
+        self.core_handler_call_back.on_charging_info_received(pkt.notification.charging)
+        logging.debug(f"[NT] Charging status: {pkt.notification.charging}")
 
     def handle_noti_battery_level_changed(self, pkt: brp.Packet):
-        print(f"[NT] Battery level: {pkt.notification.battery_level}")
-        logging.info(f"[NT] Battery level: {pkt.notification.battery_level}")
+        self.core_handler_call_back.on_battery_level_received(pkt.notification.battery_level)
+        logging.debug(f"[NT] Battery level: {pkt.notification.battery_level}")
 
     def handle_noti_hr_spo2(self, pkt: brp.Packet):
-        print(f"[NT] SPO2: {pkt.notification.spo2_hr.spo2}")
-        print(f"[NT] HR: {pkt.notification.spo2_hr.hr}")
-        logging.info(f"[NT] SPO2: {pkt.notification.spo2_hr.spo2}")
-        logging.info(f"[NT] HR: {pkt.notification.spo2_hr.hr}")
+        self.core_handler_call_back.on_hr_received(pkt.notification.spo2_hr.hr)
+        self.core_handler_call_back.on_spo2_received(pkt.notification.spo2_hr.spo2)
+        logging.debug(f"[NT] SPO2: {pkt.notification.spo2_hr.spo2}")
+        logging.debug(f"[NT] HR: {pkt.notification.spo2_hr.hr}")
         pass
 
     rx_noti_handlers = {
@@ -311,16 +311,16 @@ class CoreHandler:
 
     # Command functions
     def get_device_info(self):
-        GetDeviceInfoCommand.send(ble_manager=self.ble_manager)
+        GetDeviceInfoCommand.send(write_chars=self.ble_manager.write)
 
     def live_acc_data(self, isStart= True):
-        LiveAccDataCommand.send(isStart=isStart, ble_manager=self.ble_manager)
+        LiveAccDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
         
     def live_ecg_data(self, isStart= True):
-        LiveEcgDataCommand.send(isStart=isStart, ble_manager=self.ble_manager)
+        LiveEcgDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
         
     def live_ppg_data(self, isStart= True):
-        LivePpgDataCommand.send(isStart=isStart, ble_manager=self.ble_manager)
+        LivePpgDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
     
     def live_temp_data(self, isStart= True):
-        LiveTempDataCommand.send(isStart=isStart, ble_manager=self.ble_manager)
+        LiveTempDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)

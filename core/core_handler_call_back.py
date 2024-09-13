@@ -23,6 +23,22 @@ class CoreHandlerCallBack(ABC):
     def on_device_info_received(device_info: DeviceInfo):
         pass
     
+    @abstractmethod
+    def on_charging_info_received(charging: bool):
+        pass
+    
+    @abstractmethod
+    def on_battery_level_received(battery_level: int):
+        pass
+    
+    @abstractmethod
+    def on_hr_received(hr: int):
+        pass
+    
+    @abstractmethod
+    def on_spo2_received(spo2: int):
+        pass
+    
     # Listener - Data
     
     @abstractmethod

@@ -1,3 +1,4 @@
+from typing import Any, Callable
 from proto import brp_pb2 as brp
 from ble.ble_manager import BleManager
 import time
@@ -6,7 +7,7 @@ from ble.ble_constant import BleConstant
 
 class LiveTempDataCommand:
     @staticmethod
-    def send(isStart: bool, ble_manager: BleManager):
+    def send(isStart: bool, write_chars: Callable[[str, Any], None]):
         pkt = brp.Packet()
         pkt.sid = int(time.time() * 1000)
         pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_TEMP
@@ -17,4 +18,4 @@ class LiveTempDataCommand:
         pkt.type = brp.PacketType.PACKET_TYPE_COMMAND
 
         pkt_value = pkt.SerializeToString()
-        ble_manager.write(BleConstant.BRS_UUID_CHAR_TX, pkt_value)
+        write_chars(BleConstant.BRS_UUID_CHAR_TX, pkt_value)
