@@ -1,6 +1,11 @@
+from typing import List
+from core.enum.fifo_data_type import FifoDataType
 from core.models import AccData
 import struct
 import logging
+
+from core.utils import compute_utils
+
 
 # PPG and ECG
 class AfeDataHandler:
@@ -10,6 +15,10 @@ class AfeDataHandler:
     
     @staticmethod
     def parse(data: bytearray, length: int) -> AccData:
+        ecg_data = List[int]
+        ppg_red_data = List[int]
+        ppg_ir_data = List[int] 
+        
         num_samples = int(length / 4)
         afe_data = struct.unpack(f"<{num_samples}I", data)
         logging.debug(f"afe_data: {afe_data}")
@@ -19,7 +28,7 @@ class AfeDataHandler:
 
             if fifo_type == FifoDataType.ECG_AND_FAST_RECOVER_FLAG.value:
                 ecg_data_one_sample = afe_data[i] & 0x0003FFFF  # Remove the Flag
-                ecg_data_one_sample = compute.create_a_signed_number(ecg_data_one_sample, 18)
+                ecg_data_one_sample = compute_utils.create_a_signed_number(ecg_data_one_sample, 18)
 
                 # Write to file ECG ADC value
                 self.write_record_file(RecordType.ECG, [ecg_data_one_sample])
@@ -35,7 +44,7 @@ class AfeDataHandler:
             else:
                 ppg_data = afe_data[i] & 0x000FFFFF  # Remove the Flag
 
-                ppg_data = compute.create_a_signed_number(ppg_data, 20)
+                ppg_data = compute_utils.create_a_signed_number(ppg_data, 20)
 
                 if fifo_type == FifoDataType.PPG_MEAS_1.value:
                     red_data.append(ppg_data)
