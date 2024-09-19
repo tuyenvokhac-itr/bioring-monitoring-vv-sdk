@@ -1,3 +1,4 @@
+import asyncio
 from ble.ble_manager import BleManager
 from typing import List, Tuple, Callable
 from bleak.backends.device import BLEDevice
@@ -18,7 +19,7 @@ from core.command import (
     LivePpgDataCommand,
     LiveTempDataCommand,
 )
-from core.handler.sub.proto.response.res_device_info_handler import ResDeviceInfoHandler
+from core.handler.streaming.proto.response.res_device_info_handler import ResDeviceInfoHandler
 
 
 class CoreHandler:
@@ -37,6 +38,7 @@ class CoreHandler:
 
     def start_scan(self) -> List[Tuple[BLEDevice, AdvertisementData]]:
         print("Start scan...")
+        # self.devices = asyncio.wait(self.ble_manager.scan())
         self.devices = self.ble_manager.scan()
         print(self.devices)
         return self.devices
@@ -292,7 +294,9 @@ class CoreHandler:
         logging.debug(f"[NT] Charging status: {pkt.notification.charging}")
 
     def handle_noti_battery_level_changed(self, pkt: brp.Packet):
-        self.core_handler_call_back.on_battery_level_received(pkt.notification.battery_level)
+        self.core_handler_call_back.on_battery_level_received(
+            pkt.notification.battery_level
+        )
         logging.debug(f"[NT] Battery level: {pkt.notification.battery_level}")
 
     def handle_noti_hr_spo2(self, pkt: brp.Packet):
@@ -313,14 +317,14 @@ class CoreHandler:
     def get_device_info(self):
         GetDeviceInfoCommand.send(write_chars=self.ble_manager.write)
 
-    def live_acc_data(self, isStart= True):
+    def live_acc_data(self, isStart=True):
         LiveAccDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
-        
-    def live_ecg_data(self, isStart= True):
+
+    def live_ecg_data(self, isStart=True):
         LiveEcgDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
-        
-    def live_ppg_data(self, isStart= True):
+
+    def live_ppg_data(self, isStart=True):
         LivePpgDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
-    
-    def live_temp_data(self, isStart= True):
+
+    def live_temp_data(self, isStart=True):
         LiveTempDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)

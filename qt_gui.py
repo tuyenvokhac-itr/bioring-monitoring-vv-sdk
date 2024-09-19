@@ -4,16 +4,18 @@ from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 from typing import List, Tuple, Callable
 from bleak import BleakClient
+import asyncio
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton
 
 class QTGuideWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Tool hack Lien Minh")
+
+        self.setWindowTitle("Test Bioring SDK")
         self.setMinimumSize(400,400)
         parentLayout = QVBoxLayout()
-        self.label1 = QLabel("         Máy tính của bạn đã bị hack")
+        self.label1 = QLabel("Welcome to the test tool")
         self.scanBtn = QPushButton("Scan BLE")
         self.connectBtn = QPushButton("Connect")
         self.disconnectBtn = QPushButton("Disconnect")

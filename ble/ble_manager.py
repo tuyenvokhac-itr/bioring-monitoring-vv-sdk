@@ -2,11 +2,11 @@ import asyncio
 import queue
 from enum import Enum
 from threading import Thread, Event
-from bleak import BleakScanner
+from bleak import BleakScanner, BLEDevice, AdvertisementData
 from bleak import BleakClient
 from .ble_constant import BleConstant
 import platform
-from typing import Callable
+from typing import Callable, List, Tuple
 
 OnDeviceConnected = Callable[[BleakClient], None]
 
@@ -40,21 +40,23 @@ class BleManager:
         else:
             self.use_bdaddr = False
 
-    def scan(self):
+    
+
+    async def scan(self) -> List[Tuple[BLEDevice, AdvertisementData]]:
         """
         Scan for nearby BLE devices.
         """
-        devices = asyncio.run(
-            BleakScanner.discover(
-                return_adv=True, cb=dict(use_bdaddr=self.use_bdaddr), timeout=10
-            )
+        devices = await BleakScanner.discover(
+            return_adv=True, cb=dict(use_bdaddr=self.use_bdaddr), timeout=10
         )
+
         self.filtered_devices = []
         for d, a in devices.values():
             print(d)
             if d.name != None and BleConstant.BIORING_PREFIX in d.name:
                 self.filtered_devices.append((d, a))
         return self.filtered_devices
+
 
     def scan_dfu(self):
         """
@@ -66,6 +68,7 @@ class BleManager:
             if d.name != None and BleConstant.BIORING_DFU_PREFIX in d.name:
                 self.filtered_devices.append(d)
         return self.filtered_devices
+
 
     def connect(self, addr, pairing=False, on_device_connected: OnDeviceConnected = None):
         """
@@ -81,6 +84,7 @@ class BleManager:
             self.disconnect()
             self.thread.start()
 
+
     def disconnect(self):
         """
         Disconnect from the BLE device.
@@ -92,10 +96,12 @@ class BleManager:
             if self.thread.is_alive():
                 self.thread.join()
 
+
     def connected(self):
         return self.conn_status == BLEConnectionStatus.CONNECTED
 
-    def start_notify(self, char_uuid : str, callback):
+
+    def start_notify(self, char_uuid: str, callback):
         """
         Start receiving notifications for the specified characteristic UUID.
         """
@@ -109,6 +115,7 @@ class BleManager:
                 return True
         return False
 
+
     def stop_notify(self, char_uuid):
         """
         Stop receiving notifications for the specified characteristic UUID.
@@ -119,6 +126,7 @@ class BleManager:
                 self.event_queue.put((BLEEvent.BLE_EVENT_STOP_NOTIFY, characteristic))
                 return True
         return False
+
 
     def write(self, char_uuid, value):
         """
@@ -133,6 +141,7 @@ class BleManager:
                 return True
         return False
 
+
     def get_characteristic_by_uuid(self, char_uuid):
         """
         Get the BleakGATTCharacteristic object based on the provided characteristic UUID.
@@ -144,11 +153,13 @@ class BleManager:
                         return characteristic
         return None
 
+
     def __thread_handler(self, onDeviceConnected: OnDeviceConnected = None):
         """
         Entry point for the thread. Runs the event loop and connects to the BLE device.
         """
         asyncio.run(self.__event_handler(on_device_connected=onDeviceConnected))
+
 
     async def __event_handler(self, on_device_connected: OnDeviceConnected = None):
         """

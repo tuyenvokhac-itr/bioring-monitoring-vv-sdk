@@ -42,6 +42,14 @@
         "documentation": {}
     },
     {
+        "label": "Enum",
+        "importPath": "enum",
+        "description": "enum",
+        "isExtraImport": true,
+        "detail": "enum",
+        "documentation": {}
+    },
+    {
         "label": "Thread",
         "importPath": "threading",
         "description": "threading",
@@ -82,7 +90,15 @@
         "documentation": {}
     },
     {
-        "label": "BleakClient",
+        "label": "BLEDevice",
+        "importPath": "bleak",
+        "description": "bleak",
+        "isExtraImport": true,
+        "detail": "bleak",
+        "documentation": {}
+    },
+    {
+        "label": "AdvertisementData",
         "importPath": "bleak",
         "description": "bleak",
         "isExtraImport": true,
@@ -99,6 +115,30 @@
     },
     {
         "label": "BleakClient",
+        "importPath": "bleak",
+        "description": "bleak",
+        "isExtraImport": true,
+        "detail": "bleak",
+        "documentation": {}
+    },
+    {
+        "label": "BleakClient",
+        "importPath": "bleak",
+        "description": "bleak",
+        "isExtraImport": true,
+        "detail": "bleak",
+        "documentation": {}
+    },
+    {
+        "label": "BLEDevice",
+        "importPath": "bleak",
+        "description": "bleak",
+        "isExtraImport": true,
+        "detail": "bleak",
+        "documentation": {}
+    },
+    {
+        "label": "AdvertisementData",
         "importPath": "bleak",
         "description": "bleak",
         "isExtraImport": true,
@@ -115,14 +155,6 @@
     },
     {
         "label": "BleakScanner",
-        "importPath": "bleak",
-        "description": "bleak",
-        "isExtraImport": true,
-        "detail": "bleak",
-        "documentation": {}
-    },
-    {
-        "label": "BleakClient",
         "importPath": "bleak",
         "description": "bleak",
         "isExtraImport": true,
@@ -171,6 +203,110 @@
         "documentation": {}
     },
     {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Callable",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Callable",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Callable",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Callable",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Callable",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "List",
         "importPath": "typing",
         "description": "typing",
@@ -235,14 +371,6 @@
         "documentation": {}
     },
     {
-        "label": "Callable",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
         "label": "List",
         "importPath": "typing",
         "description": "typing",
@@ -267,11 +395,67 @@
         "documentation": {}
     },
     {
-        "label": "brp_pb2",
-        "importPath": "proto",
-        "description": "proto",
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
         "isExtraImport": true,
-        "detail": "proto",
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
         "documentation": {}
     },
     {
@@ -320,6 +504,22 @@
         "description": "proto",
         "isExtraImport": true,
         "detail": "proto",
+        "documentation": {}
+    },
+    {
+        "label": "brp_pb2",
+        "importPath": "proto",
+        "description": "proto",
+        "isExtraImport": true,
+        "detail": "proto",
+        "documentation": {}
+    },
+    {
+        "label": "BleManager",
+        "importPath": "ble.ble_manager",
+        "description": "ble.ble_manager",
+        "isExtraImport": true,
+        "detail": "ble.ble_manager",
         "documentation": {}
     },
     {
@@ -500,22 +700,6 @@
         "documentation": {}
     },
     {
-        "label": "EcgData",
-        "importPath": "core.models",
-        "description": "core.models",
-        "isExtraImport": true,
-        "detail": "core.models",
-        "documentation": {}
-    },
-    {
-        "label": "PpgData",
-        "importPath": "core.models",
-        "description": "core.models",
-        "isExtraImport": true,
-        "detail": "core.models",
-        "documentation": {}
-    },
-    {
         "label": "struct",
         "kind": 6,
         "isExtraImport": true,
@@ -525,51 +709,20 @@
         "documentation": {}
     },
     {
-        "label": "dataclass",
-        "importPath": "dataclasses",
-        "description": "dataclasses",
+        "label": "FifoDataType",
+        "importPath": "core.enum.fifo_data_type",
+        "description": "core.enum.fifo_data_type",
         "isExtraImport": true,
-        "detail": "dataclasses",
+        "detail": "core.enum.fifo_data_type",
         "documentation": {}
     },
     {
-        "label": "dataclass",
-        "importPath": "dataclasses",
-        "description": "dataclasses",
+        "label": "logging",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "dataclasses",
-        "documentation": {}
-    },
-    {
-        "label": "dataclass",
-        "importPath": "dataclasses",
-        "description": "dataclasses",
-        "isExtraImport": true,
-        "detail": "dataclasses",
-        "documentation": {}
-    },
-    {
-        "label": "dataclass",
-        "importPath": "dataclasses",
-        "description": "dataclasses",
-        "isExtraImport": true,
-        "detail": "dataclasses",
-        "documentation": {}
-    },
-    {
-        "label": "dataclass",
-        "importPath": "dataclasses",
-        "description": "dataclasses",
-        "isExtraImport": true,
-        "detail": "dataclasses",
-        "documentation": {}
-    },
-    {
-        "label": "dataclass",
-        "importPath": "dataclasses",
-        "description": "dataclasses",
-        "isExtraImport": true,
-        "detail": "dataclasses",
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
         "documentation": {}
     },
     {
@@ -581,11 +734,117 @@
         "documentation": {}
     },
     {
-        "label": "BLEDevice",
-        "importPath": "bleak.backends.device",
-        "description": "bleak.backends.device",
+        "label": "numpy",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "bleak.backends.device",
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "scipy.signal",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "scipy.signal",
+        "description": "scipy.signal",
+        "detail": "scipy.signal",
+        "documentation": {}
+    },
+    {
+        "label": "find_peaks",
+        "importPath": "scipy.signal",
+        "description": "scipy.signal",
+        "isExtraImport": true,
+        "detail": "scipy.signal",
+        "documentation": {}
+    },
+    {
+        "label": "fft",
+        "importPath": "scipy.fft",
+        "description": "scipy.fft",
+        "isExtraImport": true,
+        "detail": "scipy.fft",
+        "documentation": {}
+    },
+    {
+        "label": "fftfreq",
+        "importPath": "scipy.fft",
+        "description": "scipy.fft",
+        "isExtraImport": true,
+        "detail": "scipy.fft",
+        "documentation": {}
+    },
+    {
+        "label": "butter_bandpass_filter",
+        "importPath": "utils",
+        "description": "utils",
+        "isExtraImport": true,
+        "detail": "utils",
+        "documentation": {}
+    },
+    {
+        "label": "butter_lowpass_filter",
+        "importPath": "utils",
+        "description": "utils",
+        "isExtraImport": true,
+        "detail": "utils",
+        "documentation": {}
+    },
+    {
+        "label": "NUM_CH",
+        "importPath": "define",
+        "description": "define",
+        "isExtraImport": true,
+        "detail": "define",
+        "documentation": {}
+    },
+    {
+        "label": "PPG_GAIN",
+        "importPath": "define",
+        "description": "define",
+        "isExtraImport": true,
+        "detail": "define",
+        "documentation": {}
+    },
+    {
+        "label": "CHANNELS_COLOR",
+        "importPath": "define",
+        "description": "define",
+        "isExtraImport": true,
+        "detail": "define",
+        "documentation": {}
+    },
+    {
+        "label": "CHANNELS_LABEL",
+        "importPath": "define",
+        "description": "define",
+        "isExtraImport": true,
+        "detail": "define",
+        "documentation": {}
+    },
+    {
+        "label": "SAMPLE_TIME_1S_RAW_DATA",
+        "importPath": "define",
+        "description": "define",
+        "isExtraImport": true,
+        "detail": "define",
+        "documentation": {}
+    },
+    {
+        "label": "SAMPLE_TIME_1S_PPG_DATA",
+        "importPath": "define",
+        "description": "define",
+        "isExtraImport": true,
+        "detail": "define",
+        "documentation": {}
+    },
+    {
+        "label": "\\",
+        "importPath": "define",
+        "description": "define",
+        "isExtraImport": true,
+        "detail": "define",
         "documentation": {}
     },
     {
@@ -602,14 +861,6 @@
         "description": "bleak.backends.device",
         "isExtraImport": true,
         "detail": "bleak.backends.device",
-        "documentation": {}
-    },
-    {
-        "label": "AdvertisementData",
-        "importPath": "bleak.backends.scanner",
-        "description": "bleak.backends.scanner",
-        "isExtraImport": true,
-        "detail": "bleak.backends.scanner",
         "documentation": {}
     },
     {
@@ -650,15 +901,6 @@
         "description": "bleak.backends.characteristic",
         "isExtraImport": true,
         "detail": "bleak.backends.characteristic",
-        "documentation": {}
-    },
-    {
-        "label": "logging",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "logging",
-        "description": "logging",
-        "detail": "logging",
         "documentation": {}
     },
     {
@@ -776,10 +1018,42 @@
     },
     {
         "label": "ResDeviceInfoHandler",
-        "importPath": "core.handler.sub.proto.response.res_device_info_handler",
-        "description": "core.handler.sub.proto.response.res_device_info_handler",
+        "importPath": "core.handler.streaming.proto.response.res_device_info_handler",
+        "description": "core.handler.streaming.proto.response.res_device_info_handler",
         "isExtraImport": true,
-        "detail": "core.handler.sub.proto.response.res_device_info_handler",
+        "detail": "core.handler.streaming.proto.response.res_device_info_handler",
+        "documentation": {}
+    },
+    {
+        "label": "ABC",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
+        "documentation": {}
+    },
+    {
+        "label": "abstractmethod",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
+        "documentation": {}
+    },
+    {
+        "label": "ABC",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
+        "documentation": {}
+    },
+    {
+        "label": "abstractmethod",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
         "documentation": {}
     },
     {
@@ -828,6 +1102,102 @@
         "description": "core.models.acc_data",
         "isExtraImport": true,
         "detail": "core.models.acc_data",
+        "documentation": {}
+    },
+    {
+        "label": "BluetoothCallback",
+        "importPath": "managers.bluetooth_callback",
+        "description": "managers.bluetooth_callback",
+        "isExtraImport": true,
+        "detail": "managers.bluetooth_callback",
+        "documentation": {}
+    },
+    {
+        "label": "BluetoothCallback",
+        "importPath": "managers.bluetooth_callback",
+        "description": "managers.bluetooth_callback",
+        "isExtraImport": true,
+        "detail": "managers.bluetooth_callback",
+        "documentation": {}
+    },
+    {
+        "label": "BluetoothCallback",
+        "importPath": "managers.bluetooth_callback",
+        "description": "managers.bluetooth_callback",
+        "isExtraImport": true,
+        "detail": "managers.bluetooth_callback",
+        "documentation": {}
+    },
+    {
+        "label": "BluetoothCallback",
+        "importPath": "managers.bluetooth_callback",
+        "description": "managers.bluetooth_callback",
+        "isExtraImport": true,
+        "detail": "managers.bluetooth_callback",
+        "documentation": {}
+    },
+    {
+        "label": "BTDevice",
+        "importPath": "ble.bt_device",
+        "description": "ble.bt_device",
+        "isExtraImport": true,
+        "detail": "ble.bt_device",
+        "documentation": {}
+    },
+    {
+        "label": "BTDevice",
+        "importPath": "ble.bt_device",
+        "description": "ble.bt_device",
+        "isExtraImport": true,
+        "detail": "ble.bt_device",
+        "documentation": {}
+    },
+    {
+        "label": "CommonError",
+        "importPath": "errors.common_error",
+        "description": "errors.common_error",
+        "isExtraImport": true,
+        "detail": "errors.common_error",
+        "documentation": {}
+    },
+    {
+        "label": "CommonError",
+        "importPath": "errors.common_error",
+        "description": "errors.common_error",
+        "isExtraImport": true,
+        "detail": "errors.common_error",
+        "documentation": {}
+    },
+    {
+        "label": "CoreHandler",
+        "importPath": "core.core_handler",
+        "description": "core.core_handler",
+        "isExtraImport": true,
+        "detail": "core.core_handler",
+        "documentation": {}
+    },
+    {
+        "label": "CoreHandler",
+        "importPath": "core.core_handler",
+        "description": "core.core_handler",
+        "isExtraImport": true,
+        "detail": "core.core_handler",
+        "documentation": {}
+    },
+    {
+        "label": "NewCoreHandler",
+        "importPath": "core.new_core_handler",
+        "description": "core.new_core_handler",
+        "isExtraImport": true,
+        "detail": "core.new_core_handler",
+        "documentation": {}
+    },
+    {
+        "label": "RingManagerInterface",
+        "importPath": "managers.ring_manager_interface",
+        "description": "managers.ring_manager_interface",
+        "isExtraImport": true,
+        "detail": "managers.ring_manager_interface",
         "documentation": {}
     },
     {
@@ -936,11 +1306,11 @@
         "documentation": {}
     },
     {
-        "label": "QTGuideWindow",
-        "importPath": "qt_gui",
-        "description": "qt_gui",
+        "label": "RingManager",
+        "importPath": "managers.ring_manager",
+        "description": "managers.ring_manager",
         "isExtraImport": true,
-        "detail": "qt_gui",
+        "detail": "managers.ring_manager",
         "documentation": {}
     },
     {
@@ -952,11 +1322,36 @@
         "documentation": {}
     },
     {
-        "label": "CoreHandler",
-        "importPath": "core.core_handler",
-        "description": "core.core_handler",
+        "label": "QEventLoop",
+        "importPath": "qasync",
+        "description": "qasync",
         "isExtraImport": true,
-        "detail": "core.core_handler",
+        "detail": "qasync",
+        "documentation": {}
+    },
+    {
+        "label": "QEventLoop",
+        "importPath": "qasync",
+        "description": "qasync",
+        "isExtraImport": true,
+        "detail": "qasync",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "BioRingTool",
+        "importPath": "bioring_tool",
+        "description": "bioring_tool",
+        "isExtraImport": true,
+        "detail": "bioring_tool",
         "documentation": {}
     },
     {
@@ -1013,11 +1408,20 @@
         "documentation": {}
     },
     {
+        "label": "BTDevice",
+        "kind": 6,
+        "importPath": "ble.bt_device",
+        "description": "ble.bt_device",
+        "peekOfCode": "class BTDevice:\n    address: str\n    name: str",
+        "detail": "ble.bt_device",
+        "documentation": {}
+    },
+    {
         "label": "GetDeviceInfoCommand",
         "kind": 6,
         "importPath": "core.command.get_device_info_command",
         "description": "core.command.get_device_info_command",
-        "peekOfCode": "class GetDeviceInfoCommand:\n    @staticmethod\n    def send(ble_manager: BleManager):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.type = brp.PacketType.PACKET_TYPE_COMMAND\n        pkt.command.cid = brp.CommandId.CID_DEV_INFO_GET\n        pkt_value = pkt.SerializeToString()\n        ble_manager.write(BleConstant.BRS_UUID_CHAR_TX, pkt_value)",
+        "peekOfCode": "class GetDeviceInfoCommand:\n    @staticmethod\n    def send(write_chars: Callable[[str, Any], None]):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.type = brp.PacketType.PACKET_TYPE_COMMAND\n        pkt.command.cid = brp.CommandId.CID_DEV_INFO_GET\n        pkt_value = pkt.SerializeToString()\n        write_chars(BleConstant.BRS_UUID_CHAR_TX, pkt_value)",
         "detail": "core.command.get_device_info_command",
         "documentation": {}
     },
@@ -1026,7 +1430,7 @@
         "kind": 6,
         "importPath": "core.command.live_acc_data_command",
         "description": "core.command.live_acc_data_command",
-        "peekOfCode": "class LiveAccDataCommand:\n    @staticmethod\n    def send(isStart: bool, ble_manager: BleManager):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.type = brp.PacketType.PACKET_TYPE_COMMAND\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
+        "peekOfCode": "class LiveAccDataCommand:\n    @staticmethod\n    def send(isStart: bool, write_chars: Callable[[str, Any], None]):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.type = brp.PacketType.PACKET_TYPE_COMMAND\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
         "detail": "core.command.live_acc_data_command",
         "documentation": {}
     },
@@ -1035,7 +1439,7 @@
         "kind": 6,
         "importPath": "core.command.live_ecg_data_command",
         "description": "core.command.live_ecg_data_command",
-        "peekOfCode": "class LiveEcgDataCommand:\n    @staticmethod\n    def send(isStart: bool, ble_manager: BleManager):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_ECG\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
+        "peekOfCode": "class LiveEcgDataCommand:\n    @staticmethod\n    def send(isStart: bool, write_chars: Callable[[str, Any], None]):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_ECG\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
         "detail": "core.command.live_ecg_data_command",
         "documentation": {}
     },
@@ -1044,7 +1448,7 @@
         "kind": 6,
         "importPath": "core.command.live_ppg_data_command",
         "description": "core.command.live_ppg_data_command",
-        "peekOfCode": "class LivePpgDataCommand:\n    @staticmethod\n    def send(isStart: bool, ble_manager: BleManager):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_PPG\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
+        "peekOfCode": "class LivePpgDataCommand:\n    @staticmethod\n    def send(isStart: bool, write_chars: Callable[[str, Any], None]):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_PPG\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
         "detail": "core.command.live_ppg_data_command",
         "documentation": {}
     },
@@ -1053,8 +1457,17 @@
         "kind": 6,
         "importPath": "core.command.live_temp_data_command",
         "description": "core.command.live_temp_data_command",
-        "peekOfCode": "class LiveTempDataCommand:\n    @staticmethod\n    def send(isStart: bool, ble_manager: BleManager):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_TEMP\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
+        "peekOfCode": "class LiveTempDataCommand:\n    @staticmethod\n    def send(isStart: bool, write_chars: Callable[[str, Any], None]):\n        pkt = brp.Packet()\n        pkt.sid = int(time.time() * 1000)\n        pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_TEMP\n        if isStart:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_START\n        else:\n            pkt.command.cid = brp.CommandId.CID_STREAMING_DATA_STOP",
         "detail": "core.command.live_temp_data_command",
+        "documentation": {}
+    },
+    {
+        "label": "FifoDataType",
+        "kind": 6,
+        "importPath": "core.enum.fifo_data_type",
+        "description": "core.enum.fifo_data_type",
+        "peekOfCode": "class FifoDataType(Enum):\n    PPG_MEAS_1 = 0\n    PPG_MEAS_2 = 1\n    PPG_MEAS_3 = 2\n    PPG_MEAS_4 = 3\n    PPG_MEAS_5 = 4\n    PPG_MEAS_6 = 5\n    PPG_DARK = 6\n    PPG_ALC_OVF = 7\n    PPG_EXP_OVF = 8",
+        "detail": "core.enum.fifo_data_type",
         "documentation": {}
     },
     {
@@ -1069,82 +1482,82 @@
     {
         "label": "AccDataHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.acc.acc_data_handler",
-        "description": "core.handler.sub.acc.acc_data_handler",
+        "importPath": "core.handler.streaming.acc.acc_data_handler",
+        "description": "core.handler.streaming.acc.acc_data_handler",
         "peekOfCode": "class AccDataHandler:\n    @staticmethod\n    def parse(data: bytearray, length: int) -> AccData:\n        num_samples = int(length / 2)\n        imu_data = struct.unpack(f\"<{num_samples}h\", data)\n        for i in range(0, num_samples, 3):\n            raw_x = imu_data[i]\n            raw_y = imu_data[i + 1]\n            raw_z = imu_data[i + 2]\n        return AccData(raw_x, raw_y, raw_z)",
-        "detail": "core.handler.sub.acc.acc_data_handler",
+        "detail": "core.handler.streaming.acc.acc_data_handler",
         "documentation": {}
     },
     {
         "label": "AfeDataHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.afe.afe_data_handler",
-        "description": "core.handler.sub.afe.afe_data_handler",
-        "peekOfCode": "class AfeDataHandler:\n    @staticmethod\n    def handle(data: bytearray) -> AccData:\n        return AfeDataHandler._parse(data)\n    @staticmethod\n    def _parse(data: bytearray) -> AccData:\n        pass",
-        "detail": "core.handler.sub.afe.afe_data_handler",
+        "importPath": "core.handler.streaming.afe.afe_data_handler",
+        "description": "core.handler.streaming.afe.afe_data_handler",
+        "peekOfCode": "class AfeDataHandler:\n    @staticmethod\n    def handle(data: bytearray) -> AccData:\n        return AfeDataHandler._parse(data)\n    @staticmethod\n    def parse(data: bytearray, length: int) -> AccData:\n        ecg_data = List[int]\n        ppg_red_data = List[int]\n        ppg_ir_data = List[int] \n        num_samples = int(length / 4)",
+        "detail": "core.handler.streaming.afe.afe_data_handler",
         "documentation": {}
     },
     {
         "label": "NotiDeviceInfoHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.proto.notification.device_info.noti_device_info_handler",
-        "description": "core.handler.sub.proto.notification.device_info.noti_device_info_handler",
+        "importPath": "core.handler.streaming.proto.notification.device_info.noti_device_info_handler",
+        "description": "core.handler.streaming.proto.notification.device_info.noti_device_info_handler",
         "peekOfCode": "class NotiDeviceInfoHandler:\n    @staticmethod\n    def handle():\n        cid = 1",
-        "detail": "core.handler.sub.proto.notification.device_info.noti_device_info_handler",
+        "detail": "core.handler.streaming.proto.notification.device_info.noti_device_info_handler",
         "documentation": {}
     },
     {
         "label": "ProtoNotificationHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.proto.notification.ptoto_notification_handler",
-        "description": "core.handler.sub.proto.notification.ptoto_notification_handler",
+        "importPath": "core.handler.streaming.proto.notification.ptoto_notification_handler",
+        "description": "core.handler.streaming.proto.notification.ptoto_notification_handler",
         "peekOfCode": "class ProtoNotificationHandler:\n    @staticmethod\n    def handle():\n        cid = 1",
-        "detail": "core.handler.sub.proto.notification.ptoto_notification_handler",
+        "detail": "core.handler.streaming.proto.notification.ptoto_notification_handler",
         "documentation": {}
     },
     {
         "label": "ProtoResponseHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.proto.response.proto_response_handler",
-        "description": "core.handler.sub.proto.response.proto_response_handler",
+        "importPath": "core.handler.streaming.proto.response.proto_response_handler",
+        "description": "core.handler.streaming.proto.response.proto_response_handler",
         "peekOfCode": "class ProtoResponseHandler:\n    @staticmethod\n    def handle():\n        cid = 1",
-        "detail": "core.handler.sub.proto.response.proto_response_handler",
+        "detail": "core.handler.streaming.proto.response.proto_response_handler",
         "documentation": {}
     },
     {
         "label": "ResDeviceInfoHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.proto.response.res_device_info_handler",
-        "description": "core.handler.sub.proto.response.res_device_info_handler",
+        "importPath": "core.handler.streaming.proto.response.res_device_info_handler",
+        "description": "core.handler.streaming.proto.response.res_device_info_handler",
         "peekOfCode": "class ResDeviceInfoHandler:\n    @staticmethod\n    def parse(packet: brp.Packet) -> DeviceInfo:\n        return DeviceInfo(\n            hw_version=packet.response.dev_info.hardware_version,\n            fw_version=packet.response.dev_info.firmware_version,\n            serial_number=packet.response.dev_info.serial_number,\n            model=packet.response.dev_info.model,\n        )",
-        "detail": "core.handler.sub.proto.response.res_device_info_handler",
+        "detail": "core.handler.streaming.proto.response.res_device_info_handler",
         "documentation": {}
     },
     {
         "label": "TempDataHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.temp.temp_data_handler",
-        "description": "core.handler.sub.temp.temp_data_handler",
+        "importPath": "core.handler.streaming.temp.temp_data_handler",
+        "description": "core.handler.streaming.temp.temp_data_handler",
         "peekOfCode": "class TempDataHandler:\n    @staticmethod\n    def parse(data: bytearray) -> TempData:\n        num_samples = 1\n        temp_data = struct.unpack(f\"<{num_samples}f\", data)\n        return temp_data[0]",
-        "detail": "core.handler.sub.temp.temp_data_handler",
+        "detail": "core.handler.streaming.temp.temp_data_handler",
         "documentation": {}
     },
     {
         "label": "ProtoDataHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.proto_data_handler",
-        "description": "core.handler.sub.proto_data_handler",
+        "importPath": "core.handler.streaming.proto_data_handler",
+        "description": "core.handler.streaming.proto_data_handler",
         "peekOfCode": "class ProtoDataHandler:\n    @staticmethod\n    def handle():\n        cid = 1",
-        "detail": "core.handler.sub.proto_data_handler",
+        "detail": "core.handler.streaming.proto_data_handler",
         "documentation": {}
     },
     {
         "label": "StreamDataHandler",
         "kind": 6,
-        "importPath": "core.handler.sub.stream_data_handler",
-        "description": "core.handler.sub.stream_data_handler",
+        "importPath": "core.handler.streaming.stream_data_handler",
+        "description": "core.handler.streaming.stream_data_handler",
         "peekOfCode": "class StreamDataHandler:\n    @staticmethod\n    def handle():\n        cid = 1",
-        "detail": "core.handler.sub.stream_data_handler",
+        "detail": "core.handler.streaming.stream_data_handler",
         "documentation": {}
     },
     {
@@ -1202,6 +1615,303 @@
         "documentation": {}
     },
     {
+        "label": "compute_spo2",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def compute_spo2(ppg_red, ppg_ir):\n    # Compute the AC component for both PPG signals\n    ac_red = ppg_red - np.mean(ppg_red)\n    ac_ir = ppg_ir - np.mean(ppg_ir)\n    # Find peaks in the AC components\n    peaks_red, _ = find_peaks(ac_red, height=0)\n    peaks_ir, _ = find_peaks(ac_ir, height=0)\n    # Compute the mean peak-to-peak amplitude for both PPG signals\n    amp_red = np.mean(ac_red[peaks_red])\n    amp_ir = np.mean(ac_ir[peaks_ir])",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "compute_fft",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def compute_fft(signal, fs=FS_DEVICE):\n    x = fft(signal)\n    f_resolution = fs / len(signal)\n    X_magnitude = np.abs(x)[:len(signal) // 2]\n    _x = f_resolution * np.arange(len(x) // 2)\n    return _x, X_magnitude\ndef compute_hr_spo2(ppg_red, ppg_ir):\n    ppg_lp_ppg_red = butter_lowpass_filter(ppg_red, 5, FS_DEVICE, 2)\n    ppg_fil_ppg_red = butter_bandpass_filter(ppg_red, 0.5, 5, FS_DEVICE, 2)\n    ppg_lp_ppg_ir = butter_lowpass_filter(ppg_ir, 5, FS_DEVICE, 2)",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "compute_hr_spo2",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def compute_hr_spo2(ppg_red, ppg_ir):\n    ppg_lp_ppg_red = butter_lowpass_filter(ppg_red, 5, FS_DEVICE, 2)\n    ppg_fil_ppg_red = butter_bandpass_filter(ppg_red, 0.5, 5, FS_DEVICE, 2)\n    ppg_lp_ppg_ir = butter_lowpass_filter(ppg_ir, 5, FS_DEVICE, 2)\n    ppg_fil_ppg_ir = butter_bandpass_filter(ppg_ir, 0.5, 5, FS_DEVICE, 2)\n    ac_red = ppg_fil_ppg_red[-N_SAMPLES:]\n    dc_red = ppg_lp_ppg_red[-N_SAMPLES:]\n    ac_ir = ppg_fil_ppg_ir[-N_SAMPLES:]\n    dc_ir = ppg_lp_ppg_ir[-N_SAMPLES:]\n    ppg_ai = np.asarray([ac_red, ac_ir])",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "moving_average",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def moving_average(data, window_size):\n    \"\"\"\n    Tính toán giá trị trung bình động của dữ liệu.\n    Parameters:\n        data (numpy.array): input data (1D array).\n        window_size (int): sliding window size.\n    Returns:\n        numpy.array: filtered data.\n    \"\"\"\n    return np.convolve(data, np.ones(window_size)/window_size, mode='valid')",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "baseline_filter",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def baseline_filter(ecg_data, window_size=100):\n    \"\"\"\n    Filter baseline of ECG data using a moving average filter.\n    Parameters:\n        ecg_data (numpy.array): input ECG data (1D array).\n        window_size (int): sliding window size for the moving average filter.\n    Returns:\n        numpy.array: baseline-filtered ECG data.\n    \"\"\"\n    return ecg_data - moving_average(ecg_data, window_size)",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "detect_peak_ecg",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def detect_peak_ecg(ecg):\n    ecg_signal = np.array(ecg)\n    peaks_ecg, _ = scipy.signal.find_peaks(ecg_signal, threshold=(-2000, 2000), height=700, distance=50)\n    return peaks_ecg, ecg_signal[peaks_ecg]\ndef detect_peak_ppg(ppg):\n    ppg_signal = np.array(ppg)\n    peaks_ppg, _ = scipy.signal.find_peaks(ppg_signal, threshold=(-200, 200), height=10, distance=50)\n    return peaks_ppg, ppg_signal[peaks_ppg]\ndef calculate_hr(ppg_peaks, sampling_rate):\n    hr = []",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "detect_peak_ppg",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def detect_peak_ppg(ppg):\n    ppg_signal = np.array(ppg)\n    peaks_ppg, _ = scipy.signal.find_peaks(ppg_signal, threshold=(-200, 200), height=10, distance=50)\n    return peaks_ppg, ppg_signal[peaks_ppg]\ndef calculate_hr(ppg_peaks, sampling_rate):\n    hr = []\n    hr_avg = 0\n    if len(ppg_peaks) > 3:\n        peak_times = ppg_peaks / sampling_rate\n        inter_peak_intervals = np.diff(peak_times)",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_hr",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def calculate_hr(ppg_peaks, sampling_rate):\n    hr = []\n    hr_avg = 0\n    if len(ppg_peaks) > 3:\n        peak_times = ppg_peaks / sampling_rate\n        inter_peak_intervals = np.diff(peak_times)\n        # Calculate Heart Rate from time intervals\n        hr = 60 / inter_peak_intervals\n        # print(hr)\n        values = [value for value in hr if value is not None]",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_ptt",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def calculate_ptt(ecg_peaks, ppg_peaks, sampling_rate):\n    ptt = []\n    ptt_n = 0\n    if len(ppg_peaks) > 3:\n        if len(ecg_peaks) == len(ppg_peaks):\n            for i in range(len(ecg_peaks) - 1):\n                ecg_peak = ecg_peaks[i]\n                ppg_peak = ppg_peaks[i]\n                time_diff = (abs(ppg_peak - ecg_peak) / sampling_rate) * 1000\n                ptt.append(time_diff)",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "create_a_signed_number",
+        "kind": 2,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "def create_a_signed_number(number, bit):\n    # Maximum positive value for a signed number\n    max_value = (1 << (bit - 1)) - 1\n    # Minimum negative value for an signed number\n    _min_value = -(1 << (bit - 1))\n    # Converting it to a decimal value\n    decimal_value = number if number <= max_value else number - (1 << bit)\n    return decimal_value",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "N_SAMPLES",
+        "kind": 5,
+        "importPath": "core.utils.compute_utils",
+        "description": "core.utils.compute_utils",
+        "peekOfCode": "N_SAMPLES = 128*4\ndef compute_spo2(ppg_red, ppg_ir):\n    # Compute the AC component for both PPG signals\n    ac_red = ppg_red - np.mean(ppg_red)\n    ac_ir = ppg_ir - np.mean(ppg_ir)\n    # Find peaks in the AC components\n    peaks_red, _ = find_peaks(ac_red, height=0)\n    peaks_ir, _ = find_peaks(ac_ir, height=0)\n    # Compute the mean peak-to-peak amplitude for both PPG signals\n    amp_red = np.mean(ac_red[peaks_red])",
+        "detail": "core.utils.compute_utils",
+        "documentation": {}
+    },
+    {
+        "label": "SUBJECT_ID",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "SUBJECT_ID = '111'\n# DATA\nDIR_SAVE = ''\n# CDC USB\nPORT = '/dev/ttyACM0'\nBAUD_RATE = 115200\n# PPG Signal\nPPG_GAIN = 1 #2**19 / 31.25\nFS = 250\n#256",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "DIR_SAVE",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "DIR_SAVE = ''\n# CDC USB\nPORT = '/dev/ttyACM0'\nBAUD_RATE = 115200\n# PPG Signal\nPPG_GAIN = 1 #2**19 / 31.25\nFS = 250\n#256\nCHANNELS_LABEL = ['RED', 'GREEN', 'IR', 'ECG']\nCHANNELS_COLOR = ['r', 'g', 'k', 'r']",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "PORT",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "PORT = '/dev/ttyACM0'\nBAUD_RATE = 115200\n# PPG Signal\nPPG_GAIN = 1 #2**19 / 31.25\nFS = 250\n#256\nCHANNELS_LABEL = ['RED', 'GREEN', 'IR', 'ECG']\nCHANNELS_COLOR = ['r', 'g', 'k', 'r']\n# 256*3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "BAUD_RATE",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "BAUD_RATE = 115200\n# PPG Signal\nPPG_GAIN = 1 #2**19 / 31.25\nFS = 250\n#256\nCHANNELS_LABEL = ['RED', 'GREEN', 'IR', 'ECG']\nCHANNELS_COLOR = ['r', 'g', 'k', 'r']\n# 256*3\nNUM_CH = 4\nSAMPLE_TIME_1S_RAW_DATA = 768 * NUM_CH  # 2304 / 3 = 768 samples",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "PPG_GAIN",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "PPG_GAIN = 1 #2**19 / 31.25\nFS = 250\n#256\nCHANNELS_LABEL = ['RED', 'GREEN', 'IR', 'ECG']\nCHANNELS_COLOR = ['r', 'g', 'k', 'r']\n# 256*3\nNUM_CH = 4\nSAMPLE_TIME_1S_RAW_DATA = 768 * NUM_CH  # 2304 / 3 = 768 samples\nSAMPLE_TIME_1S_PPG_DATA = 100 * NUM_CH\n# THRESHOLD",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "FS",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "FS = 250\n#256\nCHANNELS_LABEL = ['RED', 'GREEN', 'IR', 'ECG']\nCHANNELS_COLOR = ['r', 'g', 'k', 'r']\n# 256*3\nNUM_CH = 4\nSAMPLE_TIME_1S_RAW_DATA = 768 * NUM_CH  # 2304 / 3 = 768 samples\nSAMPLE_TIME_1S_PPG_DATA = 100 * NUM_CH\n# THRESHOLD\nTHR_SKEWNESS = -0.5",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "CHANNELS_LABEL",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "CHANNELS_LABEL = ['RED', 'GREEN', 'IR', 'ECG']\nCHANNELS_COLOR = ['r', 'g', 'k', 'r']\n# 256*3\nNUM_CH = 4\nSAMPLE_TIME_1S_RAW_DATA = 768 * NUM_CH  # 2304 / 3 = 768 samples\nSAMPLE_TIME_1S_PPG_DATA = 100 * NUM_CH\n# THRESHOLD\nTHR_SKEWNESS = -0.5\nTHR_KURTOSIS = 2.38\nTHR_STD = 0.018",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "CHANNELS_COLOR",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "CHANNELS_COLOR = ['r', 'g', 'k', 'r']\n# 256*3\nNUM_CH = 4\nSAMPLE_TIME_1S_RAW_DATA = 768 * NUM_CH  # 2304 / 3 = 768 samples\nSAMPLE_TIME_1S_PPG_DATA = 100 * NUM_CH\n# THRESHOLD\nTHR_SKEWNESS = -0.5\nTHR_KURTOSIS = 2.38\nTHR_STD = 0.018\nTHR_SQI = 15",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "NUM_CH",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "NUM_CH = 4\nSAMPLE_TIME_1S_RAW_DATA = 768 * NUM_CH  # 2304 / 3 = 768 samples\nSAMPLE_TIME_1S_PPG_DATA = 100 * NUM_CH\n# THRESHOLD\nTHR_SKEWNESS = -0.5\nTHR_KURTOSIS = 2.38\nTHR_STD = 0.018\nTHR_SQI = 15\n# Define handle\nSTART_BYTE = 512",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "SAMPLE_TIME_1S_RAW_DATA",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "SAMPLE_TIME_1S_RAW_DATA = 768 * NUM_CH  # 2304 / 3 = 768 samples\nSAMPLE_TIME_1S_PPG_DATA = 100 * NUM_CH\n# THRESHOLD\nTHR_SKEWNESS = -0.5\nTHR_KURTOSIS = 2.38\nTHR_STD = 0.018\nTHR_SQI = 15\n# Define handle\nSTART_BYTE = 512\nFS_DEVICE = 128 #256",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "SAMPLE_TIME_1S_PPG_DATA",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "SAMPLE_TIME_1S_PPG_DATA = 100 * NUM_CH\n# THRESHOLD\nTHR_SKEWNESS = -0.5\nTHR_KURTOSIS = 2.38\nTHR_STD = 0.018\nTHR_SQI = 15\n# Define handle\nSTART_BYTE = 512\nFS_DEVICE = 128 #256\nFS_PROCESS = 125",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "THR_SKEWNESS",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "THR_SKEWNESS = -0.5\nTHR_KURTOSIS = 2.38\nTHR_STD = 0.018\nTHR_SQI = 15\n# Define handle\nSTART_BYTE = 512\nFS_DEVICE = 128 #256\nFS_PROCESS = 125\nFS_128 = 128\nLEN_SEG = 256",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "THR_KURTOSIS",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "THR_KURTOSIS = 2.38\nTHR_STD = 0.018\nTHR_SQI = 15\n# Define handle\nSTART_BYTE = 512\nFS_DEVICE = 128 #256\nFS_PROCESS = 125\nFS_128 = 128\nLEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "THR_STD",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "THR_STD = 0.018\nTHR_SQI = 15\n# Define handle\nSTART_BYTE = 512\nFS_DEVICE = 128 #256\nFS_PROCESS = 125\nFS_128 = 128\nLEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "THR_SQI",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "THR_SQI = 15\n# Define handle\nSTART_BYTE = 512\nFS_DEVICE = 128 #256\nFS_PROCESS = 125\nFS_128 = 128\nLEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "START_BYTE",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "START_BYTE = 512\nFS_DEVICE = 128 #256\nFS_PROCESS = 125\nFS_128 = 128\nLEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "FS_DEVICE",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "FS_DEVICE = 128 #256\nFS_PROCESS = 125\nFS_128 = 128\nLEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "FS_PROCESS",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "FS_PROCESS = 125\nFS_128 = 128\nLEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "FS_128",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "FS_128 = 128\nLEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "LEN_SEG",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "LEN_SEG = 256\nNUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "NUM_OVERLAP",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "NUM_OVERLAP = LEN_SEG * 2 // 3\nNUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
+        "label": "NUM_CH",
+        "kind": 5,
+        "importPath": "core.utils.define",
+        "description": "core.utils.define",
+        "peekOfCode": "NUM_CH = 4",
+        "detail": "core.utils.define",
+        "documentation": {}
+    },
+    {
         "label": "CoreHandler",
         "kind": 6,
         "importPath": "core.core_handler",
@@ -1215,8 +1925,53 @@
         "kind": 6,
         "importPath": "core.core_handler_call_back",
         "description": "core.core_handler_call_back",
-        "peekOfCode": "class CoreHandlerCallBack(ABC):\n    # Listener - BLE\n    @abstractmethod\n    def on_device_found():\n        pass\n    @abstractmethod\n    def on_device_connected(device: BleakClient):\n        pass\n    @abstractmethod\n    def on_device_disconnected(device: BleakClient):",
+        "peekOfCode": "class CoreHandlerCallBack(ABC):\n    # Listener - BLE\n    @abstractmethod\n    def on_device_found(self):\n        pass\n    @abstractmethod\n    def on_device_connected(self, device: BleakClient):\n        pass\n    @abstractmethod\n    def on_device_disconnected(self, device: BleakClient):",
         "detail": "core.core_handler_call_back",
+        "documentation": {}
+    },
+    {
+        "label": "NewCoreHandler",
+        "kind": 6,
+        "importPath": "core.new_core_handler",
+        "description": "core.new_core_handler",
+        "peekOfCode": "class NewCoreHandler:\n    _instance = None\n    def __new__(cls, *args, **kwargs):\n        if cls._instance is None:\n            cls._instance = super(NewCoreHandler, cls).__new__(cls)\n        return cls._instance\n    def __init__(self):\n        self.ble_manager = BleManager()\n        self.devices: List[Tuple[BLEDevice, AdvertisementData]] = []\n    async def start_scan(self):",
+        "detail": "core.new_core_handler",
+        "documentation": {}
+    },
+    {
+        "label": "CommonError",
+        "kind": 6,
+        "importPath": "errors.common_error",
+        "description": "errors.common_error",
+        "peekOfCode": "class CommonError:\n    code: int\n    message: str",
+        "detail": "errors.common_error",
+        "documentation": {}
+    },
+    {
+        "label": "BluetoothCallback",
+        "kind": 6,
+        "importPath": "managers.bluetooth_callback",
+        "description": "managers.bluetooth_callback",
+        "peekOfCode": "class BluetoothCallback(ABC):\n    @abstractmethod\n    def on_scan_result(self, device: BTDevice):\n        pass\n    @abstractmethod\n    def on_device_connected(self, device: BTDevice):\n        pass\n    @abstractmethod\n    def on_bluetooth_error(self, error: CommonError):\n        pass",
+        "detail": "managers.bluetooth_callback",
+        "documentation": {}
+    },
+    {
+        "label": "RingManager",
+        "kind": 6,
+        "importPath": "managers.ring_manager",
+        "description": "managers.ring_manager",
+        "peekOfCode": "class RingManager(RingManagerInterface):\n    def __init__(self):\n        self.new_core_handler = NewCoreHandler()\n        pass\n    def start_scan(self):\n        asyncio.create_task(self.new_core_handler.start_scan())\n    def stop_scan(self):\n        pass\n    def connect(self, address: str, timeout: int):\n        pass",
+        "detail": "managers.ring_manager",
+        "documentation": {}
+    },
+    {
+        "label": "RingManagerInterface",
+        "kind": 6,
+        "importPath": "managers.ring_manager_interface",
+        "description": "managers.ring_manager_interface",
+        "peekOfCode": "class RingManagerInterface(ABC):\n    @abstractmethod\n    def start_scan(self):\n        pass\n    @abstractmethod\n    def stop_scan(self):\n        pass\n    @abstractmethod\n    def connect(self, address: str, timeout: int):\n        pass",
+        "detail": "managers.ring_manager_interface",
         "documentation": {}
     },
     {
@@ -1251,7 +2006,7 @@
         "kind": 6,
         "importPath": "bioring_tool",
         "description": "bioring_tool",
-        "peekOfCode": "class BioRingTool(CoreHandlerCallBack):\n    def __init__(self):\n        self.core_handler = CoreHandler(self)\n        app = QApplication([])\n        window = QTGuideWindow()\n        window.scanBtn.clicked.connect(self.start_scan)\n        window.connectBtn.clicked.connect(self.connect)\n        window.disconnectBtn.clicked.connect(self.disconnect)\n        window.getInfoBtn.clicked.connect(self.get_device_info)\n        window.start_live_acc.clicked.connect(self.start_live_acc_data)",
+        "peekOfCode": "class BioRingTool(CoreHandlerCallBack, BluetoothCallback):\n    def __init__(self):\n        self.core_handler = CoreHandler(self)\n        self.ring_manager = RingManager()\n        app = QApplication([])\n        loop = QEventLoop(app)\n        asyncio.set_event_loop(loop)\n        window = QTGuideWindow()\n        window.scanBtn.clicked.connect(self.start_scan)\n        window.connectBtn.clicked.connect(self.connect)",
         "detail": "bioring_tool",
         "documentation": {}
     },
@@ -1287,7 +2042,7 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def main():\n    tool = BioRingTool()\nif(__name__ == \"__main__\"):\n    main()",
+        "peekOfCode": "def main():\n    tool = BioRingTool()\nif __name__ == \"__main__\":\n    main()",
         "detail": "main",
         "documentation": {}
     },
@@ -1296,7 +2051,7 @@
         "kind": 6,
         "importPath": "qt_gui",
         "description": "qt_gui",
-        "peekOfCode": "class QTGuideWindow(QMainWindow):\n    def __init__(self):\n        super().__init__()\n        self.setWindowTitle(\"Tool hack Lien Minh\")\n        self.setMinimumSize(400,400)\n        parentLayout = QVBoxLayout()\n        self.label1 = QLabel(\"         Máy tính của bạn đã bị hack\")\n        self.scanBtn = QPushButton(\"Scan BLE\")\n        self.connectBtn = QPushButton(\"Connect\")\n        self.disconnectBtn = QPushButton(\"Disconnect\")",
+        "peekOfCode": "class QTGuideWindow(QMainWindow):\n    def __init__(self):\n        super().__init__()\n        self.setWindowTitle(\"Test Bioring SDK\")\n        self.setMinimumSize(400,400)\n        parentLayout = QVBoxLayout()\n        self.label1 = QLabel(\"Welcome to the test tool\")\n        self.scanBtn = QPushButton(\"Scan BLE\")\n        self.connectBtn = QPushButton(\"Connect\")\n        self.disconnectBtn = QPushButton(\"Disconnect\")",
         "detail": "qt_gui",
         "documentation": {}
     }
