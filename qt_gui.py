@@ -1,4 +1,4 @@
-from ble.ble_manager import BleManager
+from ble.old_ble_manager import OldBleManager
 from core.models import EcgData, PpgData
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
@@ -16,9 +16,11 @@ class QTGuideWindow(QMainWindow):
         self.setMinimumSize(400,400)
         parentLayout = QVBoxLayout()
         self.label1 = QLabel("Welcome to the test tool")
-        self.scanBtn = QPushButton("Scan BLE")
+        self.scanBtn = QPushButton("Start Scan BLE")
+        self.stopBtn = QPushButton("Stop Scan BLE")
         self.connectBtn = QPushButton("Connect")
         self.disconnectBtn = QPushButton("Disconnect")
+        self.get_bluetooth_state = QPushButton("Get Bluetooth state")
         self.getInfoBtn = QPushButton("Get tool info")
         self.start_live_acc = QPushButton("Start Live ACC")
         self.stop_live_acc = QPushButton("Stop Live ACC")
@@ -31,8 +33,10 @@ class QTGuideWindow(QMainWindow):
 
         parentLayout.addWidget(self.label1)
         parentLayout.addWidget(self.scanBtn)
+        parentLayout.addWidget(self.stopBtn)
         parentLayout.addWidget(self.connectBtn)
         parentLayout.addWidget(self.disconnectBtn)
+        parentLayout.addWidget(self.get_bluetooth_state)
         parentLayout.addWidget(self.getInfoBtn)
         parentLayout.addWidget(self.start_live_acc)
         parentLayout.addWidget(self.stop_live_acc)

@@ -1,3 +1,6 @@
+import subprocess
+from typing import List
+
 from PyQt6.QtWidgets import QApplication
 
 from ble.bt_device import BTDevice
@@ -5,7 +8,7 @@ from errors.common_error import CommonError
 from managers.bluetooth_callback import BluetoothCallback
 from managers.ring_manager import RingManager
 from qt_gui import QTGuideWindow
-from core.core_handler import CoreHandler
+from core.old_core_handler import OldCoreHandler
 from bleak import BleakClient
 from core.core_handler_call_back import CoreHandlerCallBack
 from ble.ble_constant import BleConstant
@@ -18,14 +21,17 @@ from core.command import (
 )
 from core.models.device_info import DeviceInfo
 from core.models.acc_data import AccData
-from qasync import QEventLoop 
+from qasync import QEventLoop
 import asyncio
+from ble.mac_bluetooth_state_checker import check_bluetooth_state_mac_os
 
 
 class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
     def __init__(self):
-        self.core_handler = CoreHandler(self)
+        self.core_handler = OldCoreHandler(self)
         self.ring_manager = RingManager()
+        self.ring_manager.set_bluetooth_callback(self)
+        self.devices : List[BTDevice] = []
 
         app = QApplication([])
         loop = QEventLoop(app)
@@ -33,8 +39,10 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
 
         window = QTGuideWindow()
         window.scanBtn.clicked.connect(self.start_scan)
+        window.stopBtn.clicked.connect(self.stop_scan)
         window.connectBtn.clicked.connect(self.connect)
         window.disconnectBtn.clicked.connect(self.disconnect)
+        window.get_bluetooth_state.clicked.connect(self.get_bluetooth_state)
         window.getInfoBtn.clicked.connect(self.get_device_info)
         window.start_live_acc.clicked.connect(self.start_live_acc_data)
         window.stop_live_acc.clicked.connect(self.stop_live_acc_data)
@@ -45,46 +53,47 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
         window.start_live_temp.clicked.connect(self.start_live_temp_data)
         window.stop_live_temp.clicked.connect(self.stop_live_temp_data)
 
-
         window.show()
         # Run the PyQt event loop alongside asyncio
         with loop:
             loop.run_forever()
 
-    """ Implement BluetoothCallback """
+    """ BLE actions"""
+
+    def start_scan(self):
+        self.ring_manager.start_scan()
+
+    def stop_scan(self):
+        self.ring_manager.stop_scan()
+
+    def connect(self):
+        self.ring_manager.connect(self.devices[0].address, 10)
+        print('connect to device', self.devices[0])
+
+    def disconnect(self,  address: str):
+        self.ring_manager.disconnect(self.devices[0].address)
+
+    def get_bluetooth_state(self):
+        state = self.ring_manager.get_bluetooth_state()
+        print(state)
+
+    """ BluetoothCallback """
+
     def on_scan_result(self, device: BTDevice):
+        print(f"on_scan_result Device found: {device}")
+        self.devices.append(device)
         pass
 
     def on_device_connected(self, device: BleakClient):
-        # self.core_handler.start_notify()
+        print(f"on_device_connected Device connected: {device}")
         pass
 
-    def on_bluetooth_error(self, error: CommonError):
+    def on_bluetooth_error(self, device: BTDevice, error: CommonError):
+        print(f"on_bluetooth_error Error: {error}")
         pass
 
     def on_bluetooth_state_changed(self, status: bool):
         pass
-
-
-
-
-
-    def is_bluetooth_enabled(self):
-        pass
-
-    def start_scan(self):
-        # self.core_handler.start_scan()
-        self.ring_manager.start_scan()
-
-    def stop_scan(self):
-        pass
-
-    def connect(self):
-        # self.core_handler.connect()
-        print('test not block')
-
-    def disconnect(self):
-        self.core_handler.disconnect()
 
     # Command functions - Device info
 

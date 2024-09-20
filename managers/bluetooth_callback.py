@@ -14,7 +14,7 @@ class BluetoothCallback(ABC):
         pass
 
     @abstractmethod
-    def on_bluetooth_error(self, error: CommonError):
+    def on_bluetooth_error(self, device: BTDevice, error: CommonError):
         pass
 
     @abstractmethod
