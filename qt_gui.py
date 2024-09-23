@@ -9,12 +9,14 @@ import asyncio
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton
 
 class QTGuideWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, close_event: Callable):
         super().__init__()
+
+        self.close_event = close_event
 
         self.setWindowTitle("Test Bioring SDK")
         self.setMinimumSize(400,400)
-        parentLayout = QVBoxLayout()
+        parent_layout = QVBoxLayout()
         self.label1 = QLabel("Welcome to the test tool")
         self.scanBtn = QPushButton("Start Scan BLE")
         self.stopBtn = QPushButton("Stop Scan BLE")
@@ -31,24 +33,27 @@ class QTGuideWindow(QMainWindow):
         self.start_live_temp = QPushButton("Start Live temp")
         self.stop_live_temp = QPushButton("Stop Live temp")
 
-        parentLayout.addWidget(self.label1)
-        parentLayout.addWidget(self.scanBtn)
-        parentLayout.addWidget(self.stopBtn)
-        parentLayout.addWidget(self.connectBtn)
-        parentLayout.addWidget(self.disconnectBtn)
-        parentLayout.addWidget(self.get_bluetooth_state)
-        parentLayout.addWidget(self.getInfoBtn)
-        parentLayout.addWidget(self.start_live_acc)
-        parentLayout.addWidget(self.stop_live_acc)
-        parentLayout.addWidget(self.start_live_ecg)
-        parentLayout.addWidget(self.stop_live_ecg)
-        parentLayout.addWidget(self.start_live_ppg)
-        parentLayout.addWidget(self.stop_live_ppg)
-        parentLayout.addWidget(self.start_live_temp)
-        parentLayout.addWidget(self.stop_live_temp)
+        parent_layout.addWidget(self.label1)
+        parent_layout.addWidget(self.scanBtn)
+        parent_layout.addWidget(self.stopBtn)
+        parent_layout.addWidget(self.connectBtn)
+        parent_layout.addWidget(self.disconnectBtn)
+        parent_layout.addWidget(self.get_bluetooth_state)
+        parent_layout.addWidget(self.getInfoBtn)
+        parent_layout.addWidget(self.start_live_acc)
+        parent_layout.addWidget(self.stop_live_acc)
+        parent_layout.addWidget(self.start_live_ecg)
+        parent_layout.addWidget(self.stop_live_ecg)
+        parent_layout.addWidget(self.start_live_ppg)
+        parent_layout.addWidget(self.stop_live_ppg)
+        parent_layout.addWidget(self.start_live_temp)
+        parent_layout.addWidget(self.stop_live_temp)
         
 
-        centerWidget = QWidget()
-        centerWidget.setLayout(parentLayout)
-        self.setCentralWidget(centerWidget)
-        
+        center_widget = QWidget()
+        center_widget.setLayout(parent_layout)
+        self.setCentralWidget(center_widget)
+
+    def closeEvent(self, event):
+        self.close_event()
+        super().closeEvent(event)

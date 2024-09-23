@@ -1,6 +1,6 @@
 from typing import List
 from core.enum.fifo_data_type import FifoDataType
-from core.models import AccData
+from core.models import AccelData
 import struct
 import logging
 
@@ -10,11 +10,11 @@ import logging
 # PPG and ECG
 class AfeDataHandler:
     @staticmethod
-    def handle(data: bytearray) -> AccData:
+    def handle(data: bytearray) -> AccelData:
         return AfeDataHandler._parse(data)
     
     @staticmethod
-    def parse(data: bytearray, length: int) -> AccData:
+    def parse(data: bytearray, length: int) -> AccelData:
         ecg_data = List[int]
         ppg_red_data = List[int]
         ppg_ir_data = List[int] 

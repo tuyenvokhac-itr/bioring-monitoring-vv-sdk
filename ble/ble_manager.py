@@ -48,3 +48,24 @@ class BleManager:
 
     async def disconnect(self, client: BleakClient):
         await client.disconnect()
+
+    def get_characteristic_by_uuid(self, char_uuid, client: BleakClient):
+        """
+        Get the BleakGATTCharacteristic object based on the provided characteristic UUID.
+        """
+
+        for service in client.services:
+                for characteristic in service.characteristics:
+                    if characteristic.uuid == char_uuid:
+                        return characteristic
+        return None
+
+    async def start_notify(self, char_uuid: str, client: BleakClient, callback):
+        """
+        Start receiving notifications for the specified characteristic UUID.
+        """
+
+        characteristic = self.get_characteristic_by_uuid(char_uuid, client)
+        if characteristic:
+            await client.start_notify(characteristic, callback)
+        # self.logger.info('[CoreHandler]: Start notify for %s', client.address)

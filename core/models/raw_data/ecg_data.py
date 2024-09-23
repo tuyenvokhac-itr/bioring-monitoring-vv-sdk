@@ -3,4 +3,5 @@ from typing import List
 
 @dataclass
 class EcgData:
+    start_time: int
     data: List[int]

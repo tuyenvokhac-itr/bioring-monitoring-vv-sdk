@@ -1,0 +1,681 @@
+/**
+ * @file       brp.proto
+ * @copyright  Copyright (C) 2023 ITR VN. All rights reserved.
+ * @license    This project is released under the ITR VN License.
+ * @version    1.0.0
+ * @date       
+ * @author     
+ * @brief      BioRing Protocol (BRP) definitions.
+ * @note       Style guide: https://protobuf.dev/programming-guides/style/
+ * @note       Proto 2 guide: https://protobuf.dev/programming-guides/proto2/
+ * @note       Proto 3 guide: https://protobuf.dev/programming-guides/proto3/
+ */
+
+syntax = "proto2";
+package BRP;
+
+/* Import ------------------------------------------------------------------- */
+
+/* Messages ----------------------------------------------------------------- */
+
+message ProtocolInfo {
+  required uint64 version = 1 [ default = 202409201700 ];  // YYYY-MM-DD-HH-MM
+}
+
+message Packet {
+  /* Session ID: timestamp of the message. Format: Unix epoch in ms.
+     In case of ACK packet, it is the session ID of the packet being ACKed.
+   */
+  required uint64 sid = 1;
+  // Packet type: used to differentiate between packets.
+  required PacketType type = 2;
+
+  // Payload. Used to store the message's additional data.
+  oneof payload {
+    CommandPacket command = 3;  // App -> Device
+    ResponsePacket response = 4;  // Device -> App
+    NotificationPacket notification = 5;  // Device -> App
+    AckPacket ack = 6;  // App -> Device
+  }
+}
+
+enum PacketType {
+  PACKET_TYPE_UNSPECIFIED = 0;
+  PACKET_TYPE_COMMAND = 1;
+  PACKET_TYPE_RESPONSE = 2;
+  PACKET_TYPE_NOTIFICATION = 3;
+  PACKET_TYPE_ACK = 4;
+}
+
+enum SensorType {
+  SENSOR_TYPE_PPG = 1;
+  SENSOR_TYPE_ECG = 2;
+  SENSOR_TYPE_ACCEL = 4;
+  SENSOR_TYPE_TEMP = 8;
+}
+
+/* Command message format */
+message CommandPacket {
+  required CommandId cid = 1;
+  oneof payload {
+    CmdMemSet mem_set = 2; // CID_MEM_SET
+    CmdMemGet mem_get = 3; // CID_MEM_GET
+    AfeSettings afe_setting = 4; // CID_AFE_SENSOR_SETTING_SET
+    WlcRunParams wlc_run_params = 5; // CID_WLC_RUN_PARAMS_SET
+    WlcOemParams wlc_oem_params = 6; // CID_WLC_OEM_PARAMS_SET
+    uint32 sensor_type = 7; // CID_STREAMING_DATA_START and CID_RECORD_DATA_START. value: see @SensorType
+    SensorConfig sensor_config = 8; // CID_STREAMING_DATA_START. value: see @SensorType
+    uint32 bist_interval = 9; // CID_SELF_TEST_BIST_SET_INTERVAL
+    uint32 record_sample = 10; // CID_RECORD_DATA_START
+    uint32 pre_sleep_timeout = 12; //CID_DEV_PRE_SLEEP_TIMEOUT_SET
+    DevStatus dev_status = 13; //CID_TIME_SET
+    AllDevSettings all_dev_settings = 14; //CID_DEV_SETTINGS_STORE_ALL
+  }
+}
+
+/* Response message format */
+message ResponsePacket {
+  // Command ID. This field is used to match the response with the command.
+  required CommandId cid = 1;
+
+  // Response code. Used to indicate the result of the command.
+  required ResponseCode result = 2;
+
+  // Payload. Used to store the response additional data.
+  oneof payload {
+    ProtocolInfo protocol_info = 4; // CID_PROTOCOL_INFO_GET
+    RspMemGet mem_get = 5; // CID_MEM_GET
+    DevInfo dev_info = 6; // CID_DEV_INFO_GET
+    AfeSettings afe_setting = 7; // CID_AFE_SENSOR_SETTING_GET
+    WlcRunParams wlc_run_params = 8; // CID_WLC_RUN_PARAMS_GET
+    WlcOemParams wlc_oem_params = 9; // CID_WLC_OEM_PARAMS_GET
+    SelfTestData self_test_data = 11; // CID_SELF_TEST_POST_GET
+    AllDevSettings all_dev_settings = 13; //CID_DEV_SETTINGS_LOAD_ALL
+    PpgLedControl ppg_led_control = 14; //CID_PPG_LED_ENABLE and CID_PPG_LED_DISABLE
+    DevStatus dev_status = 15; //CID_DEV_INFO_GET
+    SampleThreshold sample_threshold = 16;//CID_RECORD_SAMPLES_THRESHOLD_GET
+  }
+}
+
+/* Notification message format */
+message NotificationPacket {
+  // Notification ID. Used to differentiate between notifications.
+  required NotificationId nid = 2;
+
+  /* ACK:
+   *
+   * - `true`: require ACK
+   * - `false`: not require ACK
+   */
+  required bool ack = 3;
+
+  // Payload. Used to store the notification additional data.
+  oneof payload {
+    NotiLog log = 4; // NID_LOG_DATA
+    bool charging = 5; // NID_CHARGING_STATUS_CHANGED
+    uint32 battery_level = 6; // NID_BATTERY_LEVEL_CHANGED
+    Spo2HrData spo2_hr = 7; // NID_SPO2_HR_DATA
+    bool ecg_lead_off_detect = 8; //NID_ECG_LEAD_OFF_DETECT
+    SelfTestData bist_result = 9; //NID_BIST_RESULT
+  }
+}
+
+/* ACK message format */
+message AckPacket {
+  // Notification ID. Used to differentiate between notifications.
+  required NotificationId nid = 1;
+  required AckResponseCode result = 2;
+}
+
+enum CommandId {
+  // Unspecified packet to be ignored
+  CID_UNSPECIFIED = 0;
+
+  // Set/Get time to/from device
+  CID_TIME_SET = 1;
+  CID_TIME_GET = 2;
+
+  // Get protocol info
+  CID_PROTOCOL_INFO_GET = 3;
+
+  // Get device info
+  CID_DEV_INFO_GET = 4;
+
+  // Get device status
+  CID_DEV_STATUS_GET = 5;
+
+  // Self-tests
+  CID_SELF_TEST_POST_GET = 6;
+  CID_SELF_TEST_BIST_GET = 7;
+  CID_SELF_TEST_BIST_ENABLE = 8;
+  CID_SELF_TEST_BIST_DISABLE = 9;
+  CID_SELF_TEST_BIST_SET_INTERVAL = 10;
+
+  // Data streaming
+  CID_STREAMING_DATA_START = 11;
+  CID_STREAMING_DATA_STOP = 12;
+
+  // Data recorder for raw data
+  CID_RECORD_SAMPLES_THRESHOLD_GET = 13;
+  CID_RECORD_DATA_START = 14;
+  CID_RECORD_DATA_STOP = 15;
+  CID_RECORD_DATA_GET = 16;
+
+  // All device settings
+  CID_ALL_SETTINGS_GET = 17;
+  CID_ALL_SETTINGS_SET = 18;
+
+  // ECG Settings
+  CID_ECG_SETTINGS_SET = 19;
+
+  // PPG Settings
+  CID_PPG_SETTINGS_SET = 20;
+
+  // ACCEL Settings
+  CID_ACCEL_SETTINGS_SET = 21;
+
+  // BLE Settings
+  CID_BLE_SETTINGS_SET = 22;
+
+  // Log settings
+  CID_LOG_SETTINGS_SET = 23;
+
+  // Enter DFU mode
+  CID_DFU_ENTER = 24;
+
+  // Power manager
+  CID_DEV_PRE_SLEEP_TIMEOUT_SET = 25;
+
+  // Factory reset
+  CID_DEV_FACTORY_RESET = 26;
+
+  // Restart device
+  CID_REBOOT = 27;
+
+  //---------------------------------------------
+  // For V&V: Set/Get memory content
+  CID_MEM_SET = 28;
+  CID_MEM_GET = 29;
+
+  // Set/Get AFE sensor settings
+  CID_AFE_SENSOR_SETTING_SET = 30;
+  CID_AFE_SENSOR_SETTING_GET = 31;
+
+  // Set/Get Wireless Charger runtimes params
+  CID_WLC_RUN_PARAMS_SET = 32;
+  CID_WLC_RUN_PARAMS_GET = 33;
+
+  // Set/Get Wireless Charger OEM params
+  CID_WLC_OEM_PARAMS_SET = 34;
+  CID_WLC_OEM_PARAMS_GET = 35;
+
+  // Start/stop SPO2 and HR calculation
+  CID_SPO2_HR_START = 36;
+  CID_SPO2_HR_STOP = 37;
+
+  // Set device to Sleep Mode
+  CID_DEV_SLEEP = 38;
+
+  // Re-init all components
+  CID_DEV_REINIT = 39;
+
+  // BLE Direct Test Mode (DTM) packets
+  CID_BLE_DTM_LE_TX = 248;
+  CID_BLE_DTM_LE_TX_RESP = 249;
+  CID_BLE_DTM_LE_RX = 250;
+  CID_BLE_DTM_LE_RX_RESP = 251;
+  CID_BLE_DTM_UNMODULATED_TX = 252;
+  CID_BLE_DTM_UNMODULATED_TX_RESP = 253;
+  CID_BLE_DTM_UNMODULATED_RX = 254;
+  CID_BLE_DTM_UNMODULATED_RX_RESP = 255;
+}
+
+enum ResponseCode {
+  RC_UNSPECIFIED = 0;
+  RC_OK = 1;
+  RC_ERROR_UNIMPLEMENTED = 2;
+  RC_ERROR_CMD_FAILED = 3;
+  RC_ERROR_TIMED_OUT = 4;
+  RC_ERROR_BUSY = 5;
+  RC_ERROR_INVALID_PACKET_TYPE = 6;
+  RC_ERROR_INVALID_PAYLOAD = 7;
+}
+
+enum NotificationId {
+  NID_UNSPECIFIED = 0;
+  NID_LOG_DATA = 1;
+  NID_CHARGING_STATUS_CHANGED = 2;
+  NID_BATTERY_LEVEL_CHANGED = 3;
+  NID_SPO2_HR_DATA = 4;
+  NID_ECG_LEAD_OFF_DETECT = 5;
+  NID_BIST_RESULT = 6;
+}
+
+enum AckResponseCode {
+  ACK_RC_UNSPECIFIED = 0;
+  ACK_RC_ACK = 1;
+  ACK_RC_NACK_UNIMPLEMENTED = 2;
+  ACK_RC_NACK_CMD_FAILED = 3;
+  ACK_RC_NACK_TIMED_OUT = 4;
+  ACK_RC_NACK_BUSY = 5;
+  ACK_RC_NACK_INVALID_PACKET_TYPE = 6;
+  ACK_RC_NACK_INVALID_PAYLOAD = 7;
+}
+
+enum AppType {
+  APP_TYPE_BOOTLOADER = 0;
+  APP_TYPE_APPLICATION = 1;
+}
+
+message DevInfo {
+  /* Serial number.
+    Format: "BRG1-495452-AABBCC". Where:
+      - "495452" (ASCII is "ITR"): Company code.
+      - "AABBCC" is the last 3 bytes of BLE MAC address.
+  */
+  optional string serial_number = 1;
+
+  // Manufacturing Date. Format: "DD-MM-YY"
+  optional string manufacturing_date = 2;
+
+  // Lot. Format: "XXXXXXXX"
+  optional string lot = 3;
+
+  // Model name. Currently, it is **"BR Gen 1"**
+  optional string model = 4;
+
+  // PCBA version. Format: "Major.Minor-[Prototype|Production]"
+  optional string pcba_version = 5;
+
+  // Bootloader version. Format: "Major.Minor.Patch.Build[-Suffix]
+  optional string bootloader_version = 6;
+
+  // Application version. Format: "Major.Minor.Patch.Build[-Suffix]"
+  optional string application_version = 7;
+
+  // Firmware build date "DD-MM-YY"
+  optional string build_date = 8;
+}
+
+message CmdMemSet {
+  required uint32 address = 1;
+  required uint32 length = 2;
+  required bytes data = 3;
+}
+
+message CmdMemGet {
+  required uint32 address = 1;
+  required uint32 length = 2;
+}
+
+message RspMemGet {
+  required bytes data = 1;
+}
+
+message NotiLog {
+  optional string data = 1;
+}
+
+message AfeSettings {
+  required uint32 ecg_sample_rate = 1;
+  required uint32 ppg_sample_rate = 2;
+  required uint32 ppg_meas1_current_step = 3;
+  required uint32 ppg_meas2_current_step = 4;
+  required float ppg_meas1_current = 5;
+  required float ppg_meas2_current = 6;
+  required uint32 ecg_input_polar = 7;
+  required uint32 ecg_pga_gain = 8;
+  required uint32 ecg_ina_gain = 9;
+  required uint32 ecg_auto_reco_mode = 10;
+  required uint32 ecg_auto_fast_reco_mode = 11;
+  required uint32 ecg_auto_fast_reco_thresh = 12;
+  required uint32 ecg_rld_enable = 13;
+  required uint32 ecg_rld_mode = 14;
+  required uint32 ecg_rld_pos_input_enable = 15;
+  required uint32 ecg_rld_neg_input_enable = 16;
+  required uint32 ecg_rld_gain = 17;
+  required uint32 ecg_rld_ex_res_connect = 18;
+  required uint32 ecg_rld_select_ecg = 19; 
+  required uint32 ppg_meas1_inter_time = 20; 
+  required uint32 ppg_meas2_inter_time = 21; 
+  required uint32 ppg_meas1_pd_seltling = 22; 
+  required uint32 ppg_meas2_pd_seltling = 23; 
+  required uint32 ppg_meas1_led_seltling = 24; 
+  required uint32 ppg_meas2_led_seltling = 25; 
+  required uint32 ppg_meas1_ppg1_offset = 26; 
+  required uint32 ppg_meas2_ppg1_offset = 27; 
+  required uint32 ppg_meas1_ppg2_offset = 28; 
+  required uint32 ppg_meas2_ppg2_offset = 29; 
+  required uint32 ppg_meas1_sinc3_filter = 30; 
+  required uint32 ppg_meas2_sinc3_filter = 31; 
+  required uint32 ppg_meas1_alc_method = 32; 
+  required uint32 ppg_meas2_alc_method = 33; 
+  required uint32 ppg_meas1_filter_order = 34; 
+  required uint32 ppg_meas2_filter_order = 35; 
+  required uint32 ppg_meas1_ambient = 36; 
+  required uint32 ppg_meas2_ambient = 37; 
+  required uint32 ppg_pd1_photodiode_bias = 38;
+  required uint32 ppg_proximity_mode = 39;
+  required uint32 ppg_threshold_1_lower = 40;
+  required uint32 ecg_ina_rge = 41;
+}
+
+message WlcRunParams {
+  required uint32 charge_current = 1;
+  required uint32 recharge_voltage = 2;
+  required uint32 termination_voltage = 3;
+  required uint32 trickle_voltage = 4;
+  required uint32 enable_charging = 5;
+  required uint32 wpt_req = 6;
+  required uint32 wpt_duration = 7;
+  required uint32 detuning = 8;
+}
+
+message WlcOemParams {
+  required uint32 bc_i_charge_cold = 1;
+  required uint32 bc_i_charge_hot = 2;
+  required uint32 bc_v_term = 3;
+  required uint32 bc_v_term_cold = 4;
+  required uint32 bc_v_term_hot = 5;
+  required uint32 bc_v_trickle = 6;
+  required uint32 bc_v_recharge = 7;
+  required uint32 vd_mcu_mode = 8;
+  required uint32 i_sensor_thresh = 9;
+  required uint32 adj_wpt_duration_int = 10;
+  required uint32 tcm_wpt_duration_int = 11;
+  required uint32 ccm_wpt_duration_int = 12;
+  required uint32 cvm_wpt_duration_int = 13;
+  required uint32 cap_wt_int = 14;
+  required uint32 gpio0_config = 15;
+  required uint32 gpio1_config = 16;
+  required uint32 bc_uvlo_thresh = 17;
+  required uint32 wpt_req_sel = 18;
+  required uint32 irq_polarity = 19;
+  required uint32 nfc_resistive_mod = 20;
+  required uint32 nfc_resistive_set =  21;
+  required uint32 wpt_resistive_mod = 22;
+  required uint32 wpt_resistive_set = 23;
+  required uint32 ntc_mode = 24;
+  required uint32 bc_i_charge_wpt = 25;
+  required uint32 bc_i_charge_nfc = 26;
+  required uint32 bc_i_term = 27;
+  required uint32 bc_i_lim_sel = 28;
+  required uint32 bc_i_lim_bat_enable = 29;
+  required uint32 bc_lo_bat_off_en = 30;
+  required uint32 bc_enable = 31;
+  required uint32 i2c_address = 32;
+  required uint32 tcm_timeout = 33;
+  required uint32 ccm_timeout = 34;
+  required uint32 cvm_timeout = 35;
+  required uint32 vddc_thres_low = 36;
+  required uint32 vd_bat_offset_high = 37;
+  required uint32 vd_bat_offset_low = 38;
+  required uint32 dc_charging_enable = 39;
+  required uint32 oem_version = 40;
+}
+
+enum SensorMode {
+  SM_MODE_OFF = 1;
+  SM_MODE_STREAM = 2;
+  SM_MODE_RECORD_TO_FLASH = 3;
+  SM_MODE_UPLOAD_FROM_FLASH = 4;
+}
+
+enum LogLevel {
+  LOG_LEVEL_ERROR = 0;
+  LOG_LEVEL_WARNING = 1;
+  LOG_LEVEL_INFO = 2;
+  LOG_LEVEL_DEBUG = 3;
+}
+
+enum ChargingStatus {
+  CHARGING_STATUS_DISCHARGING = 0;
+  CHARGING_STATUS_CHARGING = 1;
+}
+
+enum ChargingError {
+  CHARGING_ERROR_OK           = 0;
+  CHARGING_ERROR_IC_TEMP      = 1;
+  CHARGING_ERROR_PROTOCOL     = 2;
+  CHARGING_ERROR_BATT_CONNECT = 4;
+  CHARGING_ERROR_BATT_TEMP    = 8;
+  CHARGING_ERROR_TCM_TIMEOUT  = 12;
+  CHARGING_ERROR_CCM_TIMEOUT  = 16;
+  CHARGING_ERROR_CVM_TIMEOUT  = 20;
+}
+
+enum BleTxPowerLevel {
+  BLE_TX_POWER_LEVEL_NEG_20 = -20;
+  BLE_TX_POWER_LEVEL_NEG_16 = -16;
+  BLE_TX_POWER_LEVEL_NEG_12 = -12;
+  BLE_TX_POWER_LEVEL_NEG_6 = -6;
+  BLE_TX_POWER_LEVEL_0 = 0;
+  BLE_TX_POWER_LEVEL_4 = 4;
+}
+
+enum EcgSampleRate {
+  ECG_SAMPLE_RATE_64HZ = 0;
+  ECG_SAMPLE_RATE_128HZ = 1;
+  ECG_SAMPLE_RATE_256HZ = 2;
+}
+
+enum EcgPgaGain {
+  ECG_PGA_GAIN_1  = 0;
+  ECG_PGA_GAIN_2  = 1;
+  ECG_PGA_GAIN_4  = 2;
+  ECG_PGA_GAIN_8  = 3;
+  ECG_PGA_GAIN_16 = 7;
+}
+
+enum EcgInaGain {
+  ECG_INA_GAIN_0 = 0;
+  ECG_INA_GAIN_1 = 1;
+  ECG_INA_GAIN_2 = 2;
+  ECG_INA_GAIN_3 = 3;
+}
+
+enum EcgInaRange {
+  ECG_INA_GAIN_RGE_0 = 0;
+  ECG_INA_GAIN_RGE_1 = 1;
+  ECG_INA_GAIN_RGE_2 = 2;
+  ECG_INA_GAIN_RGE_3 = 3;
+}
+
+enum EcgInputPolarity {
+  ECG_INPUT_NON_INVERTED = 0;
+  ECG_INPUT_INVERTED = 1;
+}
+
+enum EcgLeadOffMode {
+  ECG_LEAD_OFF_DC = 0;
+  ECG_LEAD_OFF_AC = 1;
+}
+
+enum EcgLeadOffCurrentPolarity {
+  ECG_LEAD_OFF_NON_INVERTED = 0;
+  ECG_LEAD_OFF_INVERTED = 1; 
+}
+
+enum EcgLeadOffCurrentMagnitude {
+  ECG_LEAD_OFF_IMAG_0 = 0;
+  ECG_LEAD_OFF_IMAG_5 = 1;
+  ECG_LEAD_OFF_IMAG_10 = 2;
+  ECG_LEAD_OFF_IMAG_20 = 3;
+  ECG_LEAD_OFF_IMAG_50 = 4;
+  ECG_LEAD_OFF_IMAG_100 = 5;
+  ECG_LEAD_OFF_IMAG_200 = 6;
+  ECG_LEAD_OFF_IMAG_400 = 7;
+}
+
+enum EcgLeadOffVoltageThreshold {
+  ECG_LEAD_OFF_VOL_THRESH_25MV = 0;
+  ECG_LEAD_OFF_VOL_THRESH_50MV = 1;
+  ECG_LEAD_OFF_VOL_THRESH_75MV = 2;
+  ECG_LEAD_OFF_VOL_THRESH_100MV = 3;
+  ECG_LEAD_OFF_VOL_THRESH_125MV = 4;
+  ECG_LEAD_OFF_VOL_THRESH_150MV = 5;
+  ECG_LEAD_OFF_VOL_THRESH_175MV = 6;
+  ECG_LEAD_OFF_VOL_THRESH_200MV = 7;
+  ECG_LEAD_OFF_VOL_THRESH_225MV = 8;
+  ECG_LEAD_OFF_VOL_THRESH_250MV = 9;
+  ECG_LEAD_OFF_VOL_THRESH_275MV = 10;
+  ECG_LEAD_OFF_VOL_THRESH_300MV = 11;
+  ECG_LEAD_OFF_VOL_THRESH_325MV = 12;
+  ECG_LEAD_OFF_VOL_THRESH_350MV = 13;
+  ECG_LEAD_OFF_VOL_THRESH_375MV = 14;
+  ECG_LEAD_OFF_VOL_THRESH_400MV = 15;
+}
+
+enum EcgLeadOffFreq {
+  ECG_LEAD_OFF_FREQ_DISABLE = 0;
+  ECG_LEAD_OFF_FREQ_8192HZ = 1;
+  ECG_LEAD_OFF_FREQ_4096HZ = 2;
+  ECG_LEAD_OFF_FREQ_2048HZ = 3;
+  ECG_LEAD_OFF_FREQ_1024HZ = 4;
+  ECG_LEAD_OFF_FREQ_512HZ = 5;
+  ECG_LEAD_OFF_FREQ_256HZ = 6;
+  ECG_LEAD_OFF_FREQ_128HZ = 7;
+}
+
+enum PpgSampleRate {
+  PPG_SAMPLE_RATE_64HZ = 0;
+  PPG_SAMPLE_RATE_128HZ = 1;
+  PPG_SAMPLE_RATE_256HZ = 2;
+}
+
+enum AccelSampleRate {
+  ACC_SAMPLE_RATE_12Hz5    =  1;
+  ACC_SAMPLE_RATE_26Hz     =  2;
+  ACC_SAMPLE_RATE_52Hz     =  3;
+  ACC_SAMPLE_RATE_104Hz    =  4;
+  ACC_SAMPLE_RATE_208Hz    =  5;
+}
+
+enum AccelFullScale {
+  ACC_FULLSCALE_2g       = 0;
+  ACC_FULLSCALE_16g      = 1;
+  ACC_FULLSCALE_4g       = 2;
+  ACC_FULLSCALE_8g       = 3;
+}
+
+enum PpgLedType {
+  PPG_LED_IR = 0;
+  PPG_LED_RED = 1;
+  PPG_LED_GREEN = 2;
+}
+
+message SensorConfig {
+  optional SensorType sensor_type = 1;
+  optional SensorMode mode = 2;
+}
+
+message Spo2HrData {
+  repeated uint32 spo2 = 1 [packed = true];
+  repeated uint32 hr = 2 [packed = true];
+}
+
+message SelfTestData {
+  optional bool afe = 1;
+  optional bool accel = 2;
+  optional bool temperature = 3;
+  optional bool wireless_charger = 4;
+  optional bool fuel_gauge = 5;
+}
+
+message DevStatus {
+  optional AppType current_app = 1;
+  optional uint32 device_time = 2;
+  optional SelfTestData bist_result = 3;
+  optional uint32 bist_timestamp = 4;
+  optional SelfTestData post_result = 5;
+  optional uint32 post_timestamp = 6;
+  optional ChargingStatus charging_status = 7;
+  optional ChargingError charging_error = 8;
+  optional uint32 battery_level = 9;
+}
+
+message PowerManagement {
+  optional uint32 timeout = 1;
+}
+
+message SampleThreshold {
+  optional uint32 max_accel_samples = 1;
+  optional uint32 max_ecg_samples = 2;
+  optional uint32 max_ppg_samples = 3;
+  optional uint32 max_temp_samples = 4;
+}
+
+message BleConnectParams {
+  optional float connect_intv_min = 1;
+  optional float connect_intv_max = 2;
+  optional uint32 slave_latency = 3;
+  optional uint32 supervision_timeout = 4;
+}
+
+message BleSettings {
+  optional string advertising_name = 1;
+  optional float advertising_interval = 2;
+  optional BleConnectParams connect_params = 3;
+  optional BleTxPowerLevel tx_power_level = 4; 
+}
+
+message LogSettings {
+  optional bool log_enable = 1;
+  optional LogLevel log_level = 2;
+}
+
+message EcgGain {
+  optional EcgPgaGain pga_gain = 1;
+  optional EcgInaGain ina_gain = 2;
+  optional EcgInaRange ina_range = 3;
+}
+
+message EcgLeadOffParams {
+  optional EcgLeadOffMode lead_off_mode = 1;
+  optional EcgLeadOffCurrentPolarity lead_off_current_polarity = 2;
+  optional EcgLeadOffCurrentMagnitude lead_off_current_magnitude = 3;
+  optional EcgLeadOffVoltageThreshold lead_off_voltage_threshold = 4;
+  optional EcgLeadOffFreq lead_off_freq = 5;
+}
+
+message EcgSettings {
+  optional bool ecg_enable = 1;
+  optional EcgSampleRate sample_rate = 2;
+  optional EcgGain ecg_gain = 3;
+  optional EcgInputPolarity input_polarity = 4;
+  optional bool lead_off_enable = 5;
+  optional EcgLeadOffParams lead_off_params = 6;
+}
+
+message PpgLedControl {
+  optional PpgLedType ppg_led_type = 1;
+}
+
+message PpgLedSettings {
+  optional bool red_led_enable = 1;
+  optional bool ir_led_enable = 2;
+  optional float red_led_current = 3;
+  optional float ir_led_current = 4;
+}
+
+message PpgSettings {
+  optional bool ppg_enable = 1;
+  optional PpgSampleRate sample_rate = 2;
+  optional PpgLedSettings ppg_led_settings = 3;
+}
+
+message AccelSettings {
+  optional bool accel_enable = 1;
+  optional AccelSampleRate sample_rate = 2;
+  optional AccelFullScale accel_full_scale = 3;
+}
+
+message AllDevSettings {
+  optional EcgSettings ecg_settings = 2;
+  optional PpgSettings ppg_settings = 3;
+  optional AccelSettings accel_settings = 4;
+  optional BleSettings ble_settings = 5;
+  optional LogSettings log_settings = 6;
+}
+
+/* End of file -------------------------------------------------------------- */

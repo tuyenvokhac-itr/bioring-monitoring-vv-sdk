@@ -1,17 +1,14 @@
-import asyncio
 from ble.old_ble_manager import OldBleManager
-from typing import List, Tuple, Callable
+from typing import List, Tuple
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 from core.core_handler_call_back import CoreHandlerCallBack
 from bleak import BleakClient
-from bleak.backends.characteristic import BleakGATTCharacteristic
 from ble.ble_constant import BleConstant
-from proto import brp_pb2 as brp
-import struct
+from proto import old_brp_pb2 as brp
 import logging
-import proto.brp_protocol as brp_protocol
-from core.handler import TempDataHandler, AccDataHandler, AfeDataHandler
+import proto.old_brp_protocol as brp_protocol
+from core.handler import TempDataHandler, AccDataHandler
 from core.command import (
     GetDeviceInfoCommand,
     LiveAccDataCommand,
@@ -19,7 +16,7 @@ from core.command import (
     LivePpgDataCommand,
     LiveTempDataCommand,
 )
-from core.handler.streaming.proto.response.res_device_info_handler import ResDeviceInfoHandler
+from core.handler.proto.response.res_device_info_handler import ResDeviceInfoHandler
 
 
 class OldCoreHandler:

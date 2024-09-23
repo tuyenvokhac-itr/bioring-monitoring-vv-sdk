@@ -2,8 +2,11 @@ from enum import Enum
 
 class NotifyDataType(Enum):
     AFE = 0xA0
-    IMU = 0xA1
+    ACC = 0xA1
     TEMP = 0xA2
+    LOG = 0xA3
+    POWER = 0xA4
+    SELF_TEST = 0xA5
 
     @staticmethod
     def get(value: int):

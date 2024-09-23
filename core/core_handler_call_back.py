@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from bleak import BleakClient
 
 from core.models.device_info import DeviceInfo
-from core.models.acc_data import AccData
+from core.models.raw_data.accel_data import AccelData
 
 
 class CoreHandlerCallBack(ABC):
@@ -43,7 +43,7 @@ class CoreHandlerCallBack(ABC):
     # Listener - Data
 
     @abstractmethod
-    def on_acc_data_received(self, acc: AccData):
+    def on_acc_data_received(self, acc: AccelData):
         pass
 
     @abstractmethod

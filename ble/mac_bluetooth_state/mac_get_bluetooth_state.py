@@ -7,7 +7,7 @@ functions = [("IOBluetoothPreferenceGetControllerPowerState", b'i')]
 objc.loadBundleFunctions(IOBluetooth, globals(), functions)
 
 
-def check_bluetooth_state_mac_os() -> bool:
+def mac_get_bluetooth_state() -> bool:
     state = IOBluetoothPreferenceGetControllerPowerState()
     if state == 1:
         return True

@@ -1,5 +1,5 @@
 from typing import Any, Callable
-from proto import brp_pb2 as brp
+from proto import old_brp_pb2 as brp
 from ble.old_ble_manager import OldBleManager
 import time
 from ble.ble_constant import BleConstant

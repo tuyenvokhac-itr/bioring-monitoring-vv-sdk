@@ -1,9 +1,10 @@
-import subprocess
 from typing import List
 
 from PyQt6.QtWidgets import QApplication
 
 from ble.bt_device import BTDevice
+from ble.mac_bluetooth_state.mac_bluetooth_listener_thread import BluetoothListenerThread
+from ble.mac_bluetooth_state.mac_bluetooth_state_receiver import BluetoothStateReceiver
 from errors.common_error import CommonError
 from managers.bluetooth_callback import BluetoothCallback
 from managers.ring_manager import RingManager
@@ -11,19 +12,10 @@ from qt_gui import QTGuideWindow
 from core.old_core_handler import OldCoreHandler
 from bleak import BleakClient
 from core.core_handler_call_back import CoreHandlerCallBack
-from ble.ble_constant import BleConstant
-from core.command import (
-    GetDeviceInfoCommand,
-    LiveAccDataCommand,
-    LiveEcgDataCommand,
-    LivePpgDataCommand,
-    LiveTempDataCommand,
-)
 from core.models.device_info import DeviceInfo
-from core.models.acc_data import AccData
+from core.models.raw_data.accel_data import AccelData
 from qasync import QEventLoop
 import asyncio
-from ble.mac_bluetooth_state_checker import check_bluetooth_state_mac_os
 
 
 class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
@@ -37,7 +29,7 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
         loop = QEventLoop(app)
         asyncio.set_event_loop(loop)
 
-        window = QTGuideWindow()
+        window = QTGuideWindow(self.close_event)
         window.scanBtn.clicked.connect(self.start_scan)
         window.stopBtn.clicked.connect(self.stop_scan)
         window.connectBtn.clicked.connect(self.connect)
@@ -53,10 +45,28 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
         window.start_live_temp.clicked.connect(self.start_live_temp_data)
         window.stop_live_temp.clicked.connect(self.stop_live_temp_data)
 
+        # Create the Bluetooth state receiver
+        self.bt_receiver = BluetoothStateReceiver()
+        self.bt_receiver.bluetoothStateChanged.connect(self.handle_bluetooth_state_change)
+
+        # Start the Bluetooth listener thread
+        self.bt_listener_thread = BluetoothListenerThread(self.bt_receiver.bluetoothStateChanged.emit)
+        self.bt_listener_thread.start()
+
         window.show()
         # Run the PyQt event loop alongside asyncio
         with loop:
             loop.run_forever()
+
+    def close_event(self):
+        # Stop the Bluetooth listener thread when closing the application
+        print('close event')
+        self.bt_listener_thread.stop()
+        self.bt_listener_thread.join()
+
+    def handle_bluetooth_state_change(self, state: str):
+        print(f"Bluetooth state changed: {state}")
+
 
     """ BLE actions"""
 
@@ -82,15 +92,12 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
     def on_scan_result(self, device: BTDevice):
         print(f"on_scan_result Device found: {device}")
         self.devices.append(device)
-        pass
 
     def on_device_connected(self, device: BleakClient):
         print(f"on_device_connected Device connected: {device}")
-        pass
 
     def on_bluetooth_error(self, device: BTDevice, error: CommonError):
         print(f"on_bluetooth_error Error: {error}")
-        pass
 
     def on_bluetooth_state_changed(self, status: bool):
         pass
@@ -158,7 +165,7 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
 
     # Listener - Data
 
-    def on_acc_data_received(self, acc: AccData):
+    def on_acc_data_received(self, acc: AccelData):
         print(acc)
 
     def on_ecg_data_received(self):
