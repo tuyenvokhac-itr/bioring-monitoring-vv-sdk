@@ -3,8 +3,6 @@ from typing import List
 from PyQt6.QtWidgets import QApplication
 
 from ble.bt_device import BTDevice
-from ble.mac_bluetooth_state.mac_bluetooth_listener_thread import BluetoothListenerThread
-from ble.mac_bluetooth_state.mac_bluetooth_state_receiver import BluetoothStateReceiver
 from errors.common_error import CommonError
 from managers.bluetooth_callback import BluetoothCallback
 from managers.ring_manager import RingManager
@@ -45,13 +43,13 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
         window.start_live_temp.clicked.connect(self.start_live_temp_data)
         window.stop_live_temp.clicked.connect(self.stop_live_temp_data)
 
-        # Create the Bluetooth state receiver
-        self.bt_receiver = BluetoothStateReceiver()
-        self.bt_receiver.bluetoothStateChanged.connect(self.handle_bluetooth_state_change)
-
-        # Start the Bluetooth listener thread
-        self.bt_listener_thread = BluetoothListenerThread(self.bt_receiver.bluetoothStateChanged.emit)
-        self.bt_listener_thread.start()
+        # # Create the Bluetooth state receiver
+        # self.bt_receiver = BluetoothStateReceiver()
+        # self.bt_receiver.bluetoothStateChanged.connect(self.handle_bluetooth_state_change)
+        #
+        # # Start the Bluetooth listener thread
+        # self.bt_listener_thread = BluetoothListenerThread(self.bt_receiver.bluetoothStateChanged.emit)
+        # self.bt_listener_thread.start()
 
         window.show()
         # Run the PyQt event loop alongside asyncio
@@ -61,8 +59,8 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
     def close_event(self):
         # Stop the Bluetooth listener thread when closing the application
         print('close event')
-        self.bt_listener_thread.stop()
-        self.bt_listener_thread.join()
+        # self.bt_listener_thread.stop()
+        # self.bt_listener_thread.join()
 
     def handle_bluetooth_state_change(self, state: str):
         print(f"Bluetooth state changed: {state}")

@@ -19,7 +19,7 @@ package BRP;
 /* Messages ----------------------------------------------------------------- */
 
 message ProtocolInfo {
-  required uint64 version = 1 [ default = 202409201700 ];  // YYYY-MM-DD-HH-MM
+  required uint64 version = 1 [ default = 202409231800 ];  // YYYY-MM-DD-HH-MM
 }
 
 message Packet {
@@ -79,7 +79,7 @@ message ResponsePacket {
   required CommandId cid = 1;
 
   // Response code. Used to indicate the result of the command.
-  required ResponseCode result = 2;
+  required ResponseResult result = 2;
 
   // Payload. Used to store the response additional data.
   oneof payload {
@@ -124,7 +124,17 @@ message NotificationPacket {
 message AckPacket {
   // Notification ID. Used to differentiate between notifications.
   required NotificationId nid = 1;
-  required AckResponseCode result = 2;
+  required AckResult result = 2;
+}
+
+message ResponseResult {
+  required bool is_success = 1;
+  optional string error = 2;
+}
+
+message AckResult {
+  required bool is_success = 1;
+  optional string error = 2;
 }
 
 enum CommandId {
@@ -230,17 +240,6 @@ enum CommandId {
   CID_BLE_DTM_UNMODULATED_RX_RESP = 255;
 }
 
-enum ResponseCode {
-  RC_UNSPECIFIED = 0;
-  RC_OK = 1;
-  RC_ERROR_UNIMPLEMENTED = 2;
-  RC_ERROR_CMD_FAILED = 3;
-  RC_ERROR_TIMED_OUT = 4;
-  RC_ERROR_BUSY = 5;
-  RC_ERROR_INVALID_PACKET_TYPE = 6;
-  RC_ERROR_INVALID_PAYLOAD = 7;
-}
-
 enum NotificationId {
   NID_UNSPECIFIED = 0;
   NID_LOG_DATA = 1;
@@ -249,17 +248,6 @@ enum NotificationId {
   NID_SPO2_HR_DATA = 4;
   NID_ECG_LEAD_OFF_DETECT = 5;
   NID_BIST_RESULT = 6;
-}
-
-enum AckResponseCode {
-  ACK_RC_UNSPECIFIED = 0;
-  ACK_RC_ACK = 1;
-  ACK_RC_NACK_UNIMPLEMENTED = 2;
-  ACK_RC_NACK_CMD_FAILED = 3;
-  ACK_RC_NACK_TIMED_OUT = 4;
-  ACK_RC_NACK_BUSY = 5;
-  ACK_RC_NACK_INVALID_PACKET_TYPE = 6;
-  ACK_RC_NACK_INVALID_PAYLOAD = 7;
 }
 
 enum AppType {
@@ -424,8 +412,8 @@ enum SensorMode {
 enum LogLevel {
   LOG_LEVEL_ERROR = 0;
   LOG_LEVEL_WARNING = 1;
-  LOG_LEVEL_INFO = 2;
-  LOG_LEVEL_DEBUG = 3;
+  LOG_LEVEL_DEBUG = 2;
+  LOG_LEVEL_INFO = 3;
 }
 
 enum ChargingStatus {
@@ -620,8 +608,8 @@ message BleSettings {
 }
 
 message LogSettings {
-  optional bool log_enable = 1;
-  optional LogLevel log_level = 2;
+  required bool log_enable = 1;
+  repeated bool log_level = 2 [packed = true]; // value: see @LogLevel
 }
 
 message EcgGain {

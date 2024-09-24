@@ -1,6 +1,15 @@
 from enum import Enum
 
 
+class PowerLevel(Enum):
+    NEG_20 = -20
+    NEG_16 = -16
+    NEG_12 = -12
+    NEG_6 = -6
+    POS_0 = 0
+    POS_4 = 4
+
+
 class EcgSamplingRate(Enum):
     ECG_SAMPLE_RATE_64HZ = 0
     ECG_SAMPLE_RATE_128HZ = 1
@@ -104,3 +113,9 @@ class AccelFullScaleRange(Enum):
     ACC_FS_16G = 1
     ACC_FS_4G = 2
     ACC_FS_8G = 3
+
+class LogLevel(Enum):
+    ERROR = 0
+    WARNING = 1
+    DEBUG = 2
+    INFO = 3

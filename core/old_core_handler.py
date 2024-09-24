@@ -5,7 +5,7 @@ from bleak.backends.scanner import AdvertisementData
 from core.core_handler_call_back import CoreHandlerCallBack
 from bleak import BleakClient
 from ble.ble_constant import BleConstant
-from proto import old_brp_pb2 as brp
+from proto import brp_pb2 as brp
 import logging
 import proto.old_brp_protocol as brp_protocol
 from core.handler import TempDataHandler, AccDataHandler
@@ -278,7 +278,7 @@ class OldCoreHandler:
         return 0
 
     def handle_resp_dev_info(self, pkt: brp.Packet):
-        device_info = ResDeviceInfoHandler.parse(pkt)
+        device_info = ResDeviceInfoHandler.handle(pkt)
         self.core_handler_call_back.on_device_info_received(device_info)
 
     # TODO: Not full implementation
@@ -312,7 +312,7 @@ class OldCoreHandler:
 
     # Command functions
     def get_device_info(self):
-        GetDeviceInfoCommand.send(write_chars=self.ble_manager.write)
+        GetDeviceInfoCommand.send(write_char=self.ble_manager.write)
 
     def live_acc_data(self, isStart=True):
         LiveAccDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)

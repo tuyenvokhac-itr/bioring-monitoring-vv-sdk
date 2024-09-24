@@ -64,8 +64,14 @@ class BleManager:
         """
         Start receiving notifications for the specified characteristic UUID.
         """
-
         characteristic = self.get_characteristic_by_uuid(char_uuid, client)
         if characteristic:
             await client.start_notify(characteristic, callback)
-        # self.logger.info('[CoreHandler]: Start notify for %s', client.address)
+
+    async def write_char(self, client: BleakClient, char_uuid: str,  value):
+        """
+        Write value to the specified characteristic UUID.
+        """
+        characteristic = self.get_characteristic_by_uuid(char_uuid, client)
+        if characteristic:
+            await client.write_gatt_char(char_uuid, value)

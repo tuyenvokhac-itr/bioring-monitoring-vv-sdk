@@ -1,17 +1,19 @@
-from proto import old_brp_pb2 as brp
-from ble.old_ble_manager import OldBleManager
 import time
+from typing import Any, Callable, Coroutine, Awaitable
+
+from bleak import BleakClient
+
 from ble.ble_constant import BleConstant
-from typing import Any, Callable
+from proto import brp_pb2 as brp
 
 
 class GetDeviceInfoCommand:
     @staticmethod
-    def send(write_chars: Callable[[str, Any], None]):
+    async def send(sid: int, client: BleakClient, write_char: Callable[[BleakClient, str, Any], Awaitable[None]]):
         pkt = brp.Packet()
-        pkt.sid = int(time.time() * 1000)
+        pkt.sid = sid
         pkt.type = brp.PacketType.PACKET_TYPE_COMMAND
         pkt.command.cid = brp.CommandId.CID_DEV_INFO_GET
 
         pkt_value = pkt.SerializeToString()
-        write_chars(BleConstant.BRS_UUID_CHAR_TX, pkt_value)
+        await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)

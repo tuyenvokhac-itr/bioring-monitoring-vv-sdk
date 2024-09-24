@@ -1,5 +1,5 @@
 import time
-import proto.old_brp_pb2 as brp
+import proto.brp_pb2 as brp
 import logging
 
 

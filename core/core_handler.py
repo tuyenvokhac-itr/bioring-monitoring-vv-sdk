@@ -1,4 +1,6 @@
-from typing import List, Tuple, Optional
+import asyncio
+import time
+from typing import List, Tuple, Optional, Callable
 
 from bleak import BLEDevice, AdvertisementData, BleakClient
 from numpy.f2py.auxfuncs import throw_error
@@ -6,8 +8,17 @@ from numpy.f2py.auxfuncs import throw_error
 from ble.ble_constant import BleConstant
 from ble.ble_manager import BleManager
 from ble.bt_device import BTDevice
+from core.command import GetDeviceInfoCommand
+from core.command.bluetooth_settings.set_bluetooth_settings_command import SetBluetoothSettingsCommand
+from core.command.self_tests.self_test_command import SelfTestCommand
+from core.command_callback import ResponseCallback
 from core.handler.proto.response.res_device_info_handler import ResDeviceInfoHandler
+from core.handler.proto.response.set_bluetooth_settings_handler import SetBluetoothSettingsHandler
+from core.models import DeviceInfo
+from core.models.self_tests.self_test_result import SelfTestResult
+from core.models.settings.bt_settings import BTSettings
 from errors.common_error import CommonError
+from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
 import logging
 import proto.brp_pb2 as brp
@@ -24,10 +35,15 @@ class CoreHandler:
     def __init__(self):
         self._init_logger()
         self.ble_manager = BleManager()
-        self.devices: List[Tuple[BLEDevice, AdvertisementData]] = []
-        self.clients: List[BleakClient] = []
         self.bluetooth_callback: Optional[BluetoothCallback] = None
         self.is_scanning = False
+        self.response_callbacks: List[ResponseCallback] = []
+
+        """ devices: found devices"""
+        self.devices: List[Tuple[BLEDevice, AdvertisementData]] = []
+
+        """ clients: connected devices"""
+        self.clients: List[BleakClient] = []
 
     def _init_logger(self):
         self.logger = logging.getLogger(__name__)
@@ -85,12 +101,12 @@ class CoreHandler:
         self.ble_manager.start_notify(BleConstant.BRS_UUID_CHAR_DATA, client, self.brs_data_char_handler)
 
     def on_bluetooth_error(self, address, error: CommonError):
-        device = next((d for d in self.devices if d[0].address == address), None)
+        device = self.get_device(address)
         self.bluetooth_callback.on_bluetooth_error(
             BTDevice(name=device[0].name, address=device[0].address), error)
 
     async def disconnect(self, address: str):
-        client = next((cl for cl in self.clients if cl.address == address), None)
+        client = self.get_client(address)
 
         if client is None:
             self.logger.error('[CoreHandler]: Could not find client with address %s', address)
@@ -102,7 +118,7 @@ class CoreHandler:
     def on_device_disconnected(self, client: BleakClient):
         self.clients.remove(client)
         self.logger.info('[CoreHandler]: Device DISCONNECTED: %s', client)
-        device = next((d for d in self.devices if d[0].address == client.address), None)
+        device = self.get_device(client.address)
         self.bluetooth_callback.on_bluetooth_error(
             BTDevice(name=device[0].name, address=device[0].address), CommonError.DEVICE_DISCONNECTED)
 
@@ -115,33 +131,33 @@ class CoreHandler:
         rx_packet.ParseFromString(bytes(data))
         logging.debug(f"Received packet:\n{rx_packet}")
 
+        # TODO: check this if we can compare the PacketType value
         pkt_type = rx_packet.WhichOneof("payload")
         if pkt_type == "response":
             cid = rx_packet.response.cid
-            if cid in self.rx_resp_handlers:
-                self.rx_resp_handlers[cid](rx_packet)
+            self.rx_response_handlers(cid, rx_packet)
+
         elif pkt_type == "notification":
             nid = rx_packet.notification.nid
             if nid in self.rx_notif_handlers:
                 self.rx_notif_handlers[nid](rx_packet)
 
     def brs_data_char_handler(self, _sender, data: bytearray):
-        # | Type   | Message Index | Length | Value   |
-        # |--------|---------------|--------|---------|
-        # | 1 byte |    2 byte     | 2 byte | n bytes |
+        # | Type   | Sequence number | Length | Value   |
+        # |--------|-----------------|--------|---------|
+        # | 1 byte |    2 byte       | 2 byte | n bytes |
 
         # self.handle_streaming_data(data)
         pass
 
-    def handle_resp_dev_info(self, pkt: brp.Packet):
-        device_info = ResDeviceInfoHandler.parse(pkt)
-        # self.core_handler_call_back.on_device_info_received(device_info)
-        pass
-
-    # TODO: implement CID_PROTOCOL_INFO_GET, CID_AFE_SENSOR_SETTING_GET
-    rx_resp_handlers = {
-        brp.CommandId.CID_DEV_INFO_GET: handle_resp_dev_info,
-    }
+    def rx_response_handlers(self, cid: int, pkt: brp.Packet):
+        match cid:
+            case brp.CommandId.CID_DEV_INFO_GET:
+                ResDeviceInfoHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_BLE_SETTINGS_SET:
+                SetBluetoothSettingsHandler.handle(pkt, self.response_callbacks)
+            case _:
+                pass
 
     def handle_notif_charging_status_changed(self, pkt: brp.Packet):
         self.core_handler_call_back.on_charging_info_received(pkt.notification.charging)
@@ -177,3 +193,45 @@ class CoreHandler:
         #     data_handler_map[data_type](value, length)
 
         return 0
+
+    def get_device(self, address: str):
+        device = next((d for d in self.devices if d[0].address == address), None)
+        if device is None:
+            self.logger.error('[CoreHandler]: Could not find device with address %s', address)
+            throw_error('Could not find device')
+
+        return device
+
+    def get_client(self, address: str):
+        client = next((cl for cl in self.clients if cl.address == address), None)
+        if client is None:
+            self.logger.error('[CoreHandler]: Could not find client with address %s', address)
+            throw_error('Could not find client')
+
+        return client
+
+    def get_response_callback(self, sid: int):
+        return next((cb for cb in self.response_callbacks if cb.sid == sid), None)
+
+    """ Command functions """
+
+    async def get_device_info(self, address: str, on_device_info: Callable[[CommonResult, Optional[DeviceInfo]], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_device_info))
+        await GetDeviceInfoCommand.send(sid=sid, client=client, write_char=self.ble_manager.write_char)
+
+    async def set_bluetooth_settings(
+            self, address: str, settings: BTSettings,
+            on_success: Callable[[CommonResult], None]
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetBluetoothSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
+
+    async def get_post(self, address: str, on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_self_test_result))
+        await SelfTestCommand.get_post(sid, client, self.ble_manager.write_char)

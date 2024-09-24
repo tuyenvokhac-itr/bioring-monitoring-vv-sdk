@@ -127,7 +127,6 @@ class OldBleManager:
                 return True
         return False
 
-
     def write(self, char_uuid, value):
         """
         Write value to the specified characteristic UUID.

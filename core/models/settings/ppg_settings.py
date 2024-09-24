@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from core.enum.sensor_settings_enums import PpgSamplingRate
+from core.enum.settings_enums import PpgSamplingRate
 
 
 @dataclass
