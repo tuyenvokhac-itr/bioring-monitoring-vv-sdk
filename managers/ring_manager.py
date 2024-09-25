@@ -92,29 +92,24 @@ class RingManager(RingManagerInterface):
             settings: BTSettings,
             on_success: Callable[[CommonResult], None],
     ):
-        # TODO: Implement this method
-        self.core_handler.set_bluetooth_settings(address, settings, on_success)
+        asyncio.create_task(self.core_handler.set_bluetooth_settings(address, settings, on_success))
 
     """ ********************************** Self Test APIs ******************************** """
 
     def get_post(self, address: str, on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]):
-        self.core_handler.get_post(address, on_self_test_result)
+        asyncio.create_task(self.core_handler.get_post(address, on_self_test_result))
 
     def get_bist(self, address: str, on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]):
-        # TODO: Implement this method
-        pass
+        asyncio.create_task(self.core_handler.get_bist(address, on_self_test_result))
 
     def enable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        # TODO: Implement this method
-        pass
+        asyncio.create_task(self.core_handler.enable_bist(address, on_success))
 
     def disable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        # TODO: Implement this method
-        pass
+        asyncio.create_task(self.core_handler.disable_bist(address, on_success))
 
     def set_bist_interval(self, address: str, interval: int, on_success: Callable[[CommonResult], None]):
-        # TODO: Implement this method
-        pass
+        asyncio.create_task(self.core_handler.set_bist_interval(address, interval, on_success))
 
     """ ********************************** Streaming data APIs ******************************** """
 
@@ -164,21 +159,21 @@ class RingManager(RingManagerInterface):
     """ ********************************** Device Settings APIs ******************************** """
 
     def get_all_settings(self, address: str, on_settings: Callable[[CommonResult, Optional[DeviceSettings]], None]):
-        pass
+        asyncio.create_task(self.core_handler.get_all_settings(address, on_settings))
 
     def set_log_settings(self, address: str, settings: LogSettings, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.set_log_settings(address, settings, on_success))
 
     """ ********************************** Sensor Settings APIs ******************************** """
 
     def set_ecg_settings(self, address: str, settings: EcgSettings, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.set_ecg_settings(address, settings, on_success))
 
     def set_ppg_settings(self, address: str, settings: PpgSettings, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.set_ppg_settings(address, settings, on_success))
 
     def set_accel_settings(self, address: str, settings: AccelSettings, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.set_accel_settings(address, settings, on_success))
 
     """ ********************************** Firmware Update APIs ******************************** """
 
@@ -188,15 +183,15 @@ class RingManager(RingManagerInterface):
     """ ********************************** Power Management APIs ******************************** """
 
     def set_sleep_time(self, address: str, seconds: int, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.set_sleep_time(address, seconds, on_success))
 
     """ ********************************** Time Syncing APIs ******************************** """
 
     def set_time_sync(self, address: str, epoch: int, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.set_time_sync(address, epoch, on_success))
 
     def get_time_sync(self, address: str, on_time_sync: Callable[[CommonResult, Optional[int]], None]):
-        pass
+        asyncio.create_task(self.core_handler.get_time_sync(address, on_time_sync))
 
     """ ********************************** General APIs ******************************** """
 
@@ -204,15 +199,15 @@ class RingManager(RingManagerInterface):
         asyncio.create_task(self.core_handler.get_device_info(address, on_device_info))
 
     def get_device_status(self, address: str, on_device_status: Callable[[CommonResult, Optional[DeviceStatus]], None]):
-        pass
+        asyncio.create_task(self.core_handler.get_device_status(address, on_device_status))
 
     def get_protocol_info(self, address: str, on_protocol_info: Callable[[CommonResult, Optional[Protocol]], None]):
-        pass
+        asyncio.create_task(self.core_handler.get_protocol_info(address, on_protocol_info))
 
     """ ********************************** Reset APIs ******************************** """
 
     def factory_reset(self, address: str, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.factory_reset(address, on_success))
 
     def reboot(self, address: str, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.reboot(address, on_success))

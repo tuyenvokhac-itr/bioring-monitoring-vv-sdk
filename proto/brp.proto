@@ -609,7 +609,7 @@ message BleSettings {
 
 message LogSettings {
   required bool log_enable = 1;
-  repeated bool log_level = 2 [packed = true]; // value: see @LogLevel
+  repeated LogLevel log_level = 2; // value: see @LogLevel
 }
 
 message EcgGain {

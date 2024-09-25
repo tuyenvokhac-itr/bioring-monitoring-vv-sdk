@@ -1,5 +1,4 @@
-import time
-from typing import Any, Callable, Coroutine, Awaitable
+from typing import Any, Callable, Awaitable
 
 from bleak import BleakClient
 

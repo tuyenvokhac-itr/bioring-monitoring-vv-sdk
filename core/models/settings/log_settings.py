@@ -5,6 +5,6 @@ from typing import List
 
 
 @dataclass
-class LogSettings:
+class   LogSettings:
     enable: bool
     levels: List[LogLevel]

@@ -1,27 +1,56 @@
-import asyncio
+import logging
 import time
 from typing import List, Tuple, Optional, Callable
 
 from bleak import BLEDevice, AdvertisementData, BleakClient
 from numpy.f2py.auxfuncs import throw_error
 
+import proto.brp_pb2 as brp
 from ble.ble_constant import BleConstant
 from ble.ble_manager import BleManager
 from ble.bt_device import BTDevice
 from core.command import GetDeviceInfoCommand
 from core.command.bluetooth_settings.set_bluetooth_settings_command import SetBluetoothSettingsCommand
-from core.command.self_tests.self_test_command import SelfTestCommand
+from core.command.general.get_device_status_command import GetDeviceStatusCommand
+from core.command.general.get_protocol_info_command import GetProtocolInfoCommand
+from core.command.power_management.set_sleep_time_command import SetSleepTimeCommand
+from core.command.reset.factory_reset_command import FactoryResetCommand
+from core.command.reset.reboot_command import RebootCommand
+from core.command.self_tests.disable_bist_command import DisableBistCommand
+from core.command.self_tests.enable_bist_command import EnableBistCommand
+from core.command.self_tests.get_bist_command import GetBistCommand
+from core.command.self_tests.get_post_command import GetPostCommand
+from core.command.self_tests.self_test_command import SetBistIntervalCommand
+from core.command.settings.get_all_settings_command import GetAllSettingsCommand
+from core.command.settings.set_accel_settings_command import SetAccelSettingsCommand
+from core.command.settings.set_ecg_settings_command import SetEcgSettingsCommand
+from core.command.settings.set_log_settings_command import SetLogSettingsCommand
+from core.command.settings.set_ppg_settings_command import SetPpgSettingsCommand
+from core.command.time_syncing.get_time_syncing_command import GetTimeSyncingCommand
+from core.command.time_syncing.set_time_syncing_command import SetTimeSyncingCommand
 from core.command_callback import ResponseCallback
-from core.handler.proto.response.res_device_info_handler import ResDeviceInfoHandler
-from core.handler.proto.response.set_bluetooth_settings_handler import SetBluetoothSettingsHandler
+from core.handler.proto.response.general.res_device_info_handler import ResDeviceInfoHandler
+from core.handler.proto.response.general.res_device_status_handler import ResDeviceStatusHandler
+from core.handler.proto.response.general.res_protocol_info_handler import ResProtocolInfoHandler
+from core.handler.proto.response.res_common_result_handler import ResCommonResultHandler
+from core.handler.proto.response.self_tests.res_bist_handler import ResBistHandler
+from core.handler.proto.response.self_tests.res_post_handler import ResPostHandler
+
+from core.handler.proto.response.settings.res_all_settings_handler import ResAllSettingsHandler
+from core.handler.proto.response.time_syncing.res_time_syncing_handler import ResTimeSyncingHandler
 from core.models import DeviceInfo
+from core.models.device_status import DeviceStatus
+from core.models.protocol import Protocol
 from core.models.self_tests.self_test_result import SelfTestResult
+from core.models.settings.accel_settings import AccelSettings
 from core.models.settings.bt_settings import BTSettings
+from core.models.settings.device_settings import DeviceSettings
+from core.models.settings.ecg_settings import EcgSettings
+from core.models.settings.log_settings import LogSettings
+from core.models.settings.ppg_settings import PpgSettings
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
-import logging
-import proto.brp_pb2 as brp
 
 
 class CoreHandler:
@@ -155,7 +184,43 @@ class CoreHandler:
             case brp.CommandId.CID_DEV_INFO_GET:
                 ResDeviceInfoHandler.handle(pkt, self.response_callbacks)
             case brp.CommandId.CID_BLE_SETTINGS_SET:
-                SetBluetoothSettingsHandler.handle(pkt, self.response_callbacks)
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_SELF_TEST_POST_GET:
+                ResPostHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_SELF_TEST_BIST_GET:
+                ResBistHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_SELF_TEST_BIST_ENABLE:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_SELF_TEST_BIST_DISABLE:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_SELF_TEST_BIST_SET_INTERVAL:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_ALL_SETTINGS_GET:
+                ResAllSettingsHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_LOG_SETTINGS_SET:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_ECG_SETTINGS_SET:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_PPG_SETTINGS_SET:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_ACCEL_SETTINGS_SET:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_DEV_PRE_SLEEP_TIMEOUT_SET:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_TIME_SET:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_TIME_GET:
+                ResTimeSyncingHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_DEV_INFO_GET:
+                ResDeviceInfoHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_DEV_STATUS_GET:
+                ResDeviceStatusHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_PROTOCOL_INFO_GET:
+                ResProtocolInfoHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_DEV_FACTORY_RESET:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_REBOOT:
+                ResCommonResultHandler.handle(pkt, self.response_callbacks)
             case _:
                 pass
 
@@ -214,12 +279,7 @@ class CoreHandler:
         return next((cb for cb in self.response_callbacks if cb.sid == sid), None)
 
     """ Command functions """
-
-    async def get_device_info(self, address: str, on_device_info: Callable[[CommonResult, Optional[DeviceInfo]], None]):
-        client = self.get_client(address)
-        sid = int(time.time() * 1000)
-        self.response_callbacks.append(ResponseCallback(sid, on_device_info))
-        await GetDeviceInfoCommand.send(sid=sid, client=client, write_char=self.ble_manager.write_char)
+    """ Bluetooth settings """
 
     async def set_bluetooth_settings(
             self, address: str, settings: BTSettings,
@@ -230,8 +290,134 @@ class CoreHandler:
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetBluetoothSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
 
-    async def get_post(self, address: str, on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]):
+    """ Self tests """
+
+    async def get_post(
+            self, address: str,
+            on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]
+    ):
         client = self.get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_self_test_result))
-        await SelfTestCommand.get_post(sid, client, self.ble_manager.write_char)
+        await GetPostCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def get_bist(
+            self, address: str,
+            on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_self_test_result))
+        await GetBistCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def enable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await EnableBistCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def disable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await DisableBistCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def set_bist_interval(self, address: str, interval: int, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetBistIntervalCommand.send(sid, client, interval, self.ble_manager.write_char)
+
+    """ Device settings """
+
+    async def get_all_settings(self, address: str,
+                               on_settings: Callable[[CommonResult, Optional[DeviceSettings]], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_settings))
+        await GetAllSettingsCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def set_log_settings(self, address: str, settings: LogSettings, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetLogSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
+
+    """ Sensor settings """
+
+    async def set_ecg_settings(self, address: str, settings: EcgSettings, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetEcgSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
+
+    async def set_ppg_settings(self, address: str, settings: PpgSettings, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetPpgSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
+
+    async def set_accel_settings(self, address: str, settings: AccelSettings,
+                                 on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetAccelSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
+
+    """ Power management """
+
+    async def set_sleep_time(self, address: str, seconds: int, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetSleepTimeCommand.send(sid, client, seconds, self.ble_manager.write_char)
+
+    """ Time syncing """
+
+    async def set_time_sync(self, address: str, epoch: int, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await SetTimeSyncingCommand.send(sid, client, epoch, self.ble_manager.write_char)
+
+    async def get_time_sync(self, address: str, on_time_sync: Callable[[CommonResult, Optional[int]], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_time_sync))
+        await GetTimeSyncingCommand.send(sid, client, self.ble_manager.write_char)
+
+    """ General """
+
+    async def get_device_info(self, address: str, on_device_info: Callable[[CommonResult, Optional[DeviceInfo]], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_device_info))
+        await GetDeviceInfoCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def get_device_status(self, address: str,
+                                on_device_status: Callable[[CommonResult, Optional[DeviceStatus]], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_device_status))
+        await GetDeviceStatusCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def get_protocol_info(self, address: str,
+                                on_protocol_info: Callable[[CommonResult, Optional[Protocol]], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_protocol_info))
+        await GetProtocolInfoCommand.send(sid, client, self.ble_manager.write_char)
+
+    """ Reset """
+
+    async def factory_reset(self, address: str, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await FactoryResetCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def reboot(self, address: str, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await RebootCommand.send(sid, client, self.ble_manager.write_char)

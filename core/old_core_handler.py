@@ -16,7 +16,7 @@ from core.command import (
     LivePpgDataCommand,
     LiveTempDataCommand,
 )
-from core.handler.proto.response.res_device_info_handler import ResDeviceInfoHandler
+from core.handler.proto.response.general.res_device_info_handler import ResDeviceInfoHandler
 
 
 class OldCoreHandler:
