@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Optional
 
 from core.enum.general_enum import SensorType
-from core.models import DeviceInfo
+from core.models import DeviceInfo, AccelData, EcgData, PpgData, TempData
 from core.models.device_status import DeviceStatus
 from core.models.protocol import Protocol
 from core.models.raw_data.samples_threshold import SamplesThreshold
@@ -20,7 +20,6 @@ from managers.streaming_data_callback import StreamingDataCallback
 
 
 class RingManagerInterface(ABC):
-
     """ ************************************ BLE APIs ********************************** """
 
     @abstractmethod
@@ -83,7 +82,31 @@ class RingManagerInterface(ABC):
     """ ********************************** Streaming data APIs ******************************** """
 
     @abstractmethod
-    def start_streaming_data(self, address: str, sensor_type: SensorType, on_success: Callable[[CommonResult], None]):
+    def start_streaming_accel_data(
+            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            on_accel_received: Callable[[AccelData, int], None] = None,
+    ):
+        pass
+
+    @abstractmethod
+    def start_streaming_ecg_data(
+            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            on_ecg_received: Callable[[EcgData, int], None] = None,
+    ):
+        pass
+
+    @abstractmethod
+    def start_streaming_ppg_data(
+            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            on_ppg_received: Callable[[PpgData, int], None] = None,
+    ):
+        pass
+
+    @abstractmethod
+    def start_streaming_temp_data(
+            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            on_temp_received: Callable[[TempData, int], None] = None,
+    ):
         pass
 
     @abstractmethod

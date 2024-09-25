@@ -318,7 +318,7 @@ class OldCoreHandler:
         LiveAccDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
 
     def live_ecg_data(self, isStart=True):
-        LiveEcgDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
+        LiveEcgDataCommand.send(is_start=isStart, write_chars=self.ble_manager.write)
 
     def live_ppg_data(self, isStart=True):
         LivePpgDataCommand.send(isStart=isStart, write_chars=self.ble_manager.write)
