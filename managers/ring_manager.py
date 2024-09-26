@@ -21,7 +21,6 @@ from managers.bluetooth_callback import BluetoothCallback
 from managers.record_data_callback import RecordDataCallback
 from managers.ring_manager_interface import RingManagerInterface
 from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
-from managers.streaming_data_callback import StreamingDataCallback
 
 
 class RingManager(RingManagerInterface):
@@ -114,67 +113,66 @@ class RingManager(RingManagerInterface):
     """ ********************************** Streaming data APIs ******************************** """
 
     def start_streaming_accel_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_accel_received: Callable[[AccelData, int], None] = None,
     ):
-        pass
+        asyncio.create_task(self.core_handler.start_streaming_accel_data(address, on_success, on_accel_received))
 
     def start_streaming_ecg_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_ecg_received: Callable[[EcgData, int], None] = None,
     ):
-        pass
+        asyncio.create_task(self.core_handler.start_streaming_ecg_data(address, on_success, on_ecg_received))
 
     def start_streaming_ppg_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_ppg_received: Callable[[PpgData, int], None] = None,
     ):
-        pass
+        asyncio.create_task(self.core_handler.start_streaming_ppg_data(address, on_success, on_ppg_received))
 
     def start_streaming_temp_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_temp_received: Callable[[TempData, int], None] = None,
     ):
-        pass
+        asyncio.create_task(self.core_handler.start_streaming_temp_data(address, on_success, on_temp_received))
 
-    def stop_streaming_data(self, address: str, sensor_type: SensorType, on_success: Callable[[CommonResult], None]):
-        # TODO: Implement this method
-        pass
+    def stop_streaming_data(
+            self, address: str, sensor_type: SensorType,
+            on_success: Callable[[CommonResult], None]
+    ):
+        asyncio.create_task(self.core_handler.stop_streaming_data(address, sensor_type, on_success))
 
-    def set_streaming_data_callback(self, callback: StreamingDataCallback):
-        # TODO: Implement this method
-        pass
-
-    """ ********************************** Data Recorder APIs ******************************** """
+    """ ********************************** Data Recording APIs ******************************** """
 
     def get_record_samples_threshold(
             self, address: str,
             on_record_samples_threshold: Callable[[CommonResult, Optional[SamplesThreshold]], None]
     ):
-        # TODO: Implement this method
-        pass
+        asyncio.create_task(self.core_handler.get_record_samples_threshold(address, on_record_samples_threshold))
 
     def start_record(
             self, address: str,
             samples: int, sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        # TODO: Implement this method
-        pass
+        asyncio.create_task(self.core_handler.start_record(address, samples, sensor_type, on_success))
 
     def stop_record(
             self, address: str,
             samples: int, sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        # TODO: Implement this method
-        pass
+        asyncio.create_task(self.core_handler.stop_record(address, samples, sensor_type, on_success))
 
     def get_record(self, address: str, sensor_type: SensorType, start_index: int):
-        pass
+        asyncio.create_task(self.core_handler.get_record(address, sensor_type, start_index))
 
     def set_record_callback(self, callback: RecordDataCallback):
-        pass
+        self.core_handler.set_record_callback(callback)
 
     """ ********************************** Device Settings APIs ******************************** """
 
@@ -198,7 +196,7 @@ class RingManager(RingManagerInterface):
     """ ********************************** Firmware Update APIs ******************************** """
 
     def update_firmware(self, address: str, dfu_path: str, on_success: Callable[[CommonResult], None]):
-        pass
+        asyncio.create_task(self.core_handler.update_firmware(address, dfu_path, on_success))
 
     """ ********************************** Power Management APIs ******************************** """
 

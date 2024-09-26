@@ -16,7 +16,6 @@ from core.models.settings.ppg_settings import PpgSettings
 from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
 from managers.record_data_callback import RecordDataCallback
-from managers.streaming_data_callback import StreamingDataCallback
 
 
 class RingManagerInterface(ABC):
@@ -83,41 +82,44 @@ class RingManagerInterface(ABC):
 
     @abstractmethod
     def start_streaming_accel_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_accel_received: Callable[[AccelData, int], None] = None,
     ):
         pass
 
     @abstractmethod
     def start_streaming_ecg_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_ecg_received: Callable[[EcgData, int], None] = None,
     ):
         pass
 
     @abstractmethod
     def start_streaming_ppg_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_ppg_received: Callable[[PpgData, int], None] = None,
     ):
         pass
 
     @abstractmethod
     def start_streaming_temp_data(
-            self, address: str, on_success: Callable[[CommonResult], None] = None,
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
             on_temp_received: Callable[[TempData, int], None] = None,
     ):
         pass
 
     @abstractmethod
-    def stop_streaming_data(self, address: str, sensor_type: SensorType, on_success: Callable[[CommonResult], None]):
+    def stop_streaming_data(
+            self, address: str, sensor_type: SensorType,
+            on_success: Callable[[CommonResult], None]
+    ):
         pass
 
-    @abstractmethod
-    def set_streaming_data_callback(self, callback: StreamingDataCallback):
-        pass
-
-    """ ********************************** Data Recorder APIs ******************************** """
+    """ ********************************** Data Recording APIs ******************************** """
 
     @abstractmethod
     def get_record_samples_threshold(

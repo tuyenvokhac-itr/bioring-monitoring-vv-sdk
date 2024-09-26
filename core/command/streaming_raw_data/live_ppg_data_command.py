@@ -8,7 +8,7 @@ from proto import brp_pb2 as brp
 
 class LivePpgDataCommand:
     @staticmethod
-    def send(
+    async def send(
             sid: int, client: BleakClient, is_start: bool,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
@@ -22,4 +22,4 @@ class LivePpgDataCommand:
         pkt.command.sensor_type = brp.SensorType.SENSOR_TYPE_PPG
 
         pkt_value = pkt.SerializeToString()
-        write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)
+        await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)

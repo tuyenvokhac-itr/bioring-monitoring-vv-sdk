@@ -7,9 +7,9 @@ from core.utils.protobuf_utils import ProtobufUtils
 from proto import brp_pb2 as brp
 
 
-class StartStreamingDataCommand:
+class StopStreamingDataCommand:
     @staticmethod
-    def send(
+    async def send(
             sid: int, client: BleakClient, sensor_type: brp.SensorType,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
@@ -20,4 +20,4 @@ class StartStreamingDataCommand:
         pkt.command.sensor_type = ProtobufUtils.to_brp_sensor_type(sensor_type)
 
         pkt_value = pkt.SerializeToString()
-        write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)
+        await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)

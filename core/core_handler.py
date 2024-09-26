@@ -9,8 +9,13 @@ import proto.brp_pb2 as brp
 from ble.ble_constant import BleConstant
 from ble.ble_manager import BleManager
 from ble.bt_device import BTDevice
-from core.command import GetDeviceInfoCommand
+from core.command import GetDeviceInfoCommand, LiveAccDataCommand, LiveEcgDataCommand, LivePpgDataCommand, \
+    LiveTempDataCommand
 from core.command.bluetooth_settings.set_bluetooth_settings_command import SetBluetoothSettingsCommand
+from core.command.data_recording.get_record import GetRecordCommand
+from core.command.data_recording.get_record_sample_threshold_command import GetRecordSampleThresholdCommand
+from core.command.data_recording.start_record import StartRecordCommand
+from core.command.data_recording.stop_record import StopRecordCommand
 from core.command.general.get_device_status_command import GetDeviceStatusCommand
 from core.command.general.get_protocol_info_command import GetProtocolInfoCommand
 from core.command.power_management.set_sleep_time_command import SetSleepTimeCommand
@@ -26,9 +31,11 @@ from core.command.settings.set_accel_settings_command import SetAccelSettingsCom
 from core.command.settings.set_ecg_settings_command import SetEcgSettingsCommand
 from core.command.settings.set_log_settings_command import SetLogSettingsCommand
 from core.command.settings.set_ppg_settings_command import SetPpgSettingsCommand
+from core.command.streaming_raw_data.stop_streaming_data_command import StopStreamingDataCommand
 from core.command.time_syncing.get_time_syncing_command import GetTimeSyncingCommand
 from core.command.time_syncing.set_time_syncing_command import SetTimeSyncingCommand
 from core.command_callback import ResponseCallback
+from core.enum.general_enum import SensorType
 from core.handler.proto.response.general.res_device_info_handler import ResDeviceInfoHandler
 from core.handler.proto.response.general.res_device_status_handler import ResDeviceStatusHandler
 from core.handler.proto.response.general.res_protocol_info_handler import ResProtocolInfoHandler
@@ -38,9 +45,10 @@ from core.handler.proto.response.self_tests.res_post_handler import ResPostHandl
 
 from core.handler.proto.response.settings.res_all_settings_handler import ResAllSettingsHandler
 from core.handler.proto.response.time_syncing.res_time_syncing_handler import ResTimeSyncingHandler
-from core.models import DeviceInfo
+from core.models import DeviceInfo, AccelData, EcgData, PpgData, TempData
 from core.models.device_status import DeviceStatus
 from core.models.protocol import Protocol
+from core.models.raw_data.samples_threshold import SamplesThreshold
 from core.models.self_tests.self_test_result import SelfTestResult
 from core.models.settings.accel_settings import AccelSettings
 from core.models.settings.bt_settings import BTSettings
@@ -51,6 +59,7 @@ from core.models.settings.ppg_settings import PpgSettings
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
+from managers.record_data_callback import RecordDataCallback
 
 
 class CoreHandler:
@@ -82,6 +91,8 @@ class CoreHandler:
 
     def set_callback(self, callback: BluetoothCallback):
         self.bluetooth_callback = callback
+
+    """ BLE functions """
 
     async def start_scan(self):
         if self.is_scanning:
@@ -328,6 +339,99 @@ class CoreHandler:
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetBistIntervalCommand.send(sid, client, interval, self.ble_manager.write_char)
 
+    """ Streaming data """
+
+    async def start_streaming_accel_data(
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
+            on_accel_received: Callable[[AccelData, int], None] = None,
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await LiveAccDataCommand.send(sid, client, True, self.ble_manager.write_char)
+
+    async def start_streaming_ecg_data(
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
+            on_ecg_received: Callable[[EcgData, int], None] = None,
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await LiveEcgDataCommand.send(sid, client, True, self.ble_manager.write_char)
+
+    async def start_streaming_ppg_data(
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
+            on_ppg_received: Callable[[PpgData, int], None] = None,
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await LivePpgDataCommand.send(sid, client, True, self.ble_manager.write_char)
+
+    async def start_streaming_temp_data(
+            self, address: str,
+            on_success: Callable[[CommonResult], None] = None,
+            on_temp_received: Callable[[TempData, int], None] = None,
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await LiveTempDataCommand.send(sid, client, True, self.ble_manager.write_char)
+
+    async def stop_streaming_data(
+            self, address: str, sensor_type: SensorType,
+            on_success: Callable[[CommonResult], None]
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await StopStreamingDataCommand.send(
+            sid=sid, client=client, sensor_type=sensor_type,
+            write_char=self.ble_manager.write_char
+        )
+
+    """ Data recording """
+
+    async def get_record_samples_threshold(
+            self, address: str,
+            on_record_samples_threshold: Callable[[CommonResult, Optional[SamplesThreshold]], None]
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_record_samples_threshold))
+        await GetRecordSampleThresholdCommand.send(sid, client, self.ble_manager.write_char)
+
+    async def start_record(
+            self, address: str,
+            samples: int, sensor_type: SensorType,
+            on_success: Callable[[CommonResult], None]
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await StartRecordCommand.send(sid, client, samples, sensor_type, self.ble_manager.write_char)
+
+    async def stop_record(
+            self, address: str,
+            samples: int, sensor_type: SensorType,
+            on_success: Callable[[CommonResult], None]
+    ):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        await StopRecordCommand.send(sid, client, sensor_type, self.ble_manager.write_char)
+
+    async def get_record(self, address: str, sensor_type: SensorType, start_index: int):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        await GetRecordCommand.send(sid, client, start_index, sensor_type, self.ble_manager.write_char)
+
+    def set_record_callback(self, callback: RecordDataCallback):
+        pass
+
     """ Device settings """
 
     async def get_all_settings(self, address: str,
@@ -357,12 +461,21 @@ class CoreHandler:
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetPpgSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
 
-    async def set_accel_settings(self, address: str, settings: AccelSettings,
-                                 on_success: Callable[[CommonResult], None]):
+    async def set_accel_settings(
+            self, address: str, settings: AccelSettings,
+            on_success: Callable[[CommonResult], None]
+    ):
         client = self.get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetAccelSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
+
+    """ Firmware update """
+
+    def update_firmware(self, address: str, dfu_path: str, on_success: Callable[[CommonResult], None]):
+        client = self.get_client(address)
+        sid = int(time.time() * 1000)
+        self.response_callbacks.append(ResponseCallback(sid, on_success))
 
     """ Power management """
 

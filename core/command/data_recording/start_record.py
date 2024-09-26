@@ -11,7 +11,8 @@ from proto import brp_pb2 as brp
 class StartRecordCommand:
     @staticmethod
     async def send(
-            sid: int, client: BleakClient, sensor_type: SensorType,
+            sid: int, client: BleakClient, samples: int,
+            sensor_type: SensorType,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
         pkt = brp.Packet()
@@ -19,6 +20,7 @@ class StartRecordCommand:
         pkt.type = brp.PacketType.PACKET_TYPE_COMMAND
         pkt.command.cid = brp.CommandId.CID_RECORD_DATA_START
         pkt.command.sensor_type = ProtobufUtils.to_brp_sensor_type(sensor_type)
+        pkt.command.record_sample = samples
 
         pkt_value = pkt.SerializeToString()
         await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)
