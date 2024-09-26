@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from core.enum.general_enum import AppType, ChargingStatus, ChargingError
+from core.enum.app_type import AppType
+from core.enum.charging_error import ChargingError
+from core.enum.charging_status import ChargingStatus
 from core.models.self_tests.self_test_result import SelfTestResult
 
 

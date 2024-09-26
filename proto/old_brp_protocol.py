@@ -27,14 +27,14 @@ class Protocol:
         logging.debug(f"Encode Command:\n{str(command)}")
         return command.SerializeToString()
 
-    def encode_ack(self, noti_packet: brp.Packet, ack_result: brp.AckResponseCode):
-        ack = brp.Packet()
-        ack.sid = noti_packet.sid
-        ack.type = brp.PacketType.PACKET_TYPE_ACK
-        ack.ack.nid = noti_packet.notification.nid
-        ack.ack.result = ack_result
-        logging.debug(f"Encode ACK:\n{str(ack)}")
-        return ack.SerializeToString()
+    # def encode_ack(self, noti_packet: brp.Packet, ack_result: brp.AckResponseCode):
+    #     ack = brp.Packet()
+    #     ack.sid = noti_packet.sid
+    #     ack.type = brp.PacketType.PACKET_TYPE_ACK
+    #     ack.ack.nid = noti_packet.notification.nid
+    #     ack.ack.result = ack_result
+    #     logging.debug(f"Encode ACK:\n{str(ack)}")
+    #     return ack.SerializeToString()
 
     def decode_streaming_data(self, data: bytearray):
         type = data[0]

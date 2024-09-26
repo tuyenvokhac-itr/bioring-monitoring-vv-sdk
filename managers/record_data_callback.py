@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ble.bt_device import BTDevice
-from core.enum.general_enum import SensorType
+from core.enum.sensor_type import SensorType
 from core.models import AccelData, EcgData, PpgData, TempData
 from errors.common_error import CommonError
 

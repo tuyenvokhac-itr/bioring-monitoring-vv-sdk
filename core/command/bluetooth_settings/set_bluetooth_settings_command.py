@@ -24,7 +24,7 @@ class SetBluetoothSettingsCommand:
         pkt.command.all_dev_settings.ble_settings.connect_params.connect_intv_max = bt_settings.connection_interval_max
         pkt.command.all_dev_settings.ble_settings.connect_params.slave_latency = bt_settings.slave_latency
         pkt.command.all_dev_settings.ble_settings.connect_params.conn_sup_timeout = bt_settings.supervision_timeout
-        pkt.command.all_dev_settings.ble_settings.tx_power_level = bt_settings.transmit_power_level
+        pkt.command.all_dev_settings.ble_settings.tx_power_level = bt_settings.transmit_power_level.to_brp_power_level()
 
         pkt_value = pkt.SerializeToString()
         await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)

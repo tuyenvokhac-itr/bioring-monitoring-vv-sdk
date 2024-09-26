@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from core.enum.settings_enums import AccelSamplingRate, AccelFullScaleRange
+from core.enum.accel_full_scale_range import AccelFullScaleRange
+from core.enum.accel_sampling_rate import AccelSamplingRate
 
 
 @dataclass

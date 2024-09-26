@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Optional
 
 from core.core_handler import CoreHandler
-from core.enum.general_enum import SensorType
+from core.enum.sensor_type import SensorType
 from core.models import DeviceInfo, AccelData, EcgData, PpgData, TempData
 from core.models.device_status import DeviceStatus
 from core.models.protocol import Protocol
@@ -115,30 +115,30 @@ class RingManager(RingManagerInterface):
     def start_streaming_accel_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_accel_received: Callable[[AccelData, int], None] = None,
+            on_accel_streaming_data: Callable[[AccelData, int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_accel_data(address, on_success, on_accel_received))
+        asyncio.create_task(self.core_handler.start_streaming_accel_data(address, on_success, on_accel_streaming_data))
 
     def start_streaming_ecg_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_ecg_received: Callable[[EcgData, int], None] = None,
+            on_ecg_streaming_data: Callable[[EcgData, int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_ecg_data(address, on_success, on_ecg_received))
+        asyncio.create_task(self.core_handler.start_streaming_ecg_data(address, on_success, on_ecg_streaming_data))
 
     def start_streaming_ppg_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_ppg_received: Callable[[PpgData, int], None] = None,
+            on_ppg_streaming_data: Callable[[PpgData, int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_ppg_data(address, on_success, on_ppg_received))
+        asyncio.create_task(self.core_handler.start_streaming_ppg_data(address, on_success, on_ppg_streaming_data))
 
     def start_streaming_temp_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_temp_received: Callable[[TempData, int], None] = None,
+            on_temp_streaming_data: Callable[[TempData, int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_temp_data(address, on_success, on_temp_received))
+        asyncio.create_task(self.core_handler.start_streaming_temp_data(address, on_success, on_temp_streaming_data))
 
     def stop_streaming_data(
             self, address: str, sensor_type: SensorType,

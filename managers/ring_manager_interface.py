@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Optional
 
-from core.enum.general_enum import SensorType
+from core.enum.sensor_type import SensorType
 from core.models import DeviceInfo, AccelData, EcgData, PpgData, TempData
 from core.models.device_status import DeviceStatus
 from core.models.protocol import Protocol
@@ -84,7 +84,7 @@ class RingManagerInterface(ABC):
     def start_streaming_accel_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_accel_received: Callable[[AccelData, int], None] = None,
+            on_accel_streaming_data: Callable[[AccelData, int], None] = None,
     ):
         pass
 
@@ -92,7 +92,7 @@ class RingManagerInterface(ABC):
     def start_streaming_ecg_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_ecg_received: Callable[[EcgData, int], None] = None,
+            on_ecg_streaming_data: Callable[[EcgData, int], None] = None,
     ):
         pass
 
@@ -100,7 +100,7 @@ class RingManagerInterface(ABC):
     def start_streaming_ppg_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_ppg_received: Callable[[PpgData, int], None] = None,
+            on_ppg_streaming_data: Callable[[PpgData, int], None] = None,
     ):
         pass
 
@@ -108,7 +108,7 @@ class RingManagerInterface(ABC):
     def start_streaming_temp_data(
             self, address: str,
             on_success: Callable[[CommonResult], None] = None,
-            on_temp_received: Callable[[TempData, int], None] = None,
+            on_temp_streaming_data: Callable[[TempData, int], None] = None,
     ):
         pass
 

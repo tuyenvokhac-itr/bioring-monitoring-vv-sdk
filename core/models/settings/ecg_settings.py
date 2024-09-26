@@ -1,15 +1,23 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from core.enum.settings_enums import EcgSamplingRate, EcgPgaGain, EcgInaGain, EcgInaRange, EcgInputPolarity, \
-    EcgLeadOffMode, EcgLeadOffCurrentMagnitude, EcgLeadOffVoltageThreshold, EcgLeadOffFreq
+from core.enum.ecg_ina_gain import EcgInaGain
+from core.enum.ecg_ina_range import EcgInaRange
+from core.enum.ecg_input_polarity import EcgInputPolarity
+from core.enum.ecg_lead_off_current_magnitude import EcgLeadOffCurrentMagnitude
+from core.enum.ecg_lead_off_current_polarity import EcgLeadOffCurrentPolarity
+from core.enum.ecg_lead_off_freq import EcgLeadOffFreq
+from core.enum.ecg_lead_off_mode import EcgLeadOffMode
+from core.enum.ecg_lead_off_voltage_threshold import EcgLeadOffVoltageThreshold
+from core.enum.ecg_pga_gain import EcgPgaGain
+from core.enum.ecg_sampling_rate import EcgSamplingRate
 
 
 @dataclass
 class LeadOffSettings:
     enable: Optional[bool]
     mode: Optional[EcgLeadOffMode]
-    current_polarity: Optional[EcgInputPolarity]
+    current_polarity: Optional[EcgLeadOffCurrentPolarity]
     current_magnitude: Optional[EcgLeadOffCurrentMagnitude]
     voltage_threshold: Optional[EcgLeadOffVoltageThreshold]
     lead_off_frequency: Optional[EcgLeadOffFreq]

@@ -35,7 +35,7 @@ from core.command.streaming_raw_data.stop_streaming_data_command import StopStre
 from core.command.time_syncing.get_time_syncing_command import GetTimeSyncingCommand
 from core.command.time_syncing.set_time_syncing_command import SetTimeSyncingCommand
 from core.command_callback import ResponseCallback
-from core.enum.general_enum import SensorType
+from core.enum.sensor_type import SensorType
 from core.handler.proto.response.general.res_device_info_handler import ResDeviceInfoHandler
 from core.handler.proto.response.general.res_device_status_handler import ResDeviceStatusHandler
 from core.handler.proto.response.general.res_protocol_info_handler import ResProtocolInfoHandler

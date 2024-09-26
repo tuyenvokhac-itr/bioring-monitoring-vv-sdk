@@ -19,7 +19,7 @@ class SetPpgSettingsCommand:
         pkt.command.cid = brp.CommandId.CID_PPG_SETTINGS_SET
 
         pkt.command.all_dev_settings.ppg_settings.ppg_enable = ppg_settings.enable
-        pkt.command.all_dev_settings.ppg_settings.sample_rate = ppg_settings.sampling_rate
+        pkt.command.all_dev_settings.ppg_settings.sample_rate = ppg_settings.sampling_rate.to_brp_ppg_sample_rate()
         pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.red_led_enable = ppg_settings.enable_red_led
         pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.ir_led_enable = ppg_settings.enable_ir_led
         pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.red_led_current = ppg_settings.red_led_current

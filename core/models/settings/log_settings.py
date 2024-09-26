@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
-from core.enum.settings_enums import LogLevel
 from typing import List
+
+from core.enum.log_level import LogLevel
 
 
 @dataclass

@@ -4,6 +4,7 @@ from core.command_callback import ResponseCallback
 from core.models.device_status import DeviceStatus
 from core.models.self_tests.self_test_result import SelfTestResult
 from core.utils.list_utils import ListUtils
+from core.utils.protobuf_utils import ProtobufUtils
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
 from proto import brp_pb2 as brp
@@ -33,14 +34,14 @@ class ResDeviceStatusHandler:
                 )
 
                 device_status = DeviceStatus(
-                    current_app=packet.response.dev_status.current_app,
+                    current_app=ProtobufUtils.to_app_type(packet.response.dev_status.current_app),
                     device_time=packet.response.dev_status.device_time,
                     bist_result=bist_result,
                     bist_timestamp=packet.response.dev_status.bist_timestamp,
                     post_result=post_result,
                     post_timestamp=packet.response.dev_status.post_timestamp,
-                    is_charging=packet.response.dev_status.charging_status,
-                    charging_error=packet.response.dev_status.charging_error,
+                    is_charging=ProtobufUtils.to_charging_status(packet.response.dev_status.charging_status),
+                    charging_error=ProtobufUtils.to_charging_error(packet.response.dev_status.charging_error),
                     battery_level=packet.response.dev_status.battery_level,
                 )
 

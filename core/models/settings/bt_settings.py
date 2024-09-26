@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from core.enum.settings_enums import PowerLevel
+from core.enum.power_level import PowerLevel
 
 
 @dataclass
