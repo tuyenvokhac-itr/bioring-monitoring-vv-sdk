@@ -3,15 +3,16 @@ import platform
 from collections.abc import Callable
 from typing import Optional
 
+from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
 from core.core_handler import CoreHandler
 from core.enum.sensor_type import SensorType
 from core.models import DeviceInfo, AccelData, EcgData, PpgData, TempData
 from core.models.device_status import DeviceStatus
 from core.models.protocol import Protocol
-from core.models.settings.accel_settings import AccelSettings
-from core.models.settings.bt_settings import BTSettings
 from core.models.raw_data.samples_threshold import SamplesThreshold
 from core.models.self_tests.self_test_result import SelfTestResult
+from core.models.settings.accel_settings import AccelSettings
+from core.models.settings.bt_settings import BTSettings
 from core.models.settings.device_settings import DeviceSettings
 from core.models.settings.ecg_settings import EcgSettings
 from core.models.settings.log_settings import LogSettings
@@ -20,7 +21,6 @@ from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
 from managers.record_data_callback import RecordDataCallback
 from managers.ring_manager_interface import RingManagerInterface
-from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
 
 
 class RingManager(RingManagerInterface):

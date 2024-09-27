@@ -3,7 +3,6 @@ from typing import Any, Callable, Awaitable
 from bleak import BleakClient
 
 from ble.ble_constant import BleConstant
-from core.enum.log_level import LogLevel
 from core.models.settings.log_settings import LogSettings
 from proto import brp_pb2 as brp
 

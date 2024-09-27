@@ -1,12 +1,7 @@
-from ble.old_ble_manager import OldBleManager
-from core.models import EcgData, PpgData
-from bleak.backends.device import BLEDevice
-from bleak.backends.scanner import AdvertisementData
-from typing import List, Tuple, Callable
-from bleak import BleakClient
-import asyncio
+from typing import Callable
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton
+from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton
+
 
 class QTGuideWindow(QMainWindow):
     def __init__(self, close_event: Callable):

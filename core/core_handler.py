@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 from typing import List, Tuple, Optional, Callable
@@ -42,7 +43,6 @@ from core.handler.proto.response.general.res_protocol_info_handler import ResPro
 from core.handler.proto.response.res_common_result_handler import ResCommonResultHandler
 from core.handler.proto.response.self_tests.res_bist_handler import ResBistHandler
 from core.handler.proto.response.self_tests.res_post_handler import ResPostHandler
-
 from core.handler.proto.response.settings.res_all_settings_handler import ResAllSettingsHandler
 from core.handler.proto.response.time_syncing.res_time_syncing_handler import ResTimeSyncingHandler
 from core.models import DeviceInfo, AccelData, EcgData, PpgData, TempData
@@ -137,8 +137,10 @@ class CoreHandler:
                 self.bluetooth_callback.on_device_connected(device)
                 break
 
-        self.ble_manager.start_notify(BleConstant.BRS_UUID_CHAR_RX, client, self.brs_rx_char_handler)
-        self.ble_manager.start_notify(BleConstant.BRS_UUID_CHAR_DATA, client, self.brs_data_char_handler)
+        asyncio.create_task(
+            self.ble_manager.start_notify(BleConstant.BRS_UUID_CHAR_RX, client, self.brs_rx_char_handler))
+        asyncio.create_task(
+            self.ble_manager.start_notify(BleConstant.BRS_UUID_CHAR_DATA, client, self.brs_data_char_handler))
 
     def on_bluetooth_error(self, address, error: CommonError):
         device = self.get_device(address)
@@ -162,14 +164,11 @@ class CoreHandler:
         self.bluetooth_callback.on_bluetooth_error(
             BTDevice(name=device[0].name, address=device[0].address), CommonError.DEVICE_DISCONNECTED)
 
-    def start_notify(self, client: BleakClient, char_uuid, callback):
-        self.ble_manager.start_notify(char_uuid, client, callback)
-        self.logger.info('[CoreHandler]: Start notify for %s', client.address)
-
     def brs_rx_char_handler(self, _sender, data: bytearray):
         rx_packet = brp.Packet()
         rx_packet.ParseFromString(bytes(data))
         logging.debug(f"Received packet:\n{rx_packet}")
+        print(f"Received packet:\n{rx_packet}")
 
         # TODO: check this if we can compare the PacketType value
         pkt_type = rx_packet.WhichOneof("payload")
@@ -191,6 +190,7 @@ class CoreHandler:
         pass
 
     def rx_response_handlers(self, cid: int, pkt: brp.Packet):
+        print(f"Received response: {pkt}")
         match cid:
             case brp.CommandId.CID_DEV_INFO_GET:
                 ResDeviceInfoHandler.handle(pkt, self.response_callbacks)
@@ -514,8 +514,10 @@ class CoreHandler:
         self.response_callbacks.append(ResponseCallback(sid, on_device_status))
         await GetDeviceStatusCommand.send(sid, client, self.ble_manager.write_char)
 
-    async def get_protocol_info(self, address: str,
-                                on_protocol_info: Callable[[CommonResult, Optional[Protocol]], None]):
+    async def get_protocol_info(
+            self, address: str,
+            on_protocol_info: Callable[[CommonResult, Optional[Protocol]], None]
+    ):
         client = self.get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_protocol_info))

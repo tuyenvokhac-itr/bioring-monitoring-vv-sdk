@@ -1,13 +1,14 @@
-from typing import List
+import sys
+from typing import List, Optional
 
 from PyQt6.QtWidgets import QApplication
 
 from ble.bt_device import BTDevice
 from errors.common_error import CommonError
+from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
 from managers.ring_manager import RingManager
 from qt_gui import QTGuideWindow
-from core.old_core_handler import OldCoreHandler
 from bleak import BleakClient
 from core.core_handler_call_back import CoreHandlerCallBack
 from core.models.device_info import DeviceInfo
@@ -18,7 +19,6 @@ import asyncio
 
 class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
     def __init__(self):
-        self.core_handler = OldCoreHandler(self)
         self.ring_manager = RingManager()
         self.ring_manager.set_bluetooth_callback(self)
         self.devices : List[BTDevice] = []
@@ -103,30 +103,34 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
     # Command functions - Device info
 
     def get_device_info(self):
-        self.core_handler.get_device_info()
+        self.ring_manager.get_device_info(self.devices[0].address, self.on_device_info)
+
+    def on_device_info(self, result: CommonResult, info: Optional[DeviceInfo]):
+        print(f"on_device_info Result: {result}")
+        print(f"on_device_info Device info: {info}")
 
     # Command functions - Data
 
     def start_live_acc_data(self):
-        self.core_handler.live_acc_data()
+        pass
 
     def stop_live_acc_data(self):
-        self.core_handler.live_acc_data(isStart=False)
+        pass
 
     def start_live_ecg_data(self):
-        self.core_handler.live_ecg_data()
+        pass
 
     def stop_live_ecg_data(self):
-        self.core_handler.live_ecg_data(isStart=False)
+        pass
 
     def start_live_ppg_data(self):
-        self.core_handler.live_ppg_data()
+        pass
 
     def stop_live_ppg_data(self):
-        self.core_handler.live_ppg_data(isStart=False)
+        pass
 
     def start_live_temp_data(self):
-        self.core_handler.live_temp_data()
+        pass
 
     def stop_live_temp_data(self):
         print("stop live temp data")
