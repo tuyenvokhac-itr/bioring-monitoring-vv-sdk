@@ -10,7 +10,9 @@ from proto import brp_pb2 as brp
 class SetEcgSettingsCommand:
     @staticmethod
     async def send(
-            sid: int, client: BleakClient, ecg_settings: EcgSettings,
+            sid: int,
+            client: BleakClient,
+            ecg_settings: EcgSettings,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
         pkt = brp.Packet()

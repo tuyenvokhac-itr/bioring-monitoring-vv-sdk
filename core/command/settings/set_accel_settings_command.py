@@ -10,7 +10,9 @@ from proto import brp_pb2 as brp
 class SetAccelSettingsCommand:
     @staticmethod
     async def send(
-            sid: int, client: BleakClient, accel_settings: AccelSettings,
+            sid: int,
+            client: BleakClient,
+            accel_settings: AccelSettings,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
         pkt = brp.Packet()

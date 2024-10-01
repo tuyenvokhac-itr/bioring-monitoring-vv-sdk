@@ -1,4 +1,3 @@
-import sys
 from typing import List, Optional
 
 from PyQt6.QtWidgets import QApplication
@@ -7,21 +6,20 @@ from ble.bt_device import BTDevice
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
-from managers.ring_manager import RingManager
 from qt_gui import QTGuideWindow
 from bleak import BleakClient
-from core.core_handler_call_back import CoreHandlerCallBack
 from core.models.device_info import DeviceInfo
 from core.models.raw_data.accel_data import AccelData
 from qasync import QEventLoop
 import asyncio
+from managers import ring_factory as factory
 
 
-class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
+class BioRingTool(BluetoothCallback):
     def __init__(self):
-        self.ring_manager = RingManager()
+        self.ring_manager = factory.get_ring_manager_instance()
         self.ring_manager.set_bluetooth_callback(self)
-        self.devices : List[BTDevice] = []
+        self.devices: List[BTDevice] = []
 
         app = QApplication([])
         loop = QEventLoop(app)
@@ -65,7 +63,6 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
     def handle_bluetooth_state_change(self, state: str):
         print(f"Bluetooth state changed: {state}")
 
-
     """ BLE actions"""
 
     def start_scan(self):
@@ -78,7 +75,7 @@ class BioRingTool(CoreHandlerCallBack, BluetoothCallback):
         self.ring_manager.connect(self.devices[0].address, 10)
         print('connect to device', self.devices[0])
 
-    def disconnect(self,  address: str):
+    def disconnect(self, address: str):
         self.ring_manager.disconnect(self.devices[0].address)
 
     def get_bluetooth_state(self):

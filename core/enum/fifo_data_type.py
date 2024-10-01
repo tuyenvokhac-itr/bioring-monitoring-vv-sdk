@@ -2,7 +2,9 @@ from enum import Enum
 
 
 class FifoDataType(Enum):
+    # PPG Red
     PPG_MEAS_1 = 0
+    # PPG IR
     PPG_MEAS_2 = 1
     PPG_MEAS_3 = 2
     PPG_MEAS_4 = 3
@@ -13,4 +15,5 @@ class FifoDataType(Enum):
     PPG_EXP_OVF = 8
     BIOZ_I = 9
     BIOZ_Q = 10
+    # ECG
     ECG_AND_FAST_RECOVER_FLAG = 11

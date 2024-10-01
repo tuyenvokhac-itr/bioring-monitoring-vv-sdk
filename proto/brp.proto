@@ -63,12 +63,13 @@ message CommandPacket {
     AfeSettings afe_setting = 4; // CID_AFE_SENSOR_SETTING_SET
     WlcRunParams wlc_run_params = 5; // CID_WLC_RUN_PARAMS_SET
     WlcOemParams wlc_oem_params = 6; // CID_WLC_OEM_PARAMS_SET
-    SensorType sensor_type = 7; // CID_STREAMING_DATA_START and CID_RECORD_DATA_START
+    SensorType sensor_type = 7; // CID_STREAMING_DATA_START or CID_RECORD_DATA_START
     uint32 bist_interval = 8; // CID_SELF_TEST_BIST_SET_INTERVAL
     uint32 record_sample = 9; // CID_RECORD_DATA_START
     uint32 pre_sleep_timeout = 10; //CID_DEV_PRE_SLEEP_TIMEOUT_SET
     DevStatus dev_status = 11; //CID_TIME_SET
-    AllDevSettings all_dev_settings = 12; //CID_DEV_SETTINGS_STORE_ALL
+    AllDevSettings all_dev_settings = 12;
+    uint32 start_index = 13; //CID_RECORD_DATA_GET
   }
 }
 
@@ -93,6 +94,7 @@ message ResponsePacket {
     PpgLedControl ppg_led_control = 14; //CID_PPG_LED_ENABLE and CID_PPG_LED_DISABLE
     DevStatus dev_status = 15; //CID_DEV_INFO_GET
     SampleThreshold sample_threshold = 16;//CID_RECORD_SAMPLES_THRESHOLD_GET
+    SensorType sensor_type = 17; // CID_STREAMING_DATA_STOP or CID_RECORD_DATA_STOP
   }
 }
 
@@ -250,9 +252,12 @@ enum NotificationId {
   NID_SPO2_HR_DATA = 4;
   NID_ECG_LEAD_OFF_DETECT = 5;
   NID_BIST_RESULT = 6;
-  NID_DATA_RAW_AFE = 7;
-  NID_DATA_RAW_ACCEL = 8;
-  NID_DATA_TEMP = 9;
+  NID_STREAMING_DATA_RAW_AFE = 7;
+  NID_STREAMING_DATA_RAW_ACCEL = 8;
+  NID_STREAMING_DATA_TEMP = 9;
+  NID_RECORD_DATA_RAW_AFE = 10;
+  NID_RECORD_DATA_RAW_ACCEL = 11;
+  NID_RECORD_DATA_TEMP = 12;
 }
 
 enum AppType {

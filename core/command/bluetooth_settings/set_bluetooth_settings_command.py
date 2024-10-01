@@ -10,7 +10,9 @@ from proto import brp_pb2 as brp
 class SetBluetoothSettingsCommand:
     @staticmethod
     async def send(
-            sid: int, client: BleakClient, bt_settings: BTSettings,
+            sid: int,
+            client: BleakClient,
+            bt_settings: BTSettings,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
         pkt = brp.Packet()

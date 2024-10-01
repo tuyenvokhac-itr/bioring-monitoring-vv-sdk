@@ -8,8 +8,12 @@ from proto import brp_pb2 as brp
 
 class SetBistIntervalCommand:
     @staticmethod
-    async def send(sid: int, client: BleakClient, interval: int,
-                   write_char: Callable[[BleakClient, str, Any], Awaitable[None]]):
+    async def send(
+            sid: int,
+            client: BleakClient,
+            interval: int,
+            write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
+    ):
         pkt = brp.Packet()
         pkt.sid = sid
         pkt.type = brp.PacketType.PACKET_TYPE_COMMAND

@@ -10,7 +10,9 @@ from proto import brp_pb2 as brp
 class SetLogSettingsCommand:
     @staticmethod
     async def send(
-            sid: int, client: BleakClient, log_settings: LogSettings,
+            sid: int,
+            client: BleakClient,
+            log_settings: LogSettings,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
         pkt = brp.Packet()

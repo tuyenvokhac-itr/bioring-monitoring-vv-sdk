@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from core.command_callback import ResponseCallback
+from core.callbacks.response_callback import ResponseCallback
 
 
 class ListUtils:

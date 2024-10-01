@@ -17,21 +17,23 @@ class BleManager:
             self.use_bdaddr = False
 
     async def start_scan(self, detection_callback: Callable[[BLEDevice, AdvertisementData], None]):
-        self.scanner = BleakScanner(
-            cb=dict(use_bdaddr=self.use_bdaddr),
-            detection_callback=detection_callback,
-            # service_uuids=[BleConstant.BRS_UUID_SERVICE]
-        )
+        if self.scanner is None:
+            self.scanner = BleakScanner(
+                cb=dict(use_bdaddr=self.use_bdaddr),
+                detection_callback=detection_callback,
+                # service_uuids=[BleConstant.BRS_UUID_SERVICE]
+            )
 
         await self.scanner.start()
 
     async def stop_scan(self):
-        if self.scanner:
+        if self.scanner is not None:
             await self.scanner.stop()
 
     async def connect(
             self,
-            address, timeout,
+            address,
+            timeout,
             on_device_connected: Callable[[BleakClient], None],
             on_device_disconnected: Callable[[BleakClient], None],
             on_bluetooth_error: Callable[[str, CommonError], None]
@@ -55,7 +57,6 @@ class BleManager:
         """
         Get the BleakGATTCharacteristic object based on the provided characteristic UUID.
         """
-
         for service in client.services:
             for characteristic in service.characteristics:
                 if characteristic.uuid == char_uuid:

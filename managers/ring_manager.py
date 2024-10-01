@@ -1,15 +1,15 @@
-import asyncio
-import platform
-from collections.abc import Callable
-from typing import Optional
+from abc import ABC, abstractmethod
+from typing import Callable, Optional
 
-from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
-from core.core_handler import CoreHandler
 from core.enum.sensor_type import SensorType
-from core.models import DeviceInfo, AccelData, EcgData, PpgData, TempData
+from core.models.device_info import DeviceInfo
 from core.models.device_status import DeviceStatus
 from core.models.protocol import Protocol
+from core.models.raw_data.accel_data import AccelData
+from core.models.raw_data.ecg_data import EcgData
+from core.models.raw_data.ppg_data import PpgData
 from core.models.raw_data.samples_threshold import SamplesThreshold
+from core.models.raw_data.temp_data import TempData
 from core.models.self_tests.self_test_result import SelfTestResult
 from core.models.settings.accel_settings import AccelSettings
 from core.models.settings.bt_settings import BTSettings
@@ -20,14 +20,10 @@ from core.models.settings.ppg_settings import PpgSettings
 from errors.common_result import CommonResult
 from managers.bluetooth_callback import BluetoothCallback
 from managers.record_data_callback import RecordDataCallback
-from managers.ring_manager_interface import RingManagerInterface
 
 
-class RingManager(RingManagerInterface):
-    def __init__(self):
-        self.core_handler = CoreHandler()
-
-    """ ********************************** BLE APIs ******************************** """
+class RingManager(ABC):
+    """ ************************************ BLE APIs ********************************** """
 
     """
     Start scanning for Bluetooth devices. 
@@ -35,15 +31,17 @@ class RingManager(RingManagerInterface):
     Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information. 
     """
 
+    @abstractmethod
     def start_scan(self):
-        asyncio.create_task(self.core_handler.start_scan())
+        pass
 
     """
     Stop scanning for Bluetooth devices.
     """
 
+    @abstractmethod
     def stop_scan(self):
-        asyncio.create_task(self.core_handler.stop_scan())
+        pass
 
     """
     Connect to the Bluetooth device with the given address.
@@ -52,26 +50,26 @@ class RingManager(RingManagerInterface):
     Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information. 
     """
 
-    def connect(self, address: str, timeout: int = 10):
-        asyncio.create_task(self.core_handler.connect(address, timeout))
+    @abstractmethod
+    def connect(self, address: str, timeout: int):
+        pass
 
     """
     Disconnect from the Bluetooth device with the given address.
     """
 
+    @abstractmethod
     def disconnect(self, address: str):
-        asyncio.create_task(self.core_handler.disconnect(address))
+        pass
 
     """
     Check the current state of Bluetooth.
     Returns True if Bluetooth is on, False otherwise.
     """
 
+    @abstractmethod
     def get_bluetooth_state(self) -> bool:
-        if platform.system() == "Darwin":
-            return mac_get_bluetooth_state()
-        """ TODO: Implement for Windows and Ubuntu """
-        return False
+        pass
 
     """ 
     Set BluetoothCallback for to listen to Bluetooth events.
@@ -79,153 +77,237 @@ class RingManager(RingManagerInterface):
     Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information. 
     """
 
-    def set_bluetooth_callback(self, bluetooth_callback: BluetoothCallback):
-        self.core_handler.set_callback(bluetooth_callback)
-        # TODO: Handle state listener
+    @abstractmethod
+    def set_bluetooth_callback(self, callback: BluetoothCallback):
+        pass
 
     """ ********************************** Bluetooth Settings APIs ******************************** """
 
+    @abstractmethod
     def set_bluetooth_settings(
             self,
             address: str,
             settings: BTSettings,
             on_success: Callable[[CommonResult], None],
     ):
-        asyncio.create_task(self.core_handler.set_bluetooth_settings(address, settings, on_success))
+        pass
 
     """ ********************************** Self Test APIs ******************************** """
 
-    def get_post(self, address: str, on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]):
-        asyncio.create_task(self.core_handler.get_post(address, on_self_test_result))
+    @abstractmethod
+    def get_post(
+            self,
+            address: str,
+            on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]
+    ):
+        pass
 
-    def get_bist(self, address: str, on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]):
-        asyncio.create_task(self.core_handler.get_bist(address, on_self_test_result))
+    @abstractmethod
+    def get_bist(
+            self,
+            address: str,
+            on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]
+    ):
+        pass
 
+    @abstractmethod
     def enable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.enable_bist(address, on_success))
+        pass
 
+    @abstractmethod
     def disable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.disable_bist(address, on_success))
+        pass
 
-    def set_bist_interval(self, address: str, interval: int, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_bist_interval(address, interval, on_success))
+    @abstractmethod
+    def set_bist_interval(
+            self,
+            address: str,
+            interval: int,
+            on_success: Callable[[CommonResult], None]
+    ):
+        pass
 
     """ ********************************** Streaming data APIs ******************************** """
 
+    @abstractmethod
     def start_streaming_accel_data(
-            self, address: str,
-            on_success: Callable[[CommonResult], None] = None,
-            on_accel_streaming_data: Callable[[AccelData, int], None] = None,
+            self,
+            address: str,
+            on_accel_streaming_data: Callable[[CommonResult, Optional[AccelData], int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_accel_data(address, on_success, on_accel_streaming_data))
+        pass
 
+    @abstractmethod
     def start_streaming_ecg_data(
-            self, address: str,
-            on_success: Callable[[CommonResult], None] = None,
-            on_ecg_streaming_data: Callable[[EcgData, int], None] = None,
+            self,
+            address: str,
+            on_ecg_streaming_data: Callable[[CommonResult, Optional[EcgData], int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_ecg_data(address, on_success, on_ecg_streaming_data))
+        pass
 
+    @abstractmethod
     def start_streaming_ppg_data(
-            self, address: str,
-            on_success: Callable[[CommonResult], None] = None,
-            on_ppg_streaming_data: Callable[[PpgData, int], None] = None,
+            self,
+            address: str,
+            on_ppg_streaming_data: Callable[[CommonResult, Optional[PpgData], int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_ppg_data(address, on_success, on_ppg_streaming_data))
+        pass
 
+    @abstractmethod
     def start_streaming_temp_data(
-            self, address: str,
-            on_success: Callable[[CommonResult], None] = None,
-            on_temp_streaming_data: Callable[[TempData, int], None] = None,
+            self,
+            address: str,
+            on_temp_streaming_data: Callable[[CommonResult, Optional[TempData], int], None] = None,
     ):
-        asyncio.create_task(self.core_handler.start_streaming_temp_data(address, on_success, on_temp_streaming_data))
+        pass
 
+    @abstractmethod
     def stop_streaming_data(
-            self, address: str, sensor_type: SensorType,
+            self,
+            address: str,
+            sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.stop_streaming_data(address, sensor_type, on_success))
+        pass
 
     """ ********************************** Data Recording APIs ******************************** """
 
+    @abstractmethod
     def get_record_samples_threshold(
-            self, address: str,
+            self,
+            address: str,
             on_record_samples_threshold: Callable[[CommonResult, Optional[SamplesThreshold]], None]
     ):
-        asyncio.create_task(self.core_handler.get_record_samples_threshold(address, on_record_samples_threshold))
+        pass
 
+    @abstractmethod
     def start_record(
-            self, address: str,
-            samples: int, sensor_type: SensorType,
+            self,
+            address: str,
+            samples: int,
+            sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.start_record(address, samples, sensor_type, on_success))
+        pass
 
+    @abstractmethod
     def stop_record(
             self, address: str,
-            samples: int, sensor_type: SensorType,
+            sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.stop_record(address, samples, sensor_type, on_success))
+        pass
 
+    @abstractmethod
     def get_record(self, address: str, sensor_type: SensorType, start_index: int):
-        asyncio.create_task(self.core_handler.get_record(address, sensor_type, start_index))
+        pass
 
+    @abstractmethod
     def set_record_callback(self, callback: RecordDataCallback):
-        self.core_handler.set_record_callback(callback)
+        pass
 
     """ ********************************** Device Settings APIs ******************************** """
 
-    def get_all_settings(self, address: str, on_settings: Callable[[CommonResult, Optional[DeviceSettings]], None]):
-        asyncio.create_task(self.core_handler.get_all_settings(address, on_settings))
+    @abstractmethod
+    def get_all_settings(
+            self,
+            address: str,
+            on_settings: Callable[[CommonResult, Optional[DeviceSettings]], None]
+    ):
+        pass
 
-    def set_log_settings(self, address: str, settings: LogSettings, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_log_settings(address, settings, on_success))
+    @abstractmethod
+    def set_log_settings(
+            self,
+            address: str,
+            settings: LogSettings,
+            on_success: Callable[[CommonResult], None]
+    ):
+        pass
 
     """ ********************************** Sensor Settings APIs ******************************** """
 
-    def set_ecg_settings(self, address: str, settings: EcgSettings, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_ecg_settings(address, settings, on_success))
+    @abstractmethod
+    def set_ecg_settings(
+            self,
+            address: str,
+            settings: EcgSettings,
+            on_success: Callable[[CommonResult], None]
+    ):
+        pass
 
-    def set_ppg_settings(self, address: str, settings: PpgSettings, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_ppg_settings(address, settings, on_success))
+    @abstractmethod
+    def set_ppg_settings(
+            self,
+            address: str,
+            settings: PpgSettings,
+            on_success: Callable[[CommonResult], None]
+    ):
+        pass
 
-    def set_accel_settings(self, address: str, settings: AccelSettings, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_accel_settings(address, settings, on_success))
+    @abstractmethod
+    def set_accel_settings(
+            self,
+            address: str,
+            settings: AccelSettings,
+            on_success: Callable[[CommonResult], None]
+    ):
+        pass
 
     """ ********************************** Firmware Update APIs ******************************** """
 
+    @abstractmethod
     def update_firmware(self, address: str, dfu_path: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.update_firmware(address, dfu_path, on_success))
+        pass
 
     """ ********************************** Power Management APIs ******************************** """
 
+    @abstractmethod
     def set_sleep_time(self, address: str, seconds: int, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_sleep_time(address, seconds, on_success))
+        pass
 
     """ ********************************** Time Syncing APIs ******************************** """
 
+    @abstractmethod
     def set_time_sync(self, address: str, epoch: int, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_time_sync(address, epoch, on_success))
+        pass
 
+    @abstractmethod
     def get_time_sync(self, address: str, on_time_sync: Callable[[CommonResult, Optional[int]], None]):
-        asyncio.create_task(self.core_handler.get_time_sync(address, on_time_sync))
+        pass
 
     """ ********************************** General APIs ******************************** """
 
-    def get_device_info(self, address: str, on_device_info: Callable[[CommonResult, Optional[DeviceInfo]], None]):
-        asyncio.create_task(self.core_handler.get_device_info(address, on_device_info))
+    @abstractmethod
+    def get_device_info(
+            self,
+            address: str,
+            on_device_info: Callable[[CommonResult, Optional[DeviceInfo]], None]
+    ):
+        pass
 
-    def get_device_status(self, address: str, on_device_status: Callable[[CommonResult, Optional[DeviceStatus]], None]):
-        asyncio.create_task(self.core_handler.get_device_status(address, on_device_status))
+    @abstractmethod
+    def get_device_status(
+            self,
+            address: str,
+            on_device_status: Callable[[CommonResult, Optional[DeviceStatus]], None]
+    ):
+        pass
 
-    def get_protocol_info(self, address: str, on_protocol_info: Callable[[CommonResult, Optional[Protocol]], None]):
-        asyncio.create_task(self.core_handler.get_protocol_info(address, on_protocol_info))
+    @abstractmethod
+    def get_protocol_info(
+            self,
+            address: str,
+            on_protocol_info: Callable[[CommonResult, Optional[Protocol]], None]
+    ):
+        pass
 
     """ ********************************** Reset APIs ******************************** """
 
+    @abstractmethod
     def factory_reset(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.factory_reset(address, on_success))
+        pass
 
+    @abstractmethod
     def reboot(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.reboot(address, on_success))
+        pass

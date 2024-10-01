@@ -9,7 +9,8 @@ from proto import brp_pb2 as brp
 class GetTimeSyncingCommand:
     @staticmethod
     async def send(
-            sid: int, client: BleakClient,
+            sid: int,
+            client: BleakClient,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
         pkt = brp.Packet()

@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from typing import List
 
+
 @dataclass
 class TempData:
-    start_type: int
+    start_time: int
     value: List[float]
+    is_eot: bool = False

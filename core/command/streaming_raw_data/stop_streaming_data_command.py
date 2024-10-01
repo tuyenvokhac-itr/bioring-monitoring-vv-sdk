@@ -10,7 +10,9 @@ from proto import brp_pb2 as brp
 class StopStreamingDataCommand:
     @staticmethod
     async def send(
-            sid: int, client: BleakClient, sensor_type: SensorType,
+            sid: int,
+            client: BleakClient,
+            sensor_type: SensorType,
             write_char: Callable[[BleakClient, str, Any], Awaitable[None]]
     ):
         pkt = brp.Packet()
