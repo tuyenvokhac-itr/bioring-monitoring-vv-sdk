@@ -54,7 +54,7 @@ class _RingManagerImpl(RingManager):
         return False
 
     def set_bluetooth_callback(self, bluetooth_callback: BluetoothCallback):
-        self.core_handler.set_callback(bluetooth_callback)
+        self.core_handler.set_bluetooth_callback(bluetooth_callback)
         # TODO: Handle state listener
 
     """ ********************************** Bluetooth Settings APIs ******************************** """
@@ -166,6 +166,9 @@ class _RingManagerImpl(RingManager):
 
     def set_record_callback(self, callback: RecordDataCallback):
         self.core_handler.set_record_callback(callback)
+
+    def remove_record_callback(self, callback: RecordDataCallback):
+        self.core_handler.remove_record_callback(callback)
 
     """ ********************************** Device Settings APIs ******************************** """
 

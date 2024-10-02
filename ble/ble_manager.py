@@ -1,7 +1,7 @@
 import platform
 from typing import Callable
 
-from bleak import BleakClient
+from bleak import BleakClient, BleakError
 from bleak import BleakScanner, BLEDevice, AdvertisementData
 
 from errors.common_error import CommonError
@@ -46,6 +46,12 @@ class BleManager:
             )
             await client.connect()
             on_device_connected(client)
+        except BleakError as e:
+            print(f"BleakError occurred: {e}")
+            # Access platform-specific error codes if available
+            if hasattr(e, 'hresult'):
+                print(f"HRESULT Error Code: {e.hresult}")
+            on_bluetooth_error(address, CommonError.CONNECTION_FAILED)
         except Exception as e:
             print(e)
             on_bluetooth_error(address, CommonError.CONNECTION_FAILED)

@@ -3,6 +3,7 @@ from typing import List, Callable
 from core.enum.sensor_type import SensorType
 from core.callbacks.streaming_callback import StreamingCallback
 from core.utils.compute_helper import ComputeHelper
+from core.utils.list_utils import ListUtils
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
 from proto import brp_pb2 as brp
@@ -16,10 +17,7 @@ class LiveTempDataHandler:
             prev_sequence_number: int,
             on_sequence_number_updated: Callable[[int], None]
     ):
-        temp_streaming_callbacks = [
-            callback for callback in streaming_callbacks if
-            callback.sensor_type == SensorType.TEMP
-        ]
+        temp_streaming_callbacks = ListUtils.get_streaming_callbacks(streaming_callbacks, SensorType.TEMP)
 
         try:
             sequence_number = packet.notification.sequence_number

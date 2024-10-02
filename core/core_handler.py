@@ -86,7 +86,7 @@ class CoreHandler:
         self.logger.addHandler(c_handler)
         self.logger.setLevel(logging.DEBUG)
 
-    def set_callback(self, callback: BluetoothCallback):
+    def set_bluetooth_callback(self, callback: BluetoothCallback):
         self.bluetooth_callback = callback
 
     """ BLE functions """
@@ -97,9 +97,9 @@ class CoreHandler:
         self.logger.info('[CoreHandler]: Start scan...')
         self.is_scanning = True
         self.devices.clear()
-        await self.ble_manager.start_scan(self.on_device_found)
+        await self.ble_manager.start_scan(self._on_device_found)
 
-    def on_device_found(self, device: BLEDevice, advertisement_data: AdvertisementData):
+    def _on_device_found(self, device: BLEDevice, advertisement_data: AdvertisementData):
         if device.name is not None and BleConstant.BIORING_PREFIX in device.name:
             # check if device is already in the list
             for d in self.devices:
@@ -119,12 +119,12 @@ class CoreHandler:
         await self.ble_manager.connect(
             address,
             timeout,
-            self.on_device_connected,
-            self.on_device_disconnected,
-            self.on_bluetooth_error,
+            self._on_device_connected,
+            self._on_device_disconnected,
+            self._on_bluetooth_error,
         )
 
-    def on_device_connected(self, client: BleakClient):
+    def _on_device_connected(self, client: BleakClient):
         self.logger.info('[CoreHandler]: Device connected: %s', client)
 
         try:
@@ -158,15 +158,15 @@ class CoreHandler:
         except Exception as e:
             self.logger.error('[CoreHandler]: Error on device connected: %s', e)
 
-    def on_bluetooth_error(self, address, error: CommonError):
-        device = self.get_device(address)
+    def _on_bluetooth_error(self, address, error: CommonError):
+        device = self._get_device(address)
         self.bluetooth_callback.on_bluetooth_error(
             BTDevice(name=device[0].name, address=device[0].address),
             error
         )
 
     async def disconnect(self, address: str):
-        client = self.get_client(address)
+        client = self._get_client(address)
 
         if client is None:
             self.logger.error('[CoreHandler]: Could not find client with address %s', address)
@@ -174,16 +174,16 @@ class CoreHandler:
 
         await self.ble_manager.disconnect(client)
 
-    def on_device_disconnected(self, client: BleakClient):
+    def _on_device_disconnected(self, client: BleakClient):
         self.clients.remove(client)
         self.logger.info('[CoreHandler]: Device DISCONNECTED: %s', client)
-        device = self.get_device(client.address)
+        device = self._get_device(client.address)
         self.bluetooth_callback.on_bluetooth_error(
             BTDevice(name=device[0].name, address=device[0].address),
             CommonError.DEVICE_DISCONNECTED
         )
 
-    def get_device(self, address: str):
+    def _get_device(self, address: str):
         device = next((d for d in self.devices if d[0].address == address), None)
         if device is None:
             self.logger.error('[CoreHandler]: Could not find device with address %s', address)
@@ -191,7 +191,7 @@ class CoreHandler:
 
         return device
 
-    def get_client(self, address: str):
+    def _get_client(self, address: str):
         client = next((cl for cl in self.clients if cl.address == address), None)
         if client is None:
             self.logger.error('[CoreHandler]: Could not find client with address %s', address)
@@ -199,10 +199,8 @@ class CoreHandler:
 
         return client
 
-    def get_response_callback(self, sid: int):
-        return next((cb for cb in self.response_callbacks if cb.sid == sid), None)
-
     """ Command functions """
+
     """ Bluetooth settings """
 
     async def set_bluetooth_settings(
@@ -211,7 +209,7 @@ class CoreHandler:
             settings: BTSettings,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetBluetoothSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
@@ -223,7 +221,7 @@ class CoreHandler:
             address: str,
             on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_self_test_result))
         await GetPostCommand.send(sid, client, self.ble_manager.write_char)
@@ -233,25 +231,25 @@ class CoreHandler:
             address: str,
             on_self_test_result: Callable[[CommonResult, Optional[SelfTestResult]], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_self_test_result))
         await GetBistCommand.send(sid, client, self.ble_manager.write_char)
 
     async def enable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await EnableBistCommand.send(sid, client, self.ble_manager.write_char)
 
     async def disable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await DisableBistCommand.send(sid, client, self.ble_manager.write_char)
 
     async def set_bist_interval(self, address: str, interval: int, on_success: Callable[[CommonResult], None]):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetBistIntervalCommand.send(sid, client, interval, self.ble_manager.write_char)
@@ -263,7 +261,7 @@ class CoreHandler:
             address: str,
             on_accel_streaming_data: Callable[[CommonResult, Optional[AccelData], int], None] = None,
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.streaming_callbacks.append(StreamingCallback(sid, SensorType.ACCEL, on_accel_streaming_data))
         await LiveAccDataCommand.send(sid, client, True, self.ble_manager.write_char)
@@ -273,7 +271,7 @@ class CoreHandler:
             address: str,
             on_ecg_streaming_data: Callable[[CommonResult, Optional[EcgData], int], None] = None,
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.streaming_callbacks.append(StreamingCallback(sid, SensorType.ECG, on_ecg_streaming_data))
         await LiveEcgDataCommand.send(sid, client, True, self.ble_manager.write_char)
@@ -283,7 +281,7 @@ class CoreHandler:
             address: str,
             on_ppg_streaming_data: Callable[[CommonResult, Optional[PpgData], int], None] = None,
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.streaming_callbacks.append(StreamingCallback(sid, SensorType.PPG, on_ppg_streaming_data))
         await LivePpgDataCommand.send(sid, client, True, self.ble_manager.write_char)
@@ -293,7 +291,7 @@ class CoreHandler:
             address: str,
             on_temp_streaming_data: Callable[[CommonResult, Optional[TempData], int], None] = None,
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.streaming_callbacks.append(StreamingCallback(sid, SensorType.TEMP, on_temp_streaming_data))
         await LiveTempDataCommand.send(sid, client, True, self.ble_manager.write_char)
@@ -304,7 +302,7 @@ class CoreHandler:
             sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await StopStreamingDataCommand.send(
@@ -321,7 +319,7 @@ class CoreHandler:
             address: str,
             on_record_samples_threshold: Callable[[CommonResult, Optional[SamplesThreshold]], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_record_samples_threshold))
         await GetRecordSampleThresholdCommand.send(sid, client, self.ble_manager.write_char)
@@ -333,7 +331,7 @@ class CoreHandler:
             sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await StartRecordCommand.send(sid, client, samples, sensor_type, self.ble_manager.write_char)
@@ -344,18 +342,21 @@ class CoreHandler:
             sensor_type: SensorType,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await StopRecordCommand.send(sid, client, sensor_type, self.ble_manager.write_char)
 
     async def get_record(self, address: str, sensor_type: SensorType, start_index: int):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         await GetRecordCommand.send(sid, client, start_index, sensor_type, self.ble_manager.write_char)
 
     def set_record_callback(self, callback: RecordDataCallback):
         self.record_data_callbacks.append(callback)
+
+    def remove_record_callback(self, callback: RecordDataCallback):
+        self.record_data_callbacks.remove(callback)
 
     """ Device settings """
 
@@ -364,7 +365,7 @@ class CoreHandler:
             address: str,
             on_settings: Callable[[CommonResult, Optional[DeviceSettings]], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_settings))
         await GetAllSettingsCommand.send(sid, client, self.ble_manager.write_char)
@@ -375,7 +376,7 @@ class CoreHandler:
             settings: LogSettings,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetLogSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
@@ -388,7 +389,7 @@ class CoreHandler:
             settings: EcgSettings,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetEcgSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
@@ -399,7 +400,7 @@ class CoreHandler:
             settings: PpgSettings,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetPpgSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
@@ -410,7 +411,7 @@ class CoreHandler:
             settings: AccelSettings,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetAccelSettingsCommand.send(sid, client, settings, self.ble_manager.write_char)
@@ -423,9 +424,12 @@ class CoreHandler:
             dfu_path: str,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
-        self.response_callbacks.append(ResponseCallback(sid, on_success))
+        self.response_callbacks.append(ResponseCallback(sid, self._on_enter_dfu_success))
+
+    def _on_enter_dfu_success(self, result: CommonResult):
+        pass
 
     """ Power management """
 
@@ -435,7 +439,7 @@ class CoreHandler:
             seconds: int,
             on_success: Callable[[CommonResult], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetSleepTimeCommand.send(sid, client, seconds, self.ble_manager.write_char)
@@ -443,13 +447,13 @@ class CoreHandler:
     """ Time syncing """
 
     async def set_time_sync(self, address: str, epoch: int, on_success: Callable[[CommonResult], None]):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await SetTimeSyncingCommand.send(sid, client, epoch, self.ble_manager.write_char)
 
     async def get_time_sync(self, address: str, on_time_sync: Callable[[CommonResult, Optional[int]], None]):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_time_sync))
         await GetTimeSyncingCommand.send(sid, client, self.ble_manager.write_char)
@@ -461,7 +465,7 @@ class CoreHandler:
             address: str,
             on_device_info: Callable[[CommonResult, Optional[DeviceInfo]], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_device_info))
         await GetDeviceInfoCommand.send(sid, client, self.ble_manager.write_char)
@@ -471,7 +475,7 @@ class CoreHandler:
             address: str,
             on_device_status: Callable[[CommonResult, Optional[DeviceStatus]], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_device_status))
         await GetDeviceStatusCommand.send(sid, client, self.ble_manager.write_char)
@@ -481,7 +485,7 @@ class CoreHandler:
             address: str,
             on_protocol_info: Callable[[CommonResult, Optional[Protocol]], None]
     ):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_protocol_info))
         await GetProtocolInfoCommand.send(sid, client, self.ble_manager.write_char)
@@ -489,13 +493,13 @@ class CoreHandler:
     """ Reset """
 
     async def factory_reset(self, address: str, on_success: Callable[[CommonResult], None]):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await FactoryResetCommand.send(sid, client, self.ble_manager.write_char)
 
     async def reboot(self, address: str, on_success: Callable[[CommonResult], None]):
-        client = self.get_client(address)
+        client = self._get_client(address)
         sid = int(time.time() * 1000)
         self.response_callbacks.append(ResponseCallback(sid, on_success))
         await RebootCommand.send(sid, client, self.ble_manager.write_char)

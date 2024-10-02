@@ -206,6 +206,10 @@ class RingManager(ABC):
     def set_record_callback(self, callback: RecordDataCallback):
         pass
 
+    @abstractmethod
+    def remove_record_callback(self, callback: RecordDataCallback):
+        pass
+
     """ ********************************** Device Settings APIs ******************************** """
 
     @abstractmethod

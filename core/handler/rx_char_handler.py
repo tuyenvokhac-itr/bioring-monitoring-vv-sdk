@@ -5,6 +5,7 @@ from core.handler.notification.data_recording.temp.record_temp_data_handler impo
 from core.handler.notification.streaming.acc.live_acc_data_handler import LiveAccDataHandler
 from core.handler.notification.streaming.afe.live_afe_data_handler import LiveAfeDataHandler
 from core.handler.notification.streaming.temp.live_temp_data_handler import LiveTempDataHandler
+from core.handler.response.dfu.res_enter_dfu_handler import ResEnterDfuHandler
 from core.handler.response.general.res_device_info_handler import ResDeviceInfoHandler
 from core.handler.response.general.res_device_status_handler import ResDeviceStatusHandler
 from core.handler.response.general.res_protocol_info_handler import ResProtocolInfoHandler
@@ -86,6 +87,8 @@ class RxCharHandler:
                 ResCommonResultHandler.handle(pkt, self.response_callbacks)
             case brp.CommandId.CID_REBOOT:
                 ResCommonResultHandler.handle(pkt, self.response_callbacks)
+            case brp.CommandId.CID_DFU_ENTER:
+                ResEnterDfuHandler.handle(pkt, self.response_callbacks)
             case _:
                 pass
 

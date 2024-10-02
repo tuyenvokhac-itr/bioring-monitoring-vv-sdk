@@ -14,7 +14,7 @@ class BluetoothListenerThread(threading.Thread):
 
     def run(self):
         self.delegate = CentralManagerDelegate.alloc().init()
-        self.delegate.set_callback(self.callback)
+        self.delegate.set_bluetooth_callback(self.callback)
         self.manager = CBCentralManager.alloc().initWithDelegate_queue_(self.delegate, None)
 
         # Start the run loop in this thread
