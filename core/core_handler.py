@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import time
+from functools import partial
 from typing import List, Tuple, Optional, Callable
 
 from bleak import BLEDevice, AdvertisementData, BleakClient
@@ -16,6 +17,7 @@ from core.command.data_recording.get_record import GetRecordCommand
 from core.command.data_recording.get_record_sample_threshold_command import GetRecordSampleThresholdCommand
 from core.command.data_recording.start_record import StartRecordCommand
 from core.command.data_recording.stop_record import StopRecordCommand
+from core.command.dfu.enter_dfu_command import EnterDfuCommand
 from core.command.general.get_device_info_command import GetDeviceInfoCommand
 from core.command.general.get_device_status_command import GetDeviceStatusCommand
 from core.command.general.get_protocol_info_command import GetProtocolInfoCommand
@@ -40,6 +42,7 @@ from core.command.streaming_raw_data.stop_streaming_data_command import StopStre
 from core.command.time_syncing.get_time_syncing_command import GetTimeSyncingCommand
 from core.command.time_syncing.set_time_syncing_command import SetTimeSyncingCommand
 from core.enum.sensor_type import SensorType
+from core.handler.dfu.dfu_handler import DfuHandler
 from core.handler.rx_char_handler import RxCharHandler
 from core.models.device_info import DeviceInfo
 from core.models.device_status import DeviceStatus
@@ -418,17 +421,38 @@ class CoreHandler:
 
     """ Firmware update """
 
-    def update_firmware(
+    async def update_firmware(
             self,
             address: str,
             dfu_path: str,
             on_success: Callable[[CommonResult], None]
     ):
         client = self._get_client(address)
+        device = self._get_device(address)
         sid = int(time.time() * 1000)
-        self.response_callbacks.append(ResponseCallback(sid, self._on_enter_dfu_success))
+        self.response_callbacks.append(
+            ResponseCallback(
+                sid,
+                partial(self._on_enter_dfu_success, device, dfu_path, on_success),
+                # lambda: self._on_enter_dfu_success(dfu_path, client, on_success)
+            )
+        )
+        await EnterDfuCommand.send(sid, client, self.ble_manager.write_char)
 
-    def _on_enter_dfu_success(self, result: CommonResult):
+    def _on_enter_dfu_success(
+            self,
+            device: Tuple[BLEDevice, AdvertisementData],
+            dfu_path: str,
+            on_success: Callable[[CommonResult], None],
+            result: CommonResult
+    ):
+        # handle when result is failed
+        dfu_handler = DfuHandler(
+            device=device,
+            dfu_file_path=dfu_path,
+            write_char=self.ble_manager.write_char,
+            on_dfu_success=on_success
+        )
         pass
 
     """ Power management """

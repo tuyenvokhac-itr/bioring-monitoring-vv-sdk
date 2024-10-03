@@ -14,9 +14,9 @@ class ResEnterDfuHandler:
         if resp_callback is not None:
             ack = packet.ack
             if ack.result.is_success:
-                resp_callback.callback(CommonResult(is_success=True))
+                resp_callback.callback()
             else:
-                resp_callback.callback(CommonResult(
+                resp_callback.callback(result=CommonResult(
                     is_success=False,
                     error=CommonError(packet.response.cid, ack.error)
                 ))

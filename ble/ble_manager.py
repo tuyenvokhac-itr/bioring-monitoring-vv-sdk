@@ -77,11 +77,11 @@ class BleManager:
         if characteristic:
             await client.start_notify(characteristic, callback)
 
-    async def write_char(self, client: BleakClient, char_uuid: str, value):
+    async def write_char(self, client: BleakClient, char_uuid: str, value, response=False):
         """
         Write value to the specified characteristic UUID.
         """
         characteristic = self.get_characteristic_by_uuid(char_uuid, client)
 
         if characteristic:
-            await client.write_gatt_char(characteristic, value)
+            await client.write_gatt_char(characteristic, value, response)

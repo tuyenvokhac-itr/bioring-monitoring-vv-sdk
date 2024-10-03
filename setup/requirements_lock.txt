@@ -4,3 +4,5 @@ numpy==1.26.2
 scipy==1.11.4
 PyQt6==6.7.1
 qasync==0.27.1
+kaitaistruct @ git+https://github.com/kaitai-io/kaitai_struct_python_runtime.git@704995acdb2f114e15809cf5f469e3a80a2dddad
+fastcrc==0.2.1

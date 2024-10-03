@@ -4,6 +4,7 @@ class BleConstant:
     BRS_UUID_CHAR_TX = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
     BRS_UUID_CHAR_RX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
     BRS_UUID_CHAR_DATA = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+    BRS_UUID_CHAR_DFU = "00060001-f8ce-11e4-abf4-0002a5d5c51b"
     
     BIORING_PREFIX = "BioRing"
     BIORING_DFU_PREFIX = "[DFU] BioRing"
