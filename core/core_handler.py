@@ -450,8 +450,7 @@ class CoreHandler:
         dfu_handler = DfuHandler(
             device=device,
             dfu_file_path=dfu_path,
-            write_char=self.ble_manager.write_char,
-            on_dfu_success=on_success
+            on_dfu_result=on_success
         )
         pass
 

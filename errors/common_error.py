@@ -16,6 +16,9 @@ class CommonError(Enum):
     AFE_RECORD_ERROR = (402, "ECG record error")
     TEMP_RECORD_ERROR = (403, "TEMP record error")
 
+    # DFU
+    DFU_ERROR = (501, "DFU failed")
+
     def __init__(self, code, message):
         self._code = code
         self._message = message
