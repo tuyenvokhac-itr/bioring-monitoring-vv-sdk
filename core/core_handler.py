@@ -154,7 +154,7 @@ class CoreHandler:
                 self.ble_manager.start_notify(
                     BleConstant.BRS_UUID_CHAR_RX,
                     client,
-                    rx_chars_handler.rx_notif_handlers
+                    rx_chars_handler.handle
                 )
             )
 

@@ -20,8 +20,8 @@ class GetRecordCommand:
         pkt.sid = sid
         pkt.type = brp.PacketType.PACKET_TYPE_COMMAND
         pkt.command.cid = brp.CommandId.CID_RECORD_DATA_GET
-        pkt.command.sensor_type = sensor_type.to_brp_sensor_type()
-        pkt.command.start_index = start_index
+        pkt.command.get_record_params.sensor_type = sensor_type.to_brp_sensor_type()
+        pkt.command.get_record_params.start_index = start_index
 
         pkt_value = pkt.SerializeToString()
         await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)

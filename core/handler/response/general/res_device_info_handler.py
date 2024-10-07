@@ -1,7 +1,7 @@
 from typing import List
 
-from core.models import DeviceInfo
 from core.callbacks.response_callback import ResponseCallback
+from core.models.device_info import DeviceInfo
 from core.utils.list_utils import ListUtils
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
@@ -13,8 +13,7 @@ class ResDeviceInfoHandler:
     def handle(packet: brp.Packet, response_callbacks: List[ResponseCallback]):
         resp_callback = ListUtils.get_response_callback(response_callbacks, packet.sid)
         if resp_callback is not None:
-            ack = packet.ack
-            if ack.result.is_success:
+            if packet.response.result.is_success:
                 device_info = DeviceInfo(
                     serial_number=packet.response.dev_info.serial_number,
                     manufacturing_date=packet.response.dev_info.manufacturing_date,
@@ -29,6 +28,6 @@ class ResDeviceInfoHandler:
             else:
                 resp_callback.callback(CommonResult(
                     is_success=False,
-                    error=CommonError(packet.response.cid, ack.error)
+                    error=CommonError(packet.response.cid, packet.response.result.error)
                 ))
             response_callbacks.remove(resp_callback)

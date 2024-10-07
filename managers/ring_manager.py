@@ -25,60 +25,54 @@ from managers.record_data_callback import RecordDataCallback
 class RingManager(ABC):
     """ ************************************ BLE APIs ********************************** """
 
-    """
-    Start scanning for Bluetooth devices. 
-    Device satisfies the condition will be returned in BluetoothCallback.on_scan_result.
-    Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information. 
-    """
-
     @abstractmethod
     def start_scan(self):
+        """
+        Start scanning for Bluetooth devices.
+        Device satisfies the condition will be returned in BluetoothCallback.on_scan_result.
+        Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information.
+        """
         pass
-
-    """
-    Stop scanning for Bluetooth devices.
-    """
 
     @abstractmethod
     def stop_scan(self):
+        """
+        Stop scanning for Bluetooth devices.
+        """
         pass
-
-    """
-    Connect to the Bluetooth device with the given address.
-    If the connection is successful, BluetoothCallback.on_device_connected will be called.
-    If the connection is unsuccessful, BluetoothCallback.on_bluetooth_error will be called.
-    Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information. 
-    """
 
     @abstractmethod
     def connect(self, address: str, timeout: int):
+        """
+        Connect to the Bluetooth device with the given address.
+        If the connection is successful, BluetoothCallback.on_device_connected will be called.
+        If the connection is unsuccessful, BluetoothCallback.on_bluetooth_error will be called.
+        Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information.
+        """
         pass
-
-    """
-    Disconnect from the Bluetooth device with the given address.
-    """
 
     @abstractmethod
     def disconnect(self, address: str):
+        """
+        Disconnect from the Bluetooth device with the given address.
+        """
         pass
-
-    """
-    Check the current state of Bluetooth.
-    Returns True if Bluetooth is on, False otherwise.
-    """
 
     @abstractmethod
     def get_bluetooth_state(self) -> bool:
+        """
+        Check the current state of Bluetooth.
+        Returns True if Bluetooth is on, False otherwise.
+        """
         pass
-
-    """ 
-    Set BluetoothCallback for to listen to Bluetooth events.
-    Class desired to listen to Bluetooth events should implement BluetoothCallback interface.
-    Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information. 
-    """
 
     @abstractmethod
     def set_bluetooth_callback(self, callback: BluetoothCallback):
+        """
+        Set BluetoothCallback for to listen to Bluetooth events.
+        Class desired to listen to Bluetooth events should implement BluetoothCallback interface.
+        Refer to managers/bluetooth_callback.py (BluetoothCallback) for more information.
+        """
         pass
 
     """ ********************************** Bluetooth Settings APIs ******************************** """

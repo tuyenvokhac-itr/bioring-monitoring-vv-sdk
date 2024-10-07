@@ -23,7 +23,7 @@ class LiveAfeDataHandler:
         ecg_streaming_callbacks = ListUtils.get_streaming_callbacks(streaming_callbacks, SensorType.ECG)
 
         try:
-            sequence_number = packet.notification.sequence_number
+            sequence_number = packet.notification.raw_afe.sequence_number
             ecg_data, ppg_data = ComputeHelper.decode_afe_data(packet)
             packet_lost = 0 if prev_sequence_number == 0 else sequence_number - prev_sequence_number
             on_sequence_number_updated(sequence_number)

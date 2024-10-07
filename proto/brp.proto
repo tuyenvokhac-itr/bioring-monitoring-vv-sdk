@@ -19,7 +19,7 @@ package BRP;
 /* Messages ----------------------------------------------------------------- */
 
 message ProtocolInfo {
-  required uint64 version = 1 [ default = 202409231800 ];  // YYYY-MM-DD-HH-MM
+  required uint64 version = 1 [ default = 202410041550 ];  // YYYY-MM-DD-HH-MM
 }
 
 message Packet {
@@ -65,11 +65,11 @@ message CommandPacket {
     WlcOemParams wlc_oem_params = 6; // CID_WLC_OEM_PARAMS_SET
     SensorType sensor_type = 7; // CID_STREAMING_DATA_START or CID_RECORD_DATA_START
     uint32 bist_interval = 8; // CID_SELF_TEST_BIST_SET_INTERVAL
-    uint32 record_sample = 9; // CID_RECORD_DATA_START
+    StartRecordParams start_record_params = 9; // CID_RECORD_DATA_START
     uint32 pre_sleep_timeout = 10; //CID_DEV_PRE_SLEEP_TIMEOUT_SET
     DevStatus dev_status = 11; //CID_TIME_SET
     AllDevSettings all_dev_settings = 12;
-    uint32 start_index = 13; //CID_RECORD_DATA_GET
+    GetRecordParams get_record_params = 13; //CID_RECORD_DATA_GET
   }
 }
 
@@ -118,9 +118,10 @@ message NotificationPacket {
     Spo2HrData spo2_hr = 6; // NID_SPO2_HR_DATA
     bool ecg_lead_off_detect = 7; //NID_ECG_LEAD_OFF_DETECT
     SelfTestData bist_result = 8; //NID_BIST_RESULT
-    DataRawAfe raw_afe = 9; // NID_DATA_RAW_AFE
-    DataRawAccel raw_accel = 10; // NID_DATA_RAW_ACCEL
-    DataTemp temperature = 11; // NID_DATA_TEMP
+    DataRawAfe raw_afe = 9; // NID_STREAMING_DATA_RAW_AFE or NID_RECORD_DATA_RAW_AFE
+    DataRawAccel raw_accel = 10; // NID_STREAMING_DATA_RAW_ACCEL or NID_RECORD_DATA_RAW_ACCEL
+    DataTemp temperature = 11; // NID_STREAMING_DATA_TEMP or NID_STREAMING_DATA_TEMP
+    SensorType sensor_type = 12; // NID_RECORD_FINISHED
   }
 }
 
@@ -258,6 +259,7 @@ enum NotificationId {
   NID_RECORD_DATA_RAW_AFE = 10;
   NID_RECORD_DATA_RAW_ACCEL = 11;
   NID_RECORD_DATA_TEMP = 12;
+  NID_RECORD_FINISHED = 13;
 }
 
 enum AppType {
@@ -445,9 +447,9 @@ enum BleTxPowerLevel {
 }
 
 enum EcgSampleRate {
-  ECG_SAMPLE_RATE_64HZ = 0;
-  ECG_SAMPLE_RATE_128HZ = 1;
-  ECG_SAMPLE_RATE_256HZ = 2;
+  ECG_SAMPLE_RATE_64HZ = 5;
+  ECG_SAMPLE_RATE_128HZ = 4;
+  ECG_SAMPLE_RATE_256HZ = 3;
 }
 
 enum EcgPgaGain {
@@ -538,8 +540,6 @@ enum AccelSampleRate {
   ACC_SAMPLE_RATE_12Hz5    =  1;
   ACC_SAMPLE_RATE_26Hz     =  2;
   ACC_SAMPLE_RATE_52Hz     =  3;
-  ACC_SAMPLE_RATE_104Hz    =  4;
-  ACC_SAMPLE_RATE_208Hz    =  5;
 }
 
 enum AccelFullScale {
@@ -678,11 +678,21 @@ message AccelSettings {
 }
 
 message AllDevSettings {
-  optional EcgSettings ecg_settings = 2;
-  optional PpgSettings ppg_settings = 3;
-  optional AccelSettings accel_settings = 4;
-  optional BleSettings ble_settings = 5;
-  optional LogSettings log_settings = 6;
+  optional EcgSettings ecg_settings = 1;
+  optional PpgSettings ppg_settings = 2;
+  optional AccelSettings accel_settings = 3;
+  optional BleSettings ble_settings = 4;
+  optional LogSettings log_settings = 5;
+}
+
+message StartRecordParams {
+  optional SensorType sensor_type = 1;
+  optional uint32 record_samples = 2;
+}
+
+message GetRecordParams {
+  optional SensorType sensor_type = 1;
+  optional uint32 start_index = 2;
 }
 
 /* End of file -------------------------------------------------------------- */

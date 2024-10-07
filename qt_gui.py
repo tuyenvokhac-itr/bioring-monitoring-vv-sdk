@@ -18,7 +18,20 @@ class QTGuideWindow(QMainWindow):
         self.connectBtn = QPushButton("Connect")
         self.disconnectBtn = QPushButton("Disconnect")
         self.get_bluetooth_state = QPushButton("Get Bluetooth state")
-        self.getInfoBtn = QPushButton("Get tool info")
+        self.set_bluetooth_settings = QPushButton("Set Bluetooth settings")
+
+        self.get_post = QPushButton("Get post")
+        self.get_bist = QPushButton("Get bist")
+        self.enable_bist = QPushButton("Enable bist")
+        self.disable_bist = QPushButton("Disable bist")
+        self.set_bist_interval = QPushButton("Set bist interval")
+
+        self.get_record_sample = QPushButton("Get record samples")
+        self.start_record = QPushButton("Start record")
+        self.stop_record = QPushButton("Stop record")
+        self.get_record = QPushButton("Get record")
+
+        self.getInfoBtn = QPushButton("Get device info")
         self.start_live_acc = QPushButton("Start Live ACC")
         self.stop_live_acc = QPushButton("Stop Live ACC")
         self.start_live_ecg = QPushButton("Start Live ECG")
@@ -28,12 +41,28 @@ class QTGuideWindow(QMainWindow):
         self.start_live_temp = QPushButton("Start Live temp")
         self.stop_live_temp = QPushButton("Stop Live temp")
 
+
+
         parent_layout.addWidget(self.label1)
         parent_layout.addWidget(self.scanBtn)
         parent_layout.addWidget(self.stopBtn)
         parent_layout.addWidget(self.connectBtn)
         parent_layout.addWidget(self.disconnectBtn)
         parent_layout.addWidget(self.get_bluetooth_state)
+        parent_layout.addWidget(self.set_bluetooth_settings)
+
+        parent_layout.addWidget(self.get_post)
+        parent_layout.addWidget(self.get_bist)
+        parent_layout.addWidget(self.enable_bist)
+        parent_layout.addWidget(self.disable_bist)
+        parent_layout.addWidget(self.set_bist_interval)
+
+        parent_layout.addWidget(self.get_record_sample)
+        parent_layout.addWidget(self.start_record)
+        parent_layout.addWidget(self.stop_record)
+        parent_layout.addWidget(self.get_record)
+
+
         parent_layout.addWidget(self.getInfoBtn)
         parent_layout.addWidget(self.start_live_acc)
         parent_layout.addWidget(self.stop_live_acc)

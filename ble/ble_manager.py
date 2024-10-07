@@ -6,7 +6,6 @@ from bleak import BleakScanner, BLEDevice, AdvertisementData
 
 from errors.common_error import CommonError
 
-
 class BleManager:
     def __init__(self, debug=False):
         self.scanner = None
@@ -77,11 +76,10 @@ class BleManager:
         if characteristic:
             await client.start_notify(characteristic, callback)
 
-    async def write_char(self, client: BleakClient, char_uuid: str, value, response=False):
+    async def write_char(self, client: BleakClient, char_uuid: str, value, response=True):
         """
         Write value to the specified characteristic UUID.
         """
         characteristic = self.get_characteristic_by_uuid(char_uuid, client)
-
         if characteristic:
             await client.write_gatt_char(characteristic, value, response)

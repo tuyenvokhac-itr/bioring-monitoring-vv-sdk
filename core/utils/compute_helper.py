@@ -29,11 +29,11 @@ class ComputeHelper:
 
     @staticmethod
     def decode_acc_data(packet: brp.Packet) -> AccelData:
-        start_time = packet.notification.start_time
+        start_time = packet.notification.raw_accel.start_time
         raw_accel = list(packet.notification.raw_accel)
         is_eot = False
-        if packet.notification.HasField('eot'):
-            is_eot = packet.notification.eot
+        if packet.notification.raw_accel.HasField('eot'):
+            is_eot = packet.notification.raw_accel.eot
 
         accel_data = AccelData(
             start_time=start_time,
@@ -58,11 +58,11 @@ class ComputeHelper:
 
     @staticmethod
     def decode_temp_data(packet: brp.Packet) -> TempData:
-        start_time = packet.notification.start_time
+        start_time = packet.notification.raw_temp.start_time
         raw_temp = list(packet.notification.raw_temp)
         is_eot = False
-        if packet.notification.HasField('eot'):
-            is_eot = packet.notification.eot
+        if packet.notification.raw_temp.HasField('eot'):
+            is_eot = packet.notification.raw_accel.eot
 
         temp_data = TempData(
             start_time=start_time,
@@ -74,11 +74,11 @@ class ComputeHelper:
 
     @staticmethod
     def decode_afe_data(packet: brp.Packet) -> (EcgData, PpgData):
-        start_time = packet.notification.start_time
-        afe_raw = list(packet.notification.raw_afe)
+        start_time = packet.notification.raw_afe.start_time
+        afe_raw = list(packet.notification.raw_afe.data)
         is_eot = False
-        if packet.notification.HasField('eot'):
-            is_eot = packet.notification.eot
+        if packet.notification.raw_afe.HasField('eot'):
+            is_eot = packet.notification.raw_afe.eot
 
         ppg_red_value: List[int] = []
         ppg_ir_value: List[int] = []

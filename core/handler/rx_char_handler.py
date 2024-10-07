@@ -32,6 +32,7 @@ class RxCharHandler:
         self.prev_temp_sequence_number = 0
 
     def handle(self, _sender, data: bytearray):
+        print(f"handle data: {data}")
         rx_packet = brp.Packet()
         rx_packet.ParseFromString(bytes(data))
 
@@ -93,6 +94,7 @@ class RxCharHandler:
                 pass
 
     def rx_notif_handlers(self, nid: int, pkt: brp.Packet):
+        print(f"Received notify: {pkt}")
         match nid:
             case brp.NotificationId.NID_STREAMING_DATA_RAW_ACCEL:
                 LiveAccDataHandler.handle(

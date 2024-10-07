@@ -13,8 +13,7 @@ class ResBistHandler:
     def handle(packet: brp.Packet, response_callbacks: List[ResponseCallback]):
         resp_callback = ListUtils.get_response_callback(response_callbacks, packet.sid)
         if resp_callback is not None:
-            ack = packet.ack
-            if ack.result.is_success:
+            if packet.response.result.is_success:
                 self_test_result = SelfTestResult(
                     afe=packet.response.self_test_data.afe,
                     accel=packet.response.self_test_data.accel,
@@ -26,6 +25,6 @@ class ResBistHandler:
             else:
                 resp_callback.callback(CommonResult(
                     is_success=False,
-                    error=CommonError(packet.response.cid, ack.error)
+                    error=CommonError(packet.response.cid, packet.response.result.error)
                 ))
             response_callbacks.remove(resp_callback)

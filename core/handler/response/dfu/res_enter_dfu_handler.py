@@ -12,12 +12,11 @@ class ResEnterDfuHandler:
     def handle(packet: brp.Packet, response_callbacks: List[ResponseCallback]):
         resp_callback = ListUtils.get_response_callback(response_callbacks, packet.sid)
         if resp_callback is not None:
-            ack = packet.ack
-            if ack.result.is_success:
+            if packet.response.result.is_success:
                 resp_callback.callback()
             else:
                 resp_callback.callback(result=CommonResult(
                     is_success=False,
-                    error=CommonError(packet.response.cid, ack.error)
+                    error=CommonError(packet.response.cid, packet.response.result.error)
                 ))
             response_callbacks.remove(resp_callback)
