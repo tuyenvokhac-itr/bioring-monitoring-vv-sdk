@@ -14,6 +14,7 @@ from core.models.raw_data.ppg_data import PpgData
 from core.models.raw_data.samples_threshold import SamplesThreshold
 from core.models.raw_data.temp_data import TempData
 from core.models.self_tests.self_test_result import SelfTestResult
+from core.models.settings.device_settings import DeviceSettings
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
 from managers import ring_factory as factory
@@ -51,6 +52,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         window.get_record_sample.clicked.connect(self.get_record_samples_threshold)
         window.get_record.clicked.connect(self.get_record)
 
+        window.get_all_settings.clicked.connect(self.get_all_settings)
 
         window.getInfoBtn.clicked.connect(self.get_device_info)
         window.start_live_acc.clicked.connect(self.start_live_acc_data)
@@ -279,3 +281,11 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_get_record_samples_threshold(self, result: CommonResult, samples_threshold: Optional[SamplesThreshold]):
         print(f"on_get_record_samples_threshold Result: {result}")
         print(f"on_get_record_samples_threshold Samples threshold: {samples_threshold}")
+
+
+    def get_all_settings(self):
+        self.ring_manager.get_all_settings(self.devices[0].address, self.on_all_settings_received)
+
+    def on_all_settings_received(self, result: CommonResult, settings: Optional[DeviceSettings]):
+        print(f"on_all_settings_received Result: {result}")
+        print(f"on_all_settings_received Settings: {settings}")

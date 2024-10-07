@@ -11,5 +11,4 @@ class BTSettings:
     connection_interval_min: Optional[float]
     connection_interval_max: Optional[float]
     slave_latency: Optional[float]
-    supervision_timeout: Optional[float]
     transmit_power_level: Optional[PowerLevel]

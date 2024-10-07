@@ -31,6 +31,8 @@ class QTGuideWindow(QMainWindow):
         self.stop_record = QPushButton("Stop record")
         self.get_record = QPushButton("Get record")
 
+        self.get_all_settings = QPushButton("Get all settings")
+
         self.getInfoBtn = QPushButton("Get device info")
         self.start_live_acc = QPushButton("Start Live ACC")
         self.stop_live_acc = QPushButton("Stop Live ACC")
@@ -62,6 +64,7 @@ class QTGuideWindow(QMainWindow):
         parent_layout.addWidget(self.stop_record)
         parent_layout.addWidget(self.get_record)
 
+        parent_layout.addWidget(self.get_all_settings)
 
         parent_layout.addWidget(self.getInfoBtn)
         parent_layout.addWidget(self.start_live_acc)

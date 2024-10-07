@@ -21,17 +21,17 @@ class ResAllSettingsHandler:
         if resp_callback is not None:
             if packet.response.result.is_success:
                 lead_off_settings = LeadOffSettings(
-                    enable=packet.response.all_dev_settings.lead_off_enable,
+                    enable=packet.response.all_dev_settings.ecg_settings.lead_off_enable,
                     mode=ProtobufUtils.to_ecg_lead_off_mode(
-                        packet.response.all_dev_settings.lead_off_params.lead_off_mode),
+                        packet.response.all_dev_settings.ecg_settings.lead_off_params.lead_off_mode),
                     current_polarity=ProtobufUtils.to_ecg_lead_off_current_polarity(
-                        packet.response.all_dev_settings.lead_off_params.lead_off_current_polarity),
+                        packet.response.all_dev_settings.ecg_settings.lead_off_params.lead_off_current_polarity),
                     current_magnitude=ProtobufUtils.to_ecg_lead_off_current_magnitude(
-                        packet.response.all_dev_settings.lead_off_params.lead_off_current_magnitude),
+                        packet.response.all_dev_settings.ecg_settings.lead_off_params.lead_off_current_magnitude),
                     voltage_threshold=ProtobufUtils.to_ecg_lead_off_voltage_threshold(
-                        packet.response.all_dev_settings.lead_off_params.lead_off_voltage_threshold),
+                        packet.response.all_dev_settings.ecg_settings.lead_off_params.lead_off_voltage_threshold),
                     lead_off_frequency=ProtobufUtils.to_ecg_lead_off_freq(
-                        packet.response.all_dev_settings.lead_off_params.lead_off_freq),
+                        packet.response.all_dev_settings.ecg_settings.lead_off_params.lead_off_freq),
                 )
 
                 ecg_settings = EcgSettings(
@@ -73,7 +73,6 @@ class ResAllSettingsHandler:
                     connection_interval_min=packet.response.all_dev_settings.ble_settings.connect_params.connect_intv_min,
                     connection_interval_max=packet.response.all_dev_settings.ble_settings.connect_params.connect_intv_max,
                     slave_latency=packet.response.all_dev_settings.ble_settings.connect_params.slave_latency,
-                    supervision_timeout=packet.response.all_dev_settings.ble_settings.connect_params.conn_sup_timeout,
                     transmit_power_level=ProtobufUtils.to_power_level(
                         packet.response.all_dev_settings.ble_settings.tx_power_level),
                 )
