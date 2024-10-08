@@ -7,6 +7,6 @@ from core.enum.accel_sampling_rate import AccelSamplingRate
 
 @dataclass
 class AccelSettings:
-    enable: Optional[bool]
-    sampling_rate: Optional[AccelSamplingRate]
-    full_scale_range: Optional[AccelFullScaleRange]
+    enable: Optional[bool] = None
+    sampling_rate: Optional[AccelSamplingRate] = None
+    full_scale_range: Optional[AccelFullScaleRange] = None

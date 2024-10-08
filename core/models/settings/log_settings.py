@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from core.enum.log_level import LogLevel
 
 
 @dataclass
 class LogSettings:
-    enable: bool
-    levels: List[LogLevel]
+    enable: Optional[bool] = None
+    levels: Optional[List[LogLevel]] = None

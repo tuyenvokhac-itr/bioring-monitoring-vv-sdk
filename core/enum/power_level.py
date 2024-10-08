@@ -17,7 +17,7 @@ class PowerLevel(Enum):
             PowerLevel.NEG_16: brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_NEG_16,
             PowerLevel.NEG_12: brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_NEG_12,
             PowerLevel.NEG_6: brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_NEG_6,
-            PowerLevel.POS_0: brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_POS_0,
-            PowerLevel.POS_4: brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_POS_4,
+            PowerLevel.POS_0: brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_0,
+            PowerLevel.POS_4: brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_4,
         }
         return mapping.get(self, None)

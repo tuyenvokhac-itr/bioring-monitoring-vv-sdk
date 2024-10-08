@@ -20,8 +20,11 @@ class SetLogSettingsCommand:
         pkt.type = brp.PacketType.PACKET_TYPE_COMMAND
         pkt.command.cid = brp.CommandId.CID_LOG_SETTINGS_SET
 
-        pkt.command.all_dev_settings.log_settings.log_enable = log_settings.enable
-        pkt.command.all_dev_settings.log_settings[:] = list(map(lambda x: x.to_brp_log_level(), log_settings.levels))
+        if log_settings.enable is not None:
+            pkt.command.all_dev_settings.log_settings.log_enable = log_settings.enable
+
+        if log_settings.levels is not None:
+            pkt.command.all_dev_settings.log_settings.log_level[:] = list(map(lambda x: x.to_brp_log_level(), log_settings.levels))
 
         pkt_value = pkt.SerializeToString()
         await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)

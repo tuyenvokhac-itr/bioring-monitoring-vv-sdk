@@ -4,6 +4,7 @@ from typing import Callable
 from bleak import BleakClient, BleakError
 from bleak import BleakScanner, BLEDevice, AdvertisementData
 
+from ble.ble_constant import BleConstant
 from errors.common_error import CommonError
 
 class BleManager:
@@ -16,12 +17,11 @@ class BleManager:
             self.use_bdaddr = False
 
     async def start_scan(self, detection_callback: Callable[[BLEDevice, AdvertisementData], None]):
-        if self.scanner is None:
-            self.scanner = BleakScanner(
-                cb=dict(use_bdaddr=self.use_bdaddr),
-                detection_callback=detection_callback,
-                # service_uuids=[BleConstant.BRS_UUID_SERVICE]
-            )
+        self.scanner = BleakScanner(
+            cb=dict(use_bdaddr=self.use_bdaddr),
+            detection_callback=detection_callback,
+            service_uuids=[BleConstant.BRS_UUID_SERVICE]
+        )
 
         await self.scanner.start()
 

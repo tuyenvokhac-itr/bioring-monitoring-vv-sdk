@@ -24,7 +24,7 @@ class ProtobufUtils:
     @staticmethod
     def to_app_type(brp_app_type: brp.AppType) -> AppType:
         mapping = {
-            brp.AppType.APP_TYPE_BOOT_LOADER: AppType.BOOT_LOADER,
+            brp.AppType.APP_TYPE_BOOTLOADER: AppType.BOOT_LOADER,
             brp.AppType.APP_TYPE_APPLICATION: AppType.APPLICATION,
         }
         return mapping.get(brp_app_type, None)
@@ -174,9 +174,9 @@ class ProtobufUtils:
     @staticmethod
     def to_ppg_sample_rate(brp_ppg_sample_rate: brp.PpgSampleRate) -> PpgSamplingRate:
         mapping = {
-            brp.PpgSampleRate.PPG_SAMPLE_RATE_64HZ: PpgSamplingRate.ECG_SAMPLE_RATE_64HZ,
-            brp.PpgSampleRate.PPG_SAMPLE_RATE_128HZ: PpgSamplingRate.ECG_SAMPLE_RATE_128HZ,
-            brp.PpgSampleRate.PPG_SAMPLE_RATE_256HZ: PpgSamplingRate.ECG_SAMPLE_RATE_256HZ,
+            brp.PpgSampleRate.PPG_SAMPLE_RATE_64HZ: PpgSamplingRate.PPG_SAMPLE_RATE_64HZ,
+            brp.PpgSampleRate.PPG_SAMPLE_RATE_128HZ: PpgSamplingRate.PPG_SAMPLE_RATE_128HZ,
+            brp.PpgSampleRate.PPG_SAMPLE_RATE_256HZ: PpgSamplingRate.PPG_SAMPLE_RATE_256HZ,
 
         }
         return mapping.get(brp_ppg_sample_rate, None)

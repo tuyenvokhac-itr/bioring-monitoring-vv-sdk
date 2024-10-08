@@ -1,12 +1,12 @@
 from typing import List
 
+from core.callbacks.response_callback import ResponseCallback
 from core.models.settings.accel_settings import AccelSettings
 from core.models.settings.bt_settings import BTSettings
 from core.models.settings.device_settings import DeviceSettings
 from core.models.settings.ecg_settings import EcgSettings, LeadOffSettings
 from core.models.settings.log_settings import LogSettings
 from core.models.settings.ppg_settings import PpgSettings
-from core.callbacks.response_callback import ResponseCallback
 from core.utils.list_utils import ListUtils
 from core.utils.protobuf_utils import ProtobufUtils
 from errors.common_error import CommonError
@@ -21,7 +21,6 @@ class ResAllSettingsHandler:
         if resp_callback is not None:
             if packet.response.result.is_success:
                 lead_off_settings = LeadOffSettings(
-                    enable=packet.response.all_dev_settings.ecg_settings.lead_off_enable,
                     mode=ProtobufUtils.to_ecg_lead_off_mode(
                         packet.response.all_dev_settings.ecg_settings.lead_off_params.lead_off_mode),
                     current_polarity=ProtobufUtils.to_ecg_lead_off_current_polarity(
@@ -46,7 +45,8 @@ class ResAllSettingsHandler:
                         packet.response.all_dev_settings.ecg_settings.ecg_gain.ina_range),
                     input_polarity=ProtobufUtils.to_ecg_input_polarity(
                         packet.response.all_dev_settings.ecg_settings.input_polarity),
-                    lead_off_settings=lead_off_settings
+                    lead_off_settings=lead_off_settings,
+                    lead_off_enable=packet.response.all_dev_settings.ecg_settings.lead_off_enable,
                 )
 
                 ppg_settings = PpgSettings(
@@ -73,8 +73,10 @@ class ResAllSettingsHandler:
                     connection_interval_min=packet.response.all_dev_settings.ble_settings.connect_params.connect_intv_min,
                     connection_interval_max=packet.response.all_dev_settings.ble_settings.connect_params.connect_intv_max,
                     slave_latency=packet.response.all_dev_settings.ble_settings.connect_params.slave_latency,
+                    supervision_timeout=packet.response.all_dev_settings.ble_settings.connect_params.supervision_timeout,
                     transmit_power_level=ProtobufUtils.to_power_level(
-                        packet.response.all_dev_settings.ble_settings.tx_power_level),
+                        packet.response.all_dev_settings.ble_settings.tx_power_level
+                    ),
                 )
 
                 log_settings = LogSettings(

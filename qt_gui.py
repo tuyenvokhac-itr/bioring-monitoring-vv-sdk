@@ -10,7 +10,7 @@ class QTGuideWindow(QMainWindow):
         self.close_event = close_event
 
         self.setWindowTitle("Test Bioring SDK")
-        self.setMinimumSize(400,400)
+        self.setMinimumSize(800,1000)
         parent_layout = QVBoxLayout()
         self.label1 = QLabel("Welcome to the test tool")
         self.scanBtn = QPushButton("Start Scan BLE")
@@ -27,9 +27,11 @@ class QTGuideWindow(QMainWindow):
         self.set_bist_interval = QPushButton("Set bist interval")
 
         self.get_record_sample = QPushButton("Get record samples")
-        self.start_record = QPushButton("Start record")
+        self.start_record_ppg = QPushButton("Start record PPG")
+        self.start_record_ecg = QPushButton("Start record ECG")
         self.stop_record = QPushButton("Stop record")
-        self.get_record = QPushButton("Get record")
+        self.get_record_ppg = QPushButton("Get record PPG")
+        self.get_record_ecg = QPushButton("Get record ECG")
 
         self.get_all_settings = QPushButton("Get all settings")
 
@@ -43,7 +45,17 @@ class QTGuideWindow(QMainWindow):
         self.start_live_temp = QPushButton("Start Live temp")
         self.stop_live_temp = QPushButton("Stop Live temp")
 
+        self.set_ppg_settings = QPushButton("Set ppg settings")
+        self.set_ecg_settings = QPushButton("Set ecg settings")
+        self.set_time_sync = QPushButton("Set time sync")
+        self.get_time_sync = QPushButton("Get time sync")
+        self.set_log_settings = QPushButton("Set log settings")
 
+        self.set_sleep_time = QPushButton("Set sleep time")
+        self.get_device_status = QPushButton("Get device status")
+        self.get_protocol_info = QPushButton("Get Protocol info")
+
+        self.reboot = QPushButton("Reboot")
 
         parent_layout.addWidget(self.label1)
         parent_layout.addWidget(self.scanBtn)
@@ -60,9 +72,11 @@ class QTGuideWindow(QMainWindow):
         parent_layout.addWidget(self.set_bist_interval)
 
         parent_layout.addWidget(self.get_record_sample)
-        parent_layout.addWidget(self.start_record)
+        parent_layout.addWidget(self.start_record_ppg)
+        parent_layout.addWidget(self.start_record_ecg)
         parent_layout.addWidget(self.stop_record)
-        parent_layout.addWidget(self.get_record)
+        parent_layout.addWidget(self.get_record_ppg)
+        parent_layout.addWidget(self.get_record_ecg)
 
         parent_layout.addWidget(self.get_all_settings)
 
@@ -75,6 +89,17 @@ class QTGuideWindow(QMainWindow):
         parent_layout.addWidget(self.stop_live_ppg)
         parent_layout.addWidget(self.start_live_temp)
         parent_layout.addWidget(self.stop_live_temp)
+
+        parent_layout.addWidget(self.set_ppg_settings)
+        parent_layout.addWidget(self.set_ecg_settings)
+        parent_layout.addWidget(self.reboot)
+        parent_layout.addWidget(self.set_time_sync)
+        parent_layout.addWidget(self.get_time_sync)
+        parent_layout.addWidget(self.set_log_settings)
+
+        parent_layout.addWidget(self.set_sleep_time)
+        parent_layout.addWidget(self.get_device_status)
+        parent_layout.addWidget(self.get_protocol_info)
         
 
         center_widget = QWidget()

@@ -20,12 +20,23 @@ class SetPpgSettingsCommand:
         pkt.type = brp.PacketType.PACKET_TYPE_COMMAND
         pkt.command.cid = brp.CommandId.CID_PPG_SETTINGS_SET
 
-        pkt.command.all_dev_settings.ppg_settings.ppg_enable = ppg_settings.enable
-        pkt.command.all_dev_settings.ppg_settings.sample_rate = ppg_settings.sampling_rate.to_brp_ppg_sample_rate()
-        pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.red_led_enable = ppg_settings.enable_red_led
-        pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.ir_led_enable = ppg_settings.enable_ir_led
-        pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.red_led_current = ppg_settings.red_led_current
-        pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.ir_led_current = ppg_settings.ir_led_current
+        if ppg_settings.enable is not None:
+            pkt.command.all_dev_settings.ppg_settings.ppg_enable = ppg_settings.enable
+
+        if ppg_settings.sampling_rate is not None:
+            pkt.command.all_dev_settings.ppg_settings.sample_rate = ppg_settings.sampling_rate.to_brp_ppg_sample_rate()
+
+        if ppg_settings.enable_red_led is not None:
+            pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.red_led_enable = ppg_settings.enable_red_led
+
+        if ppg_settings.enable_ir_led is not None:
+            pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.ir_led_enable = ppg_settings.enable_ir_led
+
+        if ppg_settings.red_led_current is not None:
+            pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.red_led_current = ppg_settings.red_led_current
+
+        if ppg_settings.ir_led_current is not None:
+            pkt.command.all_dev_settings.ppg_settings.ppg_led_settings.ir_led_current = ppg_settings.ir_led_current
 
         pkt_value = pkt.SerializeToString()
         await write_char(client, BleConstant.BRS_UUID_CHAR_TX, pkt_value)

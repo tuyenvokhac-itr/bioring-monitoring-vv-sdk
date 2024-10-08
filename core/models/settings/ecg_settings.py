@@ -15,20 +15,20 @@ from core.enum.ecg_sampling_rate import EcgSamplingRate
 
 @dataclass
 class LeadOffSettings:
-    enable: Optional[bool]
-    mode: Optional[EcgLeadOffMode]
-    current_polarity: Optional[EcgLeadOffCurrentPolarity]
-    current_magnitude: Optional[EcgLeadOffCurrentMagnitude]
-    voltage_threshold: Optional[EcgLeadOffVoltageThreshold]
-    lead_off_frequency: Optional[EcgLeadOffFreq]
+    mode: Optional[EcgLeadOffMode] = None
+    current_polarity: Optional[EcgLeadOffCurrentPolarity] = None
+    current_magnitude: Optional[EcgLeadOffCurrentMagnitude] = None
+    voltage_threshold: Optional[EcgLeadOffVoltageThreshold] = None
+    lead_off_frequency: Optional[EcgLeadOffFreq] = None
 
 
 @dataclass
 class EcgSettings:
-    enable: Optional[bool]
-    sampling_rate: Optional[EcgSamplingRate]
-    pga_gain: Optional[EcgPgaGain]
-    ina_gain: Optional[EcgInaGain]
-    ina_range: Optional[EcgInaRange]
-    input_polarity: Optional[EcgInputPolarity]
-    lead_off_settings: Optional[LeadOffSettings]
+    enable: Optional[bool] = None
+    sampling_rate: Optional[EcgSamplingRate] = None
+    pga_gain: Optional[EcgPgaGain] = None
+    ina_gain: Optional[EcgInaGain] = None
+    ina_range: Optional[EcgInaRange] = None
+    input_polarity: Optional[EcgInputPolarity] = None
+    lead_off_settings: Optional[LeadOffSettings] = None
+    lead_off_enable: Optional[bool] = None
