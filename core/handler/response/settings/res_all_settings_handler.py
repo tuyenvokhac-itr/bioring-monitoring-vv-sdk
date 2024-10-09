@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import List
 
 from core.callbacks.response_callback import ResponseCallback

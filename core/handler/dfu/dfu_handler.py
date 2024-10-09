@@ -33,6 +33,7 @@ class DfuHandler:
         self.cyacd: Optional[Cyacd2File] = None
         self.trial_times = 0
         self.start_dfu_process()
+        print('inited')
 
     def start_dfu_process(self):
         if self.trial_times > 3:
@@ -42,10 +43,15 @@ class DfuHandler:
         self.scan_dfu_devices()
 
     def scan_dfu_devices(self):
-        self.ble_manager.start_scan(self._on_device_found)
+        asyncio.create_task(self.ble_manager.start_scan(self._on_device_found))
+        print('scanned')
 
     def _on_device_found(self, device: BLEDevice, advertisement_data: AdvertisementData):
-        if device.name is not None and BleConstant.BIORING_DFU_PREFIX in device.name:
+        print(device.name)
+        print(device.address)
+        print(self.device[0].address)
+        if device.address == self.device[0].address:
+            print(f"Found DFU device: {device.name}")
             # check if device is the device we are looking for
             cut_dfu_device_name = device.name.replace(BleConstant.BIORING_DFU_PREFIX, "", 1)
             cut_device_name = self.device[0].name.replace(BleConstant.BIORING_PREFIX, "", 1)
@@ -85,15 +91,16 @@ class DfuHandler:
         self._response_handler(rsp_packet)
 
     async def _response_handler(self, pkt: Psoc6DfuResponsePacket):
+        print(pkt)
         if pkt.status_code != Psoc6DfuResponsePacket.DfuStatusCode.success:
             await self.ble_manager.disconnect(self.client)
             self.start_dfu_process()
         else:
-            # handle success
+            # Enter DFU success
             if not self.is_writing_file:
+                await self.set_metadata(self.cyacd)
                 await self.start_write_file()
             else:
-                await self.set_metadata(self.cyacd)
                 await self.exit()
 
     async def enter_dfu(self):

@@ -97,6 +97,7 @@ class CoreHandler:
     async def start_scan(self):
         if self.is_scanning:
             return
+        self.devices = []
         self.logger.info('[CoreHandler]: Start scan...')
         self.is_scanning = True
         self.devices.clear()
@@ -115,7 +116,6 @@ class CoreHandler:
     async def stop_scan(self):
         await self.ble_manager.stop_scan()
         self.is_scanning = False
-        self.devices = []
         self.logger.info('[CoreHandler]: Scan stopped')
 
     async def connect(self, address: str, timeout: int = 10):
@@ -148,7 +148,8 @@ class CoreHandler:
             rx_chars_handler = RxCharHandler(
                 device=device,
                 response_callbacks=self.response_callbacks,
-                streaming_callbacks=self.streaming_callbacks
+                streaming_callbacks=self.streaming_callbacks,
+                record_data_callbacks=self.record_data_callbacks,
             )
             asyncio.create_task(
                 self.ble_manager.start_notify(
@@ -447,12 +448,15 @@ class CoreHandler:
             result: CommonResult
     ):
         # handle when result is failed
+        if not result.is_success:
+            on_success(result)
+            return
+
         dfu_handler = DfuHandler(
             device=device,
             dfu_file_path=dfu_path,
             on_dfu_result=on_success
         )
-        pass
 
     """ Power management """
 

@@ -29,9 +29,17 @@ class QTGuideWindow(QMainWindow):
         self.get_record_sample = QPushButton("Get record samples")
         self.start_record_ppg = QPushButton("Start record PPG")
         self.start_record_ecg = QPushButton("Start record ECG")
-        self.stop_record = QPushButton("Stop record")
+        self.start_record_acc = QPushButton("Start record ACC")
+        self.start_record_temp = QPushButton("Start record Temp")
+
+        self.stop_record_ecg = QPushButton("Stop record ecg")
+        self.stop_record_ppg = QPushButton("Stop record ppg")
+        self.stop_record_acc = QPushButton("Stop record acc")
+        self.stop_record_temp = QPushButton("Stop record temp")
         self.get_record_ppg = QPushButton("Get record PPG")
         self.get_record_ecg = QPushButton("Get record ECG")
+        self.get_record_acc = QPushButton("Get record ACC")
+        self.get_record_temp = QPushButton("Get record Temp")
 
         self.get_all_settings = QPushButton("Get all settings")
 
@@ -47,6 +55,7 @@ class QTGuideWindow(QMainWindow):
 
         self.set_ppg_settings = QPushButton("Set ppg settings")
         self.set_ecg_settings = QPushButton("Set ecg settings")
+        self.set_acc_settings = QPushButton("Set acc settings")
         self.set_time_sync = QPushButton("Set time sync")
         self.get_time_sync = QPushButton("Get time sync")
         self.set_log_settings = QPushButton("Set log settings")
@@ -56,6 +65,8 @@ class QTGuideWindow(QMainWindow):
         self.get_protocol_info = QPushButton("Get Protocol info")
 
         self.reboot = QPushButton("Reboot")
+        self.factory_reset = QPushButton("Factory reset")
+        self.update_firmware = QPushButton("Update firmware")
 
         parent_layout.addWidget(self.label1)
         parent_layout.addWidget(self.scanBtn)
@@ -74,9 +85,16 @@ class QTGuideWindow(QMainWindow):
         parent_layout.addWidget(self.get_record_sample)
         parent_layout.addWidget(self.start_record_ppg)
         parent_layout.addWidget(self.start_record_ecg)
-        parent_layout.addWidget(self.stop_record)
+        parent_layout.addWidget(self.start_record_acc)
+        parent_layout.addWidget(self.start_record_temp)
+        parent_layout.addWidget(self.stop_record_ecg)
+        parent_layout.addWidget(self.stop_record_ppg)
+        parent_layout.addWidget(self.stop_record_acc)
+        parent_layout.addWidget(self.stop_record_temp)
         parent_layout.addWidget(self.get_record_ppg)
         parent_layout.addWidget(self.get_record_ecg)
+        parent_layout.addWidget(self.get_record_acc)
+        parent_layout.addWidget(self.get_record_temp)
 
         parent_layout.addWidget(self.get_all_settings)
 
@@ -92,6 +110,7 @@ class QTGuideWindow(QMainWindow):
 
         parent_layout.addWidget(self.set_ppg_settings)
         parent_layout.addWidget(self.set_ecg_settings)
+        parent_layout.addWidget(self.set_acc_settings)
         parent_layout.addWidget(self.reboot)
         parent_layout.addWidget(self.set_time_sync)
         parent_layout.addWidget(self.get_time_sync)
@@ -100,6 +119,8 @@ class QTGuideWindow(QMainWindow):
         parent_layout.addWidget(self.set_sleep_time)
         parent_layout.addWidget(self.get_device_status)
         parent_layout.addWidget(self.get_protocol_info)
+        parent_layout.addWidget(self.factory_reset)
+        parent_layout.addWidget(self.update_firmware)
         
 
         center_widget = QWidget()

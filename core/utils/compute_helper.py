@@ -30,7 +30,7 @@ class ComputeHelper:
     @staticmethod
     def decode_acc_data(packet: brp.Packet) -> AccelData:
         start_time = packet.notification.raw_accel.start_time
-        raw_accel = list(packet.notification.raw_accel)
+        raw_accel = list(packet.notification.raw_accel.data)
         is_eot = False
         if packet.notification.raw_accel.HasField('eot'):
             is_eot = packet.notification.raw_accel.eot
@@ -58,10 +58,10 @@ class ComputeHelper:
 
     @staticmethod
     def decode_temp_data(packet: brp.Packet) -> TempData:
-        start_time = packet.notification.raw_temp.start_time
-        raw_temp = list(packet.notification.raw_temp)
+        start_time = packet.notification.temperature.start_time
+        raw_temp = list(packet.notification.temperature.data)
         is_eot = False
-        if packet.notification.raw_temp.HasField('eot'):
+        if packet.notification.temperature.HasField('eot'):
             is_eot = packet.notification.raw_accel.eot
 
         temp_data = TempData(

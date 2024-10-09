@@ -23,10 +23,12 @@ class RxCharHandler:
             device: BTDevice,
             response_callbacks,
             streaming_callbacks,
+            record_data_callbacks,
     ):
         self.device = device
         self.response_callbacks = response_callbacks
         self.streaming_callbacks = streaming_callbacks
+        self.record_data_callbacks = record_data_callbacks
         self.prev_acc_sequence_number = 0
         self.prev_afe_sequence_number = 0
         self.prev_temp_sequence_number = 0
@@ -46,7 +48,8 @@ class RxCharHandler:
             self.rx_notif_handlers(nid, rx_packet)
 
     def rx_response_handlers(self, cid: int, pkt: brp.Packet):
-        print(f"Received response: {pkt}")
+        # print(f"Received response: {pkt}")
+        print(pkt)
         match cid:
             case brp.CommandId.CID_DEV_INFO_GET:
                 ResDeviceInfoHandler.handle(pkt, self.response_callbacks)
@@ -115,11 +118,11 @@ class RxCharHandler:
                     self.on_temp_sequence_number_updated,
                 )
             case brp.NotificationId.NID_RECORD_DATA_RAW_ACCEL:
-                RecordAccDataHandler.handle(self.device, pkt)
+                RecordAccDataHandler.handle(self.device, pkt, self.record_data_callbacks)
             case brp.NotificationId.NID_RECORD_DATA_RAW_AFE:
-                RecordAfeDataHandler.handle(self.device, pkt)
+                RecordAfeDataHandler.handle(self.device, pkt, self.record_data_callbacks)
             case brp.NotificationId.NID_RECORD_DATA_TEMP:
-                RecordTempDataHandler.handle(self.device, pkt)
+                RecordTempDataHandler.handle(self.device, pkt, self.record_data_callbacks)
             case _:
                 pass
 

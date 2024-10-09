@@ -1,4 +1,6 @@
 import asyncio
+import os
+from pathlib import Path
 from typing import List, Optional
 
 from PyQt6.QtWidgets import QApplication
@@ -28,6 +30,7 @@ from core.models.raw_data.ppg_data import PpgData
 from core.models.raw_data.samples_threshold import SamplesThreshold
 from core.models.raw_data.temp_data import TempData
 from core.models.self_tests.self_test_result import SelfTestResult
+from core.models.settings.accel_settings import AccelSettings
 from core.models.settings.bt_settings import BTSettings
 from core.models.settings.device_settings import DeviceSettings
 from core.models.settings.ecg_settings import EcgSettings, LeadOffSettings
@@ -68,10 +71,17 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
 
         window.start_record_ppg.clicked.connect(self.start_record_ppg)
         window.start_record_ecg.clicked.connect(self.start_record_ecg)
-        window.stop_record.clicked.connect(self.stop_record)
+        window.start_record_acc.clicked.connect(self.start_record_acc)
+        window.start_record_temp.clicked.connect(self.start_record_temp)
+        window.stop_record_ecg.clicked.connect(self.stop_record_ecg)
+        window.stop_record_ppg.clicked.connect(self.stop_record_ppg)
+        window.stop_record_acc.clicked.connect(self.stop_record_acc)
+        window.stop_record_temp.clicked.connect(self.stop_record_temp)
         window.get_record_sample.clicked.connect(self.get_record_samples_threshold)
         window.get_record_ppg.clicked.connect(self.get_record_ppg)
         window.get_record_ecg.clicked.connect(self.get_record_ecg)
+        window.get_record_acc.clicked.connect(self.get_record_acc)
+        window.get_record_temp.clicked.connect(self.get_record_temp)
 
         window.get_all_settings.clicked.connect(self.get_all_settings)
 
@@ -87,7 +97,9 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
 
         window.set_ppg_settings.clicked.connect(self.set_ppg_settings)
         window.set_ecg_settings.clicked.connect(self.set_ecg_settings)
+        window.set_acc_settings.clicked.connect(self.set_acc_settings)
         window.reboot.clicked.connect(self.reboot)
+        window.factory_reset.clicked.connect(self.factory_reset)
 
         window.set_time_sync.clicked.connect(self.set_time_sync)
         window.get_time_sync.clicked.connect(self.get_time_sync)
@@ -96,6 +108,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         window.set_sleep_time.clicked.connect(self.set_sleep_time)
         window.get_device_status.clicked.connect(self.get_device_status)
         window.get_protocol_info.clicked.connect(self.get_protocol_info)
+        window.update_firmware.clicked.connect(self.update_firmware)
 
         # # Create the Bluetooth state receiver
         # self.bt_receiver = BluetoothStateReceiver()
@@ -124,11 +137,11 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
             self.devices[0].address,
             BTSettings(
                 adv_name="BioRing Hieu3",
-                # adv_interval=310,
-                # connection_interval_min=20,
-                # connection_interval_max=20,
-                # slave_latency=0,
-                # transmit_power_level=PowerLevel.POS_0,
+                adv_interval=318.5,
+                connection_interval_min=20.12,
+                connection_interval_max=20.9123456789,
+                slave_latency=3,
+                transmit_power_level=PowerLevel.POS_4,
             ),
             self.on_bluetooth_settings_set,
         )
@@ -213,10 +226,17 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     # Command functions - Data
 
     def start_live_acc_data(self):
-        pass
+        self.ring_manager.start_streaming_accel_data(self.devices[0].address, self.on_acc_data_received)
+
+    def on_acc_data_received(self, result: CommonResult, data: Optional[AccelData], packet_lost: int):
+        print(f"on_acc_data_received Result: {result}")
+        print(f"on_acc_data_received Data: {data}")
 
     def stop_live_acc_data(self):
-        pass
+        self.ring_manager.stop_streaming_data(self.devices[0].address, SensorType.ACCEL, self.on_stop_acc_success)
+
+    def on_stop_acc_success(self, result: CommonResult):
+        print(f"on_stop_acc_success Result: {result}")
 
     def start_live_ecg_data(self):
         self.ring_manager.start_streaming_ecg_data(self.devices[0].address, self.on_ecg_data_received)
@@ -245,11 +265,17 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         print(f"on_stop_ppg_success Result: {result}")
 
     def start_live_temp_data(self):
-        pass
+        self.ring_manager.start_streaming_temp_data(self.devices[0].address, self.on_temp_data_received)
+
+    def on_temp_data_received(self, result: CommonResult, data: Optional[TempData], packet_lost: int):
+        print(f"on_temp_data_received Result: {result}")
+        print(f"on_temp_data_received Data: {data}")
 
     def stop_live_temp_data(self):
-        print("stop live temp data")
-        # self.core_handler.live_temp_data(isStart=False)
+        self.ring_manager.stop_streaming_data(self.devices[0].address, SensorType.TEMP, self.on_stop_temp_success)
+
+    def on_stop_temp_success(self, result: CommonResult):
+        print(f"on_stop_temp_success Result: {result}")
 
     # Listener - BLE
 
@@ -282,12 +308,6 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
 
     # Listener - Data
 
-    def on_acc_data_received(self, acc: AccelData):
-        print(acc)
-
-    def on_temp_data_received(self, temp):
-        print(f"[NT] Temperature: {temp}")
-
     def on_record_finished(self, device: BTDevice, sensor_type: SensorType):
         print(f"[NT] Record finished: {sensor_type}, device: {device}")
 
@@ -307,25 +327,64 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         print(f'device: {device}, data: {data}')
 
     def start_record_ppg(self):
-        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.PPG, self.on_start_record_success)
+        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.PPG, self.on_start_record_ppg_success)
 
     def start_record_ecg(self):
-        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.ECG, self.on_start_record_success)
+        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.ECG, self.on_start_record_ecg_success)
 
-    def on_start_record_success(self, result: CommonResult):
-        print(f"on_record_success Result: {result}")
+    def start_record_acc(self):
+        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.ACCEL, self.on_start_record_acc_success)
 
-    def stop_record(self):
-        self.ring_manager.stop_record(self.devices[0].address, SensorType.ECG, self.on_stop_record_success)
+    def start_record_temp(self):
+        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.TEMP, self.on_start_record_temp_success)
 
-    def on_stop_record_success(self, result: CommonResult):
-        print(f"on_stop_record_success Result: {result}")
+    def on_start_record_ppg_success(self, result: CommonResult):
+        print(f"on_record_ppf_success Result: {result}")
+
+    def on_start_record_ecg_success(self, result: CommonResult):
+        print(f"on_record_ecg_success Result: {result}")
+
+    def on_start_record_acc_success(self, result: CommonResult):
+        print(f"on_record_acc_success Result: {result}")
+
+    def on_start_record_temp_success(self, result: CommonResult):
+        print(f"on_record_temp_success Result: {result}")
+
+    def stop_record_ecg(self):
+        self.ring_manager.stop_record(self.devices[0].address, SensorType.ECG, self.on_stop_record_ecg_success)
+
+    def on_stop_record_ecg_success(self, result: CommonResult):
+        print(f"on_stop_record_ecg_success Result: {result}")
+
+    def stop_record_ppg(self):
+        self.ring_manager.stop_record(self.devices[0].address, SensorType.PPG, self.on_stop_record_ppg_success)
+
+    def on_stop_record_ppg_success(self, result: CommonResult):
+        print(f"on_stop_record_ppg_success Result: {result}")
+
+    def stop_record_acc(self):
+        self.ring_manager.stop_record(self.devices[0].address, SensorType.ACCEL, self.on_stop_record_acc_success)
+
+    def on_stop_record_acc_success(self, result: CommonResult):
+        print(f"on_stop_record_acc_success Result: {result}")
+
+    def stop_record_temp(self):
+        self.ring_manager.stop_record(self.devices[0].address, SensorType.TEMP, self.on_stop_record_temp_success)
+
+    def on_stop_record_temp_success(self, result: CommonResult):
+        print(f"on_stop_record_temp_success Result: {result}")
 
     def get_record_ppg(self):
-        self.ring_manager.get_record(self.devices[0].address, SensorType.PPG, 288)
+        self.ring_manager.get_record(self.devices[0].address, SensorType.PPG, 0)
 
     def get_record_ecg(self):
-        self.ring_manager.get_record(self.devices[0].address, SensorType.ECG, 288)
+        self.ring_manager.get_record(self.devices[0].address, SensorType.ECG, 0)
+
+    def get_record_acc(self):
+        self.ring_manager.get_record(self.devices[0].address, SensorType.ACCEL, 0)
+
+    def get_record_temp(self):
+        self.ring_manager.get_record(self.devices[0].address, SensorType.TEMP, 0)
 
     def on_get_record_success(self, result: CommonResult):
         print(f"on_get_record_success Result: {result}")
@@ -386,11 +445,29 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_ecg_settings_set(self, result: CommonResult):
         print(f"on_ppg_settings_set Result: {result}")
 
+    def set_acc_settings(self):
+        self.ring_manager.set_accel_settings(
+            self.devices[0].address,
+            AccelSettings(
+                enable=False,
+            ),
+            self.on_acc_settings_set,
+        )
+
+    def on_acc_settings_set(self, result: CommonResult):
+        print(f"on_acc_settings_set Result: {result}")
+
     def reboot(self):
         self.ring_manager.reboot(self.devices[0].address, self.on_reboot_success)
 
     def on_reboot_success(self, result: CommonResult):
         print(f"on_reboot_success Result: {result}")
+
+    def factory_reset(self):
+        self.ring_manager.factory_reset(self.devices[0].address, self.on_factory_reset_success)
+
+    def on_factory_reset_success(self, result: CommonResult):
+        print(f"on_factory_reset_success Result: {result}")
 
     def set_time_sync(self):
         self.ring_manager.set_time_sync(self.devices[0].address, 812964689, self.on_time_sync_success)
@@ -439,3 +516,18 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_protocol_info_success(self, result: CommonResult, protocol_info: Optional[str]):
         print(f"on_protocol_info_success Result: {result}")
         print(f"on_protocol_info_success Protocol info: {protocol_info}")
+
+    def update_firmware(self):
+        # Get the current file's path
+        current_file = os.path.abspath(__file__)
+
+        # Get the directory of the current file
+        current_dir = os.path.dirname(current_file)
+
+        # Build the path to the file inside the project folder
+        file_path = os.path.join(current_dir, 'data', 'bioring_app2_hw0.2_v0.3.5.0.cyacd2')
+
+        self.ring_manager.update_firmware(self.devices[0].address, file_path, self.on_firmware_update_success)
+
+    def on_firmware_update_success(self, result: CommonResult):
+        print(f"on_firmware_update_success Result: {result}")

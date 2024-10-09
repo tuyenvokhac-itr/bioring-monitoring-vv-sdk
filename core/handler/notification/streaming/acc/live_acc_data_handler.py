@@ -21,7 +21,7 @@ class LiveAccDataHandler:
         acc_streaming_callbacks = ListUtils.get_streaming_callbacks(streaming_callbacks, SensorType.ACCEL)
 
         try:
-            sequence_number = packet.notification.sequence_number
+            sequence_number = packet.notification.raw_accel.sequence_number
             accel_data = ComputeHelper.decode_acc_data(packet)
             packet_lost = 0 if prev_sequence_number == 0 else sequence_number - prev_sequence_number
             on_sequence_number_updated(sequence_number)

@@ -20,7 +20,7 @@ class LiveTempDataHandler:
         temp_streaming_callbacks = ListUtils.get_streaming_callbacks(streaming_callbacks, SensorType.TEMP)
 
         try:
-            sequence_number = packet.notification.sequence_number
+            sequence_number = packet.notification.temperature.sequence_number
             temp_data = ComputeHelper.decode_temp_data(packet)
             packet_lost = 0 if prev_sequence_number == 0 else sequence_number - prev_sequence_number
             on_sequence_number_updated(sequence_number)
