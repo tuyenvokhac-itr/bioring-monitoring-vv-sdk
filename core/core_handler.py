@@ -434,15 +434,17 @@ class CoreHandler:
         self.response_callbacks.append(
             ResponseCallback(
                 sid,
-                partial(self._on_enter_dfu_success, device, dfu_path, on_success),
+                partial(self._on_enter_dfu_success, device, client, dfu_path, on_success),
                 # lambda: self._on_enter_dfu_success(dfu_path, client, on_success)
             )
         )
+        print('x')
         await EnterDfuCommand.send(sid, client, self.ble_manager.write_char)
 
     def _on_enter_dfu_success(
             self,
             device: Tuple[BLEDevice, AdvertisementData],
+            client: BleakClient,
             dfu_path: str,
             on_success: Callable[[CommonResult], None],
             result: CommonResult
@@ -454,9 +456,12 @@ class CoreHandler:
 
         dfu_handler = DfuHandler(
             device=device,
+            client=client,
             dfu_file_path=dfu_path,
             on_dfu_result=on_success
         )
+
+        dfu_handler.start()
 
     """ Power management """
 

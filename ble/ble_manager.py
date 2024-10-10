@@ -24,6 +24,7 @@ class BleManager:
         )
 
         await self.scanner.start()
+        print('scanned')
 
     async def stop_scan(self):
         if self.scanner is not None:

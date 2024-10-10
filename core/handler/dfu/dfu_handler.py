@@ -21,105 +21,124 @@ class DfuHandler:
     def __init__(
             self,
             device: Tuple[BLEDevice, AdvertisementData],
+            client: BleakClient,
             dfu_file_path: str,
             on_dfu_result: Callable[[CommonResult], None],
     ):
         self.dfu_file_path = dfu_file_path
         self.device = device
-        self.client = None
+        self.client = client
         self.on_dfu_success = on_dfu_result
+
         self.ble_manager = BleManager()
         self.is_writing_file = False
         self.cyacd: Optional[Cyacd2File] = None
         self.trial_times = 0
-        self.start_dfu_process()
-        print('inited')
+        self.device_found = False
 
-    def start_dfu_process(self):
+        self._init_cyacd_file()
+
+    def start(self):
         if self.trial_times > 3:
-            return CommonResult(is_success=False, error=CommonError.DFU_ERROR)
+            self.on_dfu_success(CommonResult(is_success=False, error=CommonError.DFU_ERROR))
 
         self.trial_times += 1
-        self.scan_dfu_devices()
+        asyncio.create_task(self._subscribe_dfu_char())
+        # asyncio.create_task(self._scan_dfu_devices())
 
-    def scan_dfu_devices(self):
-        asyncio.create_task(self.ble_manager.start_scan(self._on_device_found))
-        print('scanned')
+    async def _scan_dfu_devices(self):
+        self.device_found = False
+        await self.ble_manager.disconnect(self.client)
+        await self.ble_manager.stop_scan()
+        await self.ble_manager.start_scan(self._on_device_found)
 
     def _on_device_found(self, device: BLEDevice, advertisement_data: AdvertisementData):
-        print(device.name)
-        print(device.address)
-        print(self.device[0].address)
-        if device.address == self.device[0].address:
-            print(f"Found DFU device: {device.name}")
-            # check if device is the device we are looking for
-            cut_dfu_device_name = device.name.replace(BleConstant.BIORING_DFU_PREFIX, "", 1)
-            cut_device_name = self.device[0].name.replace(BleConstant.BIORING_PREFIX, "", 1)
+        if self.device_found is True:
+            return
 
-            if cut_dfu_device_name == cut_device_name:
-                self.ble_manager.stop_scan()
-                self.ble_manager.connect(
-                    self.client.address,
-                    10,
-                    self._on_device_connected,
-                    self._on_device_disconnected,
-                    self._on_bluetooth_error,
-                )
+        if device.address == self.device[0].address:
+            self.device_found = True
+            print(f"Found DFU device: {device.name}")
+            asyncio.create_task(self.connect_dfu_device())
+
+    async def connect_dfu_device(self):
+        await self.ble_manager.stop_scan()
+        await self.ble_manager.connect(
+            self.client.address,
+            10,
+            self._on_device_connected,
+            self._on_device_disconnected,
+            self._on_bluetooth_error,
+        )
+
+    def disconnect_dfu_device(self):
+        asyncio.create_task(self.ble_manager.disconnect(self.client))
 
     def _on_device_connected(self, client: BleakClient):
         self.client = client
-        asyncio.create_task(self.start_dfu())
+        print('connected')
+        asyncio.create_task(self._subscribe_dfu_char())
 
     def _on_device_disconnected(self, client: BleakClient):
-        pass
+        print('disconnected')
+        self.start()
 
     def _on_bluetooth_error(self, address: str, error: CommonError):
-        pass
+        print(f"Bluetooth error: {error}")
+        self.start()
 
-    async def start_dfu(self):
+    async def _subscribe_dfu_char(self):
         await self.ble_manager.start_notify(
             BleConstant.BRS_UUID_CHAR_DFU,
             self.client,
-            self._on_dfu_characteristics_subscribed,
+            self._on_dfu_characteristics_listener,
         )
 
-        await self.enter_dfu()
+        await self._send_enter_command()
 
-    def _on_dfu_characteristics_subscribed(self, sender, data: bytearray):
+    async def _send_enter_command(self):
+        packet_enter = DfuUtils.build_cmd_enter_dfu()
+        await self._send_command(packet_enter, True)
+
+    def _on_dfu_characteristics_listener(self, sender, data: bytearray):
+        print(data)
         rsp_packet = Psoc6DfuResponsePacket(_io=KaitaiStream(BytesIO(data)))
         rsp_packet._read()
         self._response_handler(rsp_packet)
 
-    async def _response_handler(self, pkt: Psoc6DfuResponsePacket):
+    def _response_handler(self, pkt: Psoc6DfuResponsePacket):
         print(pkt)
         if pkt.status_code != Psoc6DfuResponsePacket.DfuStatusCode.success:
-            await self.ble_manager.disconnect(self.client)
-            self.start_dfu_process()
-        else:
-            # Enter DFU success
-            if not self.is_writing_file:
-                await self.set_metadata(self.cyacd)
-                await self.start_write_file()
-            else:
-                await self.exit()
+            self.disconnect_dfu_device()
+            return
 
-    async def enter_dfu(self):
-        packet_enter = DfuUtils.build_cmd_enter_dfu()
-        await self.send_command(packet_enter)
+        """ Enter dfu response success"""
+        if not self.is_writing_file:
+            asyncio.create_task(self._on_enter_dfu_success())
+            return
 
-    async def start_write_file(self):
-        self.is_writing_file = True
+        """ Program data success """
+
+    async def _on_enter_dfu_success(self):
+        await self._set_metadata(self.cyacd)
+        await self._start_write_file(self.cyacd)
+
+    async def _set_metadata(self, dfu_file: Cyacd2File):
+        packet_set_app_metadata = DfuUtils.build_cmd_set_metadata(
+            dfu_file.header.app_id, dfu_file.app_info
+        )
+        await self._send_command(packet_set_app_metadata)
+
+    def _init_cyacd_file(self):
         file = open(self.dfu_file_path, "r")
-        program_start_time = time.time()
-
-        # Read DFU file
         file_content = file.read()
-
-        # Parase DFU file to Cyacd2File object
         _io = KaitaiStream(BytesIO(file_content.encode("utf-8")))
         cyacd = Cyacd2File(_io)
         cyacd._read()
         self.cyacd = cyacd
+
+    async def _start_write_file(self, cyacd : Cyacd2File):
+        self.is_writing_file = True
 
         # Print DFU file info
         print("Header: ")
@@ -147,8 +166,8 @@ class DfuHandler:
 
             # Send data from 0 to 256 bytes (No Response)
             pp = DfuUtils.build_cmd_send_data_no_rsp(row.data.data_bytes[:256])
-            await self.send_command(pp)
-
+            await self._send_command(pp)
+            print("Sent 256 bytes")
             # Send data from 384 to 512 bytes and start programming
             pp_final = DfuUtils.build_cmd_program(
                 row_address,
@@ -156,21 +175,20 @@ class DfuHandler:
                 cy_checksum_data(row.data.data_bytes),
             )
 
-            await self.send_command(pp_final, True)
+            await self._send_command(pp_final, True)
 
-    async def set_metadata(self, dfu_file: Cyacd2File):
-        packet_set_app_metadata = DfuUtils.build_cmd_set_metadata(
-            dfu_file.header.app_id, dfu_file.app_info
-        )
-        await self.send_command(packet_set_app_metadata)
+        await self._exit()
+        self.on_dfu_success(CommonResult(is_success=True))
+        self.disconnect_dfu_device()
 
-    async def exit(self):
+
+    async def _exit(self):
         packet_exit = DfuUtils.build_cmd_with_empty_data(
             Psoc6DfuCommandPacket.DfuCommand.exit
         )
-        await self.send_command(packet_exit)
-        # NOTE: this command is not acknowledged
+        await self._send_command(packet_exit)
 
-    async def send_command(self, command: Psoc6DfuCommandPacket, response: bool = False):
+    async def _send_command(self, command: Psoc6DfuCommandPacket, response: bool = False):
         cmd_bytes = command._io.to_byte_array()
+        print(f"Sending command: {cmd_bytes}")
         await self.ble_manager.write_char(self.client, BleConstant.BRS_UUID_CHAR_DFU, cmd_bytes, response)
