@@ -525,7 +525,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         current_dir = os.path.dirname(current_file)
 
         # Build the path to the file inside the project folder
-        file_path = os.path.join(current_dir, 'data', 'bioring_app2_hw0.2_v0.3.5.0.cyacd2')
+        file_path = os.path.join(current_dir, 'data', 'bioring_app1_hw0.2_v0.4.1.0.cyacd2')
 
         self.ring_manager.update_firmware(self.devices[0].address, file_path, self.on_firmware_update_success)
 

@@ -41,10 +41,15 @@ class DfuHandler:
     def start(self):
         if self.trial_times > 3:
             self.on_dfu_success(CommonResult(is_success=False, error=CommonError.DFU_ERROR))
-
+        print(f"Trial times: {self.trial_times}")
         self.trial_times += 1
-        asyncio.create_task(self._subscribe_dfu_char())
-        # asyncio.create_task(self._scan_dfu_devices())
+        self.is_writing_file = False
+
+        # Don't need to scan device at the first time.
+        if self.trial_times == 1:
+            asyncio.create_task(self._subscribe_dfu_char())
+        else:
+            asyncio.create_task(self._scan_dfu_devices())
 
     async def _scan_dfu_devices(self):
         self.device_found = False
@@ -71,20 +76,14 @@ class DfuHandler:
             self._on_bluetooth_error,
         )
 
-    def disconnect_dfu_device(self):
-        asyncio.create_task(self.ble_manager.disconnect(self.client))
-
     def _on_device_connected(self, client: BleakClient):
         self.client = client
-        print('connected')
         asyncio.create_task(self._subscribe_dfu_char())
 
     def _on_device_disconnected(self, client: BleakClient):
-        print('disconnected')
         self.start()
 
     def _on_bluetooth_error(self, address: str, error: CommonError):
-        print(f"Bluetooth error: {error}")
         self.start()
 
     async def _subscribe_dfu_char(self):
@@ -101,15 +100,14 @@ class DfuHandler:
         await self._send_command(packet_enter, True)
 
     def _on_dfu_characteristics_listener(self, sender, data: bytearray):
-        print(data)
         rsp_packet = Psoc6DfuResponsePacket(_io=KaitaiStream(BytesIO(data)))
         rsp_packet._read()
         self._response_handler(rsp_packet)
 
     def _response_handler(self, pkt: Psoc6DfuResponsePacket):
-        print(pkt)
+        print(pkt.status_code.name)
         if pkt.status_code != Psoc6DfuResponsePacket.DfuStatusCode.success:
-            self.disconnect_dfu_device()
+            asyncio.create_task(self.ble_manager.disconnect(self.client))
             return
 
         """ Enter dfu response success"""
@@ -169,6 +167,7 @@ class DfuHandler:
             await self._send_command(pp)
             print("Sent 256 bytes")
             # Send data from 384 to 512 bytes and start programming
+
             pp_final = DfuUtils.build_cmd_program(
                 row_address,
                 row.data.data_bytes[256:],
@@ -179,8 +178,6 @@ class DfuHandler:
 
         await self._exit()
         self.on_dfu_success(CommonResult(is_success=True))
-        self.disconnect_dfu_device()
-
 
     async def _exit(self):
         packet_exit = DfuUtils.build_cmd_with_empty_data(

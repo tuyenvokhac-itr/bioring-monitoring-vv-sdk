@@ -53,7 +53,7 @@ class BleManager:
                 print(f"HRESULT Error Code: {e.hresult}")
             on_bluetooth_error(address, CommonError.CONNECTION_FAILED)
         except Exception as e:
-            print(e)
+            print("An error occurred: {0}".format(e))
             on_bluetooth_error(address, CommonError.CONNECTION_FAILED)
 
     async def disconnect(self, client: BleakClient):
