@@ -6,6 +6,8 @@ from bleak import BleakScanner, BLEDevice, AdvertisementData
 
 from ble.ble_constant import BleConstant
 from errors.common_error import CommonError
+from logger.custom_logger import logger
+
 
 class BleManager:
     def __init__(self, debug=False):
@@ -24,7 +26,6 @@ class BleManager:
         )
 
         await self.scanner.start()
-        print('scanned')
 
     async def stop_scan(self):
         if self.scanner is not None:
@@ -47,13 +48,10 @@ class BleManager:
             await client.connect()
             on_device_connected(client)
         except BleakError as e:
-            print(f"BleakError occurred: {e}")
-            # Access platform-specific error codes if available
-            if hasattr(e, 'hresult'):
-                print(f"HRESULT Error Code: {e.hresult}")
+            logger.error(f"BleakError occurred: {e}")
             on_bluetooth_error(address, CommonError.CONNECTION_FAILED)
         except Exception as e:
-            print("An error occurred: {0}".format(e))
+            logger.error("An error occurred: {0}".format(e))
             on_bluetooth_error(address, CommonError.CONNECTION_FAILED)
 
     async def disconnect(self, client: BleakClient):

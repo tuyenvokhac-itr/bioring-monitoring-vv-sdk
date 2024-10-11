@@ -1,7 +1,9 @@
 from bioring_tool import BioRingTool
+from logger.custom_logger import disable_logger, enable_logger
 
 
 def main():
+    enable_logger()
     tool = BioRingTool()
 
 

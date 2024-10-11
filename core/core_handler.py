@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import time
 from functools import partial
 from typing import List, Tuple, Optional, Callable
@@ -62,6 +61,7 @@ from core.models.settings.ppg_settings import PpgSettings
 from core.utils.singleton import singleton
 from errors.common_error import CommonError
 from errors.common_result import CommonResult
+from logger.custom_logger import logger
 from managers.bluetooth_callback import BluetoothCallback
 from managers.record_data_callback import RecordDataCallback
 
@@ -69,7 +69,6 @@ from managers.record_data_callback import RecordDataCallback
 @singleton
 class CoreHandler:
     def __init__(self):
-        self._init_logger()
         self.ble_manager = BleManager()
         self.bluetooth_callback: Optional[BluetoothCallback] = None
         self.is_scanning = False
@@ -83,12 +82,6 @@ class CoreHandler:
         """ clients: connected devices"""
         self.clients: List[BleakClient] = []
 
-    def _init_logger(self):
-        self.logger = logging.getLogger(__name__)
-        c_handler = logging.StreamHandler()
-        self.logger.addHandler(c_handler)
-        self.logger.setLevel(logging.DEBUG)
-
     def set_bluetooth_callback(self, callback: BluetoothCallback):
         # TODO: handle multiple callbacks
         self.bluetooth_callback = callback
@@ -99,9 +92,10 @@ class CoreHandler:
         if self.is_scanning:
             return
         self.devices = []
-        self.logger.info('[CoreHandler]: Start scan...')
         self.is_scanning = True
         self.devices.clear()
+
+        logger.info('Start scan...')
         await self.ble_manager.start_scan(self._on_device_found)
 
     def _on_device_found(self, device: BLEDevice, advertisement_data: AdvertisementData):
@@ -117,7 +111,7 @@ class CoreHandler:
     async def stop_scan(self):
         await self.ble_manager.stop_scan()
         self.is_scanning = False
-        self.logger.info('[CoreHandler]: Scan stopped')
+        logger.info('Scan stopped')
 
     async def connect(self, address: str, timeout: int = 10):
         await self.ble_manager.connect(
@@ -129,7 +123,7 @@ class CoreHandler:
         )
 
     def _on_device_connected(self, client: BleakClient):
-        self.logger.info('[CoreHandler]: Device connected: %s', client)
+        logger.info('Device connected: %s', client)
 
         try:
             device: Optional[BTDevice] = None
@@ -142,7 +136,7 @@ class CoreHandler:
                     break
 
             if device is None:
-                self.logger.error('[CoreHandler]: Could not find device with address %s', client.address)
+                logger.error('Could not find device with address %s', client.address)
                 throw_error('Could not find device')
                 return
 
@@ -161,7 +155,7 @@ class CoreHandler:
             )
 
         except Exception as e:
-            self.logger.error('[CoreHandler]: Error on device connected: %s', e)
+            logger.error('Error on device connected: %s', e)
 
     def _on_bluetooth_error(self, address, error: CommonError):
         device = self._get_device(address)
@@ -174,14 +168,14 @@ class CoreHandler:
         client = self._get_client(address)
 
         if client is None:
-            self.logger.error('[CoreHandler]: Could not find client with address %s', address)
+            logger.error('Could not find client with address %s', address)
             return
 
         await self.ble_manager.disconnect(client)
 
     def _on_device_disconnected(self, client: BleakClient):
         self.clients.remove(client)
-        self.logger.info('[CoreHandler]: Device DISCONNECTED: %s', client)
+        logger.info('Device disconnected: %s', client)
         device = self._get_device(client.address)
         self.bluetooth_callback.on_bluetooth_error(
             BTDevice(name=device[0].name, address=device[0].address),
@@ -191,7 +185,7 @@ class CoreHandler:
     def _get_device(self, address: str):
         device = next((d for d in self.devices if d[0].address == address), None)
         if device is None:
-            self.logger.error('[CoreHandler]: Could not find device with address %s', address)
+            logger.error('Could not find device with address %s', address)
             throw_error('Could not find device')
 
         return device
@@ -199,13 +193,12 @@ class CoreHandler:
     def _get_client(self, address: str):
         client = next((cl for cl in self.clients if cl.address == address), None)
         if client is None:
-            self.logger.error('[CoreHandler]: Could not find client with address %s', address)
+            logger.error('Could not find client with address %s', address)
             throw_error('Could not find client')
 
         return client
 
     """ Command functions """
-
     """ Bluetooth settings """
 
     async def set_bluetooth_settings(
@@ -436,7 +429,6 @@ class CoreHandler:
             ResponseCallback(
                 sid,
                 partial(self._on_enter_dfu_success, device, client, dfu_path, on_result),
-                # lambda: self._on_enter_dfu_success(dfu_path, client, on_result)
             )
         )
         print('x')
