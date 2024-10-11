@@ -63,9 +63,9 @@ class _RingManagerImpl(RingManager):
             self,
             address: str,
             settings: BTSettings,
-            on_success: Callable[[CommonResult], None],
+            on_result: Callable[[CommonResult], None],
     ):
-        asyncio.create_task(self.core_handler.set_bluetooth_settings(address, settings, on_success))
+        asyncio.create_task(self.core_handler.set_bluetooth_settings(address, settings, on_result))
 
     """ ********************************** Self Test APIs ******************************** """
 
@@ -83,19 +83,19 @@ class _RingManagerImpl(RingManager):
     ):
         asyncio.create_task(self.core_handler.get_bist(address, on_self_test_result))
 
-    def enable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.enable_bist(address, on_success))
+    def enable_bist(self, address: str, on_result: Callable[[CommonResult], None]):
+        asyncio.create_task(self.core_handler.enable_bist(address, on_result))
 
-    def disable_bist(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.disable_bist(address, on_success))
+    def disable_bist(self, address: str, on_result: Callable[[CommonResult], None]):
+        asyncio.create_task(self.core_handler.disable_bist(address, on_result))
 
     def set_bist_interval(
             self,
             address: str,
             interval: int,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.set_bist_interval(address, interval, on_success))
+        asyncio.create_task(self.core_handler.set_bist_interval(address, interval, on_result))
 
     """ ********************************** Streaming data APIs ******************************** """
 
@@ -131,9 +131,9 @@ class _RingManagerImpl(RingManager):
             self,
             address: str,
             sensor_type: SensorType,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.stop_streaming_data(address, sensor_type, on_success))
+        asyncio.create_task(self.core_handler.stop_streaming_data(address, sensor_type, on_result))
 
     """ ********************************** Data Recording APIs ******************************** """
 
@@ -149,17 +149,17 @@ class _RingManagerImpl(RingManager):
             address: str,
             samples: int,
             sensor_type: SensorType,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.start_record(address, samples, sensor_type, on_success))
+        asyncio.create_task(self.core_handler.start_record(address, samples, sensor_type, on_result))
 
     def stop_record(
             self,
             address: str,
             sensor_type: SensorType,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.stop_record(address, sensor_type, on_success))
+        asyncio.create_task(self.core_handler.stop_record(address, sensor_type, on_result))
 
     def get_record(self, address: str, sensor_type: SensorType, start_index: int):
         asyncio.create_task(self.core_handler.get_record(address, sensor_type, start_index))
@@ -183,9 +183,9 @@ class _RingManagerImpl(RingManager):
             self,
             address: str,
             settings: LogSettings,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.set_log_settings(address, settings, on_success))
+        asyncio.create_task(self.core_handler.set_log_settings(address, settings, on_result))
 
     """ ********************************** Sensor Settings APIs ******************************** """
 
@@ -193,40 +193,40 @@ class _RingManagerImpl(RingManager):
             self,
             address: str,
             settings: EcgSettings,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.set_ecg_settings(address, settings, on_success))
+        asyncio.create_task(self.core_handler.set_ecg_settings(address, settings, on_result))
 
     def set_ppg_settings(
             self,
             address: str,
             settings: PpgSettings,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.set_ppg_settings(address, settings, on_success))
+        asyncio.create_task(self.core_handler.set_ppg_settings(address, settings, on_result))
 
     def set_accel_settings(
             self,
             address: str,
             settings: AccelSettings,
-            on_success: Callable[[CommonResult], None]
+            on_result: Callable[[CommonResult], None]
     ):
-        asyncio.create_task(self.core_handler.set_accel_settings(address, settings, on_success))
+        asyncio.create_task(self.core_handler.set_accel_settings(address, settings, on_result))
 
     """ ********************************** Firmware Update APIs ******************************** """
 
-    def update_firmware(self, address: str, dfu_path: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.update_firmware(address, dfu_path, on_success))
+    def update_firmware(self, address: str, dfu_path: str, on_result: Callable[[CommonResult], None]):
+        asyncio.create_task(self.core_handler.update_firmware(address, dfu_path, on_result))
 
     """ ********************************** Power Management APIs ******************************** """
 
-    def set_sleep_time(self, address: str, seconds: int, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_sleep_time(address, seconds, on_success))
+    def set_sleep_time(self, address: str, seconds: int, on_result: Callable[[CommonResult], None]):
+        asyncio.create_task(self.core_handler.set_sleep_time(address, seconds, on_result))
 
     """ ********************************** Time Syncing APIs ******************************** """
 
-    def set_time_sync(self, address: str, epoch: int, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.set_time_sync(address, epoch, on_success))
+    def set_time_sync(self, address: str, epoch: int, on_result: Callable[[CommonResult], None]):
+        asyncio.create_task(self.core_handler.set_time_sync(address, epoch, on_result))
 
     def get_time_sync(self, address: str, on_time_sync: Callable[[CommonResult, Optional[int]], None]):
         asyncio.create_task(self.core_handler.get_time_sync(address, on_time_sync))
@@ -256,8 +256,8 @@ class _RingManagerImpl(RingManager):
 
     """ ********************************** Reset APIs ******************************** """
 
-    def factory_reset(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.factory_reset(address, on_success))
+    def factory_reset(self, address: str, on_result: Callable[[CommonResult], None]):
+        asyncio.create_task(self.core_handler.factory_reset(address, on_result))
 
-    def reboot(self, address: str, on_success: Callable[[CommonResult], None]):
-        asyncio.create_task(self.core_handler.reboot(address, on_success))
+    def reboot(self, address: str, on_result: Callable[[CommonResult], None]):
+        asyncio.create_task(self.core_handler.reboot(address, on_result))

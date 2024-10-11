@@ -17,6 +17,7 @@ from core.enum.ecg_sampling_rate import EcgSamplingRate
 from core.enum.log_level import LogLevel
 from core.enum.power_level import PowerLevel
 from core.enum.ppg_sampling_rate import PpgSamplingRate
+from core.enum.sensor_type import SensorType
 
 
 class ProtobufUtils:
@@ -221,3 +222,13 @@ class ProtobufUtils:
             brp.LogLevel.LOG_LEVEL_DEBUG: LogLevel.DEBUG,
         }
         return mapping.get(brp_log_level, None)
+
+    @staticmethod
+    def to_sensor_type(brp_sensor_type: brp.SensorType) -> SensorType:
+        mapping = {
+            brp.SensorType.SENSOR_TYPE_PPG: SensorType.PPG,
+            brp.SensorType.SENSOR_TYPE_ECG: SensorType.ECG,
+            brp.SensorType.SENSOR_TYPE_ACCEL: SensorType.ACCEL,
+            brp.SensorType.SENSOR_TYPE_TEMP: SensorType.TEMP,
+        }
+        return mapping.get(brp_sensor_type, None)

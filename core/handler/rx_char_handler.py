@@ -1,6 +1,7 @@
 from ble.bt_device import BTDevice
 from core.handler.notification.data_recording.acc.record_acc_data_handler import RecordAccDataHandler
 from core.handler.notification.data_recording.afe.record_afe_data_handler import RecordAfeDataHandler
+from core.handler.notification.data_recording.record_data_finished_handler import RecordDataFinishedHandler
 from core.handler.notification.data_recording.temp.record_temp_data_handler import RecordTempDataHandler
 from core.handler.notification.streaming.acc.live_acc_data_handler import LiveAccDataHandler
 from core.handler.notification.streaming.afe.live_afe_data_handler import LiveAfeDataHandler
@@ -48,8 +49,7 @@ class RxCharHandler:
             self.rx_notif_handlers(nid, rx_packet)
 
     def rx_response_handlers(self, cid: int, pkt: brp.Packet):
-        # print(f"Received response: {pkt}")
-        print(pkt)
+        print(f"Received response: {pkt}")
         match cid:
             case brp.CommandId.CID_DEV_INFO_GET:
                 ResDeviceInfoHandler.handle(pkt, self.response_callbacks)
@@ -123,6 +123,8 @@ class RxCharHandler:
                 RecordAfeDataHandler.handle(self.device, pkt, self.record_data_callbacks)
             case brp.NotificationId.NID_RECORD_DATA_TEMP:
                 RecordTempDataHandler.handle(self.device, pkt, self.record_data_callbacks)
+            case brp.NotificationId.NID_RECORD_FINISHED:
+                RecordDataFinishedHandler.handle(self.device, pkt, self.record_data_callbacks)
             case _:
                 pass
 

@@ -333,7 +333,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.ECG, self.on_start_record_ecg_success)
 
     def start_record_acc(self):
-        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.ACCEL, self.on_start_record_acc_success)
+        self.ring_manager.start_record(self.devices[0].address, 100, SensorType.ACCEL, self.on_start_record_acc_success)
 
     def start_record_temp(self):
         self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.TEMP, self.on_start_record_temp_success)
