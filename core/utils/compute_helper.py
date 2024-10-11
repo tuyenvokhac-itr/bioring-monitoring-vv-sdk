@@ -6,15 +6,8 @@ from core.models.raw_data.accel_data import AccelData
 from core.models.raw_data.ecg_data import EcgData
 from core.models.raw_data.ppg_data import PpgData
 from core.models.raw_data.temp_data import TempData
+from logger.custom_logger import logger
 from proto import brp_pb2 as brp
-
-
-# def uint32_to_int16(value):
-#     # Extract lower 16 bits
-#     lower_16_bits = value & 0xFFFF
-#     # Convert to signed 16-bit integer
-#     signed_int16 = np.int16(lower_16_bits)
-#     return signed_int16
 
 
 class ComputeHelper:
@@ -106,7 +99,7 @@ class ComputeHelper:
                     ecg_signed_value = ComputeHelper.convert_to_signed_int(ecg_raw_sample, 18)
                     ecg_value.append(ecg_signed_value)
                 case _:
-                    logging.error("Invalid FIFO type")
+                    pass
 
         ppg_data = PpgData(
             start_type=start_time,

@@ -35,4 +35,3 @@ class LiveAccDataHandler:
                     CommonResult(is_success=False, error=CommonError.ACC_STREAMING_ERROR),
                     None, 0
                 )
-            print(f'Error in LiveAccDataHandler: {e}')

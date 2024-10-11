@@ -45,5 +45,3 @@ class LiveAfeDataHandler:
                     CommonResult(is_success=False, error=CommonError.ECG_STREAMING_ERROR),
                     None, 0
                 )
-            print(f'Error in LiveAfeDataHandler: {e}')
-            logging.error(f'Error in LiveAfeDataHandler: {e}')

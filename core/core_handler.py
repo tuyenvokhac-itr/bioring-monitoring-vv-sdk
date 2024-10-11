@@ -431,7 +431,7 @@ class CoreHandler:
                 partial(self._on_enter_dfu_success, device, client, dfu_path, on_result),
             )
         )
-        print('x')
+
         await EnterDfuCommand.send(sid, client, self.ble_manager.write_char)
 
     def _on_enter_dfu_success(

@@ -34,4 +34,3 @@ class LiveTempDataHandler:
                     CommonResult(is_success=False, error=CommonError.TEMP_STREAMING_ERROR),
                     None, 0
                 )
-            print(f'Error in LiveTempDataHandler: {e}')

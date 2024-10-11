@@ -15,6 +15,7 @@ from core.handler.response.self_tests.res_bist_handler import ResBistHandler
 from core.handler.response.self_tests.res_post_handler import ResPostHandler
 from core.handler.response.settings.res_all_settings_handler import ResAllSettingsHandler
 from core.handler.response.time_syncing.res_time_syncing_handler import ResTimeSyncingHandler
+from logger.custom_logger import logger
 from proto import brp_pb2 as brp
 
 
@@ -35,7 +36,6 @@ class RxCharHandler:
         self.prev_temp_sequence_number = 0
 
     def handle(self, _sender, data: bytearray):
-        print(f"handle data: {data}")
         rx_packet = brp.Packet()
         rx_packet.ParseFromString(bytes(data))
 
@@ -49,7 +49,7 @@ class RxCharHandler:
             self.rx_notif_handlers(nid, rx_packet)
 
     def rx_response_handlers(self, cid: int, pkt: brp.Packet):
-        print(f"Received response: {pkt}")
+        logger.debug(f"Received response: {pkt}")
         match cid:
             case brp.CommandId.CID_DEV_INFO_GET:
                 ResDeviceInfoHandler.handle(pkt, self.response_callbacks)
@@ -97,7 +97,7 @@ class RxCharHandler:
                 pass
 
     def rx_notif_handlers(self, nid: int, pkt: brp.Packet):
-        print(f"Received notify: {pkt}")
+        logger.debug(f"Received notify: {pkt}")
         match nid:
             case brp.NotificationId.NID_STREAMING_DATA_RAW_ACCEL:
                 LiveAccDataHandler.handle(
