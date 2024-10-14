@@ -3,7 +3,7 @@ import platform
 from collections.abc import Callable
 from typing import Optional
 
-from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
+# from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
 from core.core_handler import CoreHandler
 from core.enum.sensor_type import SensorType
 from core.models.device_info import DeviceInfo
@@ -49,13 +49,13 @@ class _RingManagerImpl(RingManager):
 
     def get_bluetooth_state(self) -> bool:
         if platform.system() == "Darwin":
+            from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
             return mac_get_bluetooth_state()
         """ TODO: Implement for Windows and Ubuntu """
         return False
 
     def set_bluetooth_callback(self, bluetooth_callback: BluetoothCallback):
         self.core_handler.set_bluetooth_callback(bluetooth_callback)
-        # TODO: Handle state listener
 
     """ ********************************** Bluetooth Settings APIs ******************************** """
 
