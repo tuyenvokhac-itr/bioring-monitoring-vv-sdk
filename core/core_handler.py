@@ -136,7 +136,7 @@ class CoreHandler:
                     break
 
             if device is None:
-                logger.error('Could not find device with address %s', client.address)
+                logger.error(f'Could not find device with address ${client.address}')
                 throw_error('Could not find device')
                 return
 

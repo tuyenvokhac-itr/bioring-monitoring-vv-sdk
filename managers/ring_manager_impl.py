@@ -1,8 +1,10 @@
 import asyncio
+import concurrent.futures
 import platform
 from collections.abc import Callable
 from typing import Optional
 
+from ble.window_bluetooth_state.window_bluetooth_handler import WindowBluetoothHandler
 # from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
 from core.core_handler import CoreHandler
 from core.enum.sensor_type import SensorType
@@ -51,7 +53,10 @@ class _RingManagerImpl(RingManager):
         if platform.system() == "Darwin":
             from ble.mac_bluetooth_state.mac_get_bluetooth_state import mac_get_bluetooth_state
             return mac_get_bluetooth_state()
-        """ TODO: Implement for Windows and Ubuntu """
+        if platform.system() == "Windows":
+            return False
+            from ble.window_bluetooth_state.window_get_bluetooth_state import window_get_bluetooth_state
+            return window_get_bluetooth_state()
         return False
 
     def set_bluetooth_callback(self, bluetooth_callback: BluetoothCallback):

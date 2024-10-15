@@ -6,7 +6,7 @@ from typing import List, Optional
 from PyQt6.QtWidgets import QApplication
 from bleak import BleakClient
 from qasync import QEventLoop
-
+from logger.custom_logger import logger
 from ble.bt_device import BTDevice
 from core.enum.ecg_ina_gain import EcgInaGain
 from core.enum.ecg_ina_range import EcgInaRange
@@ -125,12 +125,12 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
 
     def close_event(self):
         # Stop the Bluetooth listener thread when closing the application
-        print('close event')
+        logger.info('close event')
         # self.bt_listener_thread.stop()
         # self.bt_listener_thread.join()
 
     def handle_bluetooth_state_change(self, state: str):
-        print(f"Bluetooth state changed: {state}")
+        logger.info(f"Bluetooth state changed: {state}")
 
     def set_bluetooth_settings(self):
         self.ring_manager.set_bluetooth_settings(
@@ -147,7 +147,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         )
 
     def on_bluetooth_settings_set(self, result: CommonResult):
-        print(f"on_bluetooth_settings_set Result: {result}")
+        logger.info(f"on_bluetooth_settings_set Result: {result}")
 
     """ BLE actions"""
 
@@ -159,26 +159,26 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
 
     def connect(self):
         self.ring_manager.connect(self.devices[0].address, 10)
-        print('connect to device', self.devices[0])
+        logger.info(f'connect to device: ${self.devices[0]}')
 
     def disconnect(self, address: str):
         self.ring_manager.disconnect(self.devices[0].address)
 
     def get_bluetooth_state(self):
         state = self.ring_manager.get_bluetooth_state()
-        print(state)
+        logger.info(state, flush=True)
 
     """ BluetoothCallback """
 
     def on_scan_result(self, device: BTDevice):
-        print(f"on_scan_result Device found: {device}")
+        logger.info(f"on_scan_result Device found: {device}")
         self.devices.append(device)
 
     def on_device_connected(self, device: BleakClient):
-        print(f"on_device_connected Device connected: {device}")
+        logger.info(f"on_device_connected Device connected: {device}")
 
     def on_bluetooth_error(self, device: BTDevice, error: CommonError):
-        print(f"on_bluetooth_error Error: {error}")
+        logger.info(f"on_bluetooth_error Error: {error}")
 
     def on_bluetooth_state_changed(self, status: bool):
         pass
@@ -188,31 +188,31 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.get_post(self.devices[0].address, self.on_post_result)
 
     def on_post_result(self, result: CommonResult, post: Optional[SelfTestResult]):
-        print(f"on_post_result Result: {result}")
+        logger.info(f"on_post_result Result: {result}")
 
     def get_bist(self):
         self.ring_manager.get_bist(self.devices[0].address, self.on_bist_result)
 
     def on_bist_result(self, result: CommonResult, bist: Optional[SelfTestResult]):
-        print(f"on_bist_result Result: {result}")
+        logger.info(f"on_bist_result Result: {result}")
 
     def enable_bist(self):
         self.ring_manager.enable_bist(self.devices[0].address, self.on_enable_bist_result)
 
     def on_enable_bist_result(self, result: CommonResult):
-        print(f"on_enable_bist_result Result: {result}")
+        logger.info(f"on_enable_bist_result Result: {result}")
 
     def disable_bist(self):
         self.ring_manager.disable_bist(self.devices[0].address, self.on_disable_bist_result)
 
     def on_disable_bist_result(self, result: CommonResult):
-        print(f"on_disable_bist_result Result: {result}")
+        logger.info(f"on_disable_bist_result Result: {result}")
 
     def set_bist_interval(self, interval: int):
         self.ring_manager.set_bist_interval(self.devices[0].address, 60, self.on_set_bist_interval_result)
 
     def on_set_bist_interval_result(self, result: CommonResult):
-        print(f"on_set_bist_interval_result Result: {result}")
+        logger.info(f"on_set_bist_interval_result Result: {result}")
 
     # Command functions - Device info
 
@@ -220,8 +220,8 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.get_device_info(self.devices[0].address, self.on_device_info)
 
     def on_device_info(self, result: CommonResult, info: Optional[DeviceInfo]):
-        print(f"on_device_info Result: {result}")
-        print(f"on_device_info Device info: {info}")
+        logger.info(f"on_device_info Result: {result}")
+        logger.info(f"on_device_info Device info: {info}")
 
     # Command functions - Data
 
@@ -229,53 +229,53 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.start_streaming_accel_data(self.devices[0].address, self.on_acc_data_received)
 
     def on_acc_data_received(self, result: CommonResult, data: Optional[AccelData], packet_lost: int):
-        print(f"on_acc_data_received Result: {result}")
-        print(f"on_acc_data_received Data: {data}")
+        logger.info(f"on_acc_data_received Result: {result}")
+        logger.info(f"on_acc_data_received Data: {data}")
 
     def stop_live_acc_data(self):
         self.ring_manager.stop_streaming_data(self.devices[0].address, SensorType.ACCEL, self.on_stop_acc_success)
 
     def on_stop_acc_success(self, result: CommonResult):
-        print(f"on_stop_acc_success Result: {result}")
+        logger.info(f"on_stop_acc_success Result: {result}")
 
     def start_live_ecg_data(self):
         self.ring_manager.start_streaming_ecg_data(self.devices[0].address, self.on_ecg_data_received)
 
     def on_ecg_data_received(self, result: CommonResult, data: Optional[EcgData], packet_lost: int):
-        print(f"on_ecg_data_received Result: {result}")
-        print(f"on_ecg_data_received Data: {data}")
+        logger.info(f"on_ecg_data_received Result: {result}")
+        logger.info(f"on_ecg_data_received Data: {data}")
 
     def stop_live_ecg_data(self):
         self.ring_manager.stop_streaming_data(self.devices[0].address, SensorType.ECG, self.on_stop_ecg_success)
 
     def on_stop_ecg_success(self, result: CommonResult):
-        print(f"on_stop_ecg_success Result: {result}")
+        logger.info(f"on_stop_ecg_success Result: {result}")
 
     def start_live_ppg_data(self):
         self.ring_manager.start_streaming_ppg_data(self.devices[0].address, self.on_ppg_data_received)
 
     def on_ppg_data_received(self, result: CommonResult, data: Optional[PpgData], packet_lost: int):
-        print(f"on_ppg_data_received Result: {result}")
-        print(f"on_ppg_data_received Data: {data}")
+        logger.info(f"on_ppg_data_received Result: {result}")
+        logger.info(f"on_ppg_data_received Data: {data}")
 
     def stop_live_ppg_data(self):
         self.ring_manager.stop_streaming_data(self.devices[0].address, SensorType.PPG, self.on_stop_ppg_success)
 
     def on_stop_ppg_success(self, result: CommonResult):
-        print(f"on_stop_ppg_success Result: {result}")
+        logger.info(f"on_stop_ppg_success Result: {result}")
 
     def start_live_temp_data(self):
         self.ring_manager.start_streaming_temp_data(self.devices[0].address, self.on_temp_data_received)
 
     def on_temp_data_received(self, result: CommonResult, data: Optional[TempData], packet_lost: int):
-        print(f"on_temp_data_received Result: {result}")
-        print(f"on_temp_data_received Data: {data}")
+        logger.info(f"on_temp_data_received Result: {result}")
+        logger.info(f"on_temp_data_received Data: {data}")
 
     def stop_live_temp_data(self):
         self.ring_manager.stop_streaming_data(self.devices[0].address, SensorType.TEMP, self.on_stop_temp_success)
 
     def on_stop_temp_success(self, result: CommonResult):
-        print(f"on_stop_temp_success Result: {result}")
+        logger.info(f"on_stop_temp_success Result: {result}")
 
     # Listener - BLE
 
@@ -292,39 +292,39 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     # Listener - Device Info
 
     def on_device_info_received(self, device: DeviceInfo):
-        print(device)
+        logger.info(device)
 
     def on_charging_info_received(self, charging: bool):
-        print(f"[NT] Charging status: {charging}")
+        logger.info(f"[NT] Charging status: {charging}")
 
     def on_battery_level_received(self, battery_level: int):
-        print(f"[NT] Battery level: {battery_level}")
+        logger.info(f"[NT] Battery level: {battery_level}")
 
     def on_hr_received(self, hr: int):
-        print(f"[NT] HR: {hr}")
+        logger.info(f"[NT] HR: {hr}")
 
     def on_spo2_received(self, spo2: int):
-        print(f"[NT] SpO2: {spo2}")
+        logger.info(f"[NT] SpO2: {spo2}")
 
     # Listener - Data
 
     def on_record_finished(self, device: BTDevice, sensor_type: SensorType):
-        print(f"[NT] Record finished: {sensor_type}, device: {device}")
+        logger.info(f"[NT] Record finished: {sensor_type}, device: {device}")
 
     def on_accel_recorded(self, device: BTDevice, data: AccelData):
-        print(f'device: {device}, data: {data}')
+        logger.info(f'device: {device}, data: {data}')
 
     def on_ecg_recorded(self, device: BTDevice, data: EcgData):
-        print(f'device: {device}, data: {data}')
+        logger.info(f'device: {device}, data: {data}')
 
     def on_ppg_recorded(self, device: BTDevice, data: PpgData):
-        print(f'device: {device}, data: {data}')
+        logger.info(f'device: {device}, data: {data}')
 
     def on_temp_recorded(self, device: BTDevice, data: TempData):
-        print(f'device: {device}, data: {data}')
+        logger.info(f'device: {device}, data: {data}')
 
     def on_record_error(self, device: BTDevice, data: CommonError):
-        print(f'device: {device}, data: {data}')
+        logger.info(f'device: {device}, data: {data}')
 
     def start_record_ppg(self):
         self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.PPG, self.on_start_record_ppg_success)
@@ -339,40 +339,40 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.TEMP, self.on_start_record_temp_success)
 
     def on_start_record_ppg_success(self, result: CommonResult):
-        print(f"on_record_ppf_success Result: {result}")
+        logger.info(f"on_record_ppf_success Result: {result}")
 
     def on_start_record_ecg_success(self, result: CommonResult):
-        print(f"on_record_ecg_success Result: {result}")
+        logger.info(f"on_record_ecg_success Result: {result}")
 
     def on_start_record_acc_success(self, result: CommonResult):
-        print(f"on_record_acc_success Result: {result}")
+        logger.info(f"on_record_acc_success Result: {result}")
 
     def on_start_record_temp_success(self, result: CommonResult):
-        print(f"on_record_temp_success Result: {result}")
+        logger.info(f"on_record_temp_success Result: {result}")
 
     def stop_record_ecg(self):
         self.ring_manager.stop_record(self.devices[0].address, SensorType.ECG, self.on_stop_record_ecg_success)
 
     def on_stop_record_ecg_success(self, result: CommonResult):
-        print(f"on_stop_record_ecg_success Result: {result}")
+        logger.info(f"on_stop_record_ecg_success Result: {result}")
 
     def stop_record_ppg(self):
         self.ring_manager.stop_record(self.devices[0].address, SensorType.PPG, self.on_stop_record_ppg_success)
 
     def on_stop_record_ppg_success(self, result: CommonResult):
-        print(f"on_stop_record_ppg_success Result: {result}")
+        logger.info(f"on_stop_record_ppg_success Result: {result}")
 
     def stop_record_acc(self):
         self.ring_manager.stop_record(self.devices[0].address, SensorType.ACCEL, self.on_stop_record_acc_success)
 
     def on_stop_record_acc_success(self, result: CommonResult):
-        print(f"on_stop_record_acc_success Result: {result}")
+        logger.info(f"on_stop_record_acc_success Result: {result}")
 
     def stop_record_temp(self):
         self.ring_manager.stop_record(self.devices[0].address, SensorType.TEMP, self.on_stop_record_temp_success)
 
     def on_stop_record_temp_success(self, result: CommonResult):
-        print(f"on_stop_record_temp_success Result: {result}")
+        logger.info(f"on_stop_record_temp_success Result: {result}")
 
     def get_record_ppg(self):
         self.ring_manager.get_record(self.devices[0].address, SensorType.PPG, 0)
@@ -387,21 +387,21 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.get_record(self.devices[0].address, SensorType.TEMP, 0)
 
     def on_get_record_success(self, result: CommonResult):
-        print(f"on_get_record_success Result: {result}")
+        logger.info(f"on_get_record_success Result: {result}")
 
     def get_record_samples_threshold(self):
         self.ring_manager.get_record_samples_threshold(self.devices[0].address, self.on_get_record_samples_threshold)
 
     def on_get_record_samples_threshold(self, result: CommonResult, samples_threshold: Optional[SamplesThreshold]):
-        print(f"on_get_record_samples_threshold Result: {result}")
-        print(f"on_get_record_samples_threshold Samples threshold: {samples_threshold}")
+        logger.info(f"on_get_record_samples_threshold Result: {result}")
+        logger.info(f"on_get_record_samples_threshold Samples threshold: {samples_threshold}")
 
     def get_all_settings(self):
         self.ring_manager.get_all_settings(self.devices[0].address, self.on_all_settings_received)
 
     def on_all_settings_received(self, result: CommonResult, settings: Optional[DeviceSettings]):
-        print(f"on_all_settings_received Result: {result}")
-        print(f"on_all_settings_received Settings: {settings}")
+        logger.info(f"on_all_settings_received Result: {result}")
+        logger.info(f"on_all_settings_received Settings: {settings}")
 
     def set_ppg_settings(self):
         self.ring_manager.set_ppg_settings(
@@ -417,7 +417,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         )
 
     def on_ppg_settings_set(self, result: CommonResult):
-        print(f"on_ppg_settings_set Result: {result}")
+        logger.info(f"on_ppg_settings_set Result: {result}")
 
     def set_ecg_settings(self):
         self.ring_manager.set_ecg_settings(
@@ -443,7 +443,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         )
 
     def on_ecg_settings_set(self, result: CommonResult):
-        print(f"on_ppg_settings_set Result: {result}")
+        logger.info(f"on_ppg_settings_set Result: {result}")
 
     def set_acc_settings(self):
         self.ring_manager.set_accel_settings(
@@ -455,32 +455,32 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         )
 
     def on_acc_settings_set(self, result: CommonResult):
-        print(f"on_acc_settings_set Result: {result}")
+        logger.info(f"on_acc_settings_set Result: {result}")
 
     def reboot(self):
         self.ring_manager.reboot(self.devices[0].address, self.on_reboot_success)
 
     def on_reboot_success(self, result: CommonResult):
-        print(f"on_reboot_success Result: {result}")
+        logger.info(f"on_reboot_success Result: {result}")
 
     def factory_reset(self):
         self.ring_manager.factory_reset(self.devices[0].address, self.on_factory_reset_success)
 
     def on_factory_reset_success(self, result: CommonResult):
-        print(f"on_factory_reset_success Result: {result}")
+        logger.info(f"on_factory_reset_success Result: {result}")
 
     def set_time_sync(self):
         self.ring_manager.set_time_sync(self.devices[0].address, 812964689, self.on_time_sync_success)
 
     def on_time_sync_success(self, result: CommonResult):
-        print(f"on_time_sync_success Result: {result}")
+        logger.info(f"on_time_sync_success Result: {result}")
 
     def get_time_sync(self):
         self.ring_manager.get_time_sync(self.devices[0].address, self.on_time_sync_get_success)
 
     def on_time_sync_get_success(self, result: CommonResult, time: int):
-        print(f"on_time_sync_get_success Result: {result}")
-        print(f"on_time_sync_get_success Time: {time}")
+        logger.info(f"on_time_sync_get_success Result: {result}")
+        logger.info(f"on_time_sync_get_success Time: {time}")
 
     def set_log_settings(self):
         self.ring_manager.set_log_settings(
@@ -495,27 +495,27 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
             ), self.on_log_settings_success)
 
     def on_log_settings_success(self, result: CommonResult):
-        print(f"on_log_settings_success Result: {result}")
+        logger.info(f"on_log_settings_success Result: {result}")
 
     def set_sleep_time(self):
         self.ring_manager.set_sleep_time(self.devices[0].address, 10, self.on_sleep_time_success)
 
     def on_sleep_time_success(self, result: CommonResult):
-        print(f"on_sleep_time_success Result: {result}")
+        logger.info(f"on_sleep_time_success Result: {result}")
 
     def get_device_status(self):
         self.ring_manager.get_device_status(self.devices[0].address, self.on_device_status_success)
 
     def on_device_status_success(self, result: CommonResult, device_status: Optional[DeviceStatus]):
-        print(f"on_device_status_success Result: {result}")
-        print(f"on_device_status_success Device status: {device_status}")
+        logger.info(f"on_device_status_success Result: {result}")
+        logger.info(f"on_device_status_success Device status: {device_status}")
 
     def get_protocol_info(self):
         self.ring_manager.get_protocol_info(self.devices[0].address, self.on_protocol_info_success)
 
     def on_protocol_info_success(self, result: CommonResult, protocol_info: Optional[str]):
-        print(f"on_protocol_info_success Result: {result}")
-        print(f"on_protocol_info_success Protocol info: {protocol_info}")
+        logger.info(f"on_protocol_info_success Result: {result}")
+        logger.info(f"on_protocol_info_success Protocol info: {protocol_info}")
 
     def update_firmware(self):
         # Get the current file's path
@@ -530,4 +530,4 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.update_firmware(self.devices[0].address, file_path, self.on_firmware_update_success)
 
     def on_firmware_update_success(self, result: CommonResult):
-        print(f"on_firmware_update_success Result: {result}")
+        logger.info(f"on_firmware_update_success Result: {result}")
