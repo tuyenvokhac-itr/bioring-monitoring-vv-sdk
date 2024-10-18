@@ -573,8 +573,8 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.ring_manager.get_time_sync(self.connected_client.address, self.on_time_sync_get_success)
 
     def on_time_sync_get_success(self, result: CommonResult, time: int):
-        logger.info(f"on_time_sync_get_success Result: {result}")
-        logger.info(f"on_time_sync_get_success Time: {time}")
+        device_time = TimeUtil.from_epoch_to_ymdhms(time)
+        self.window.uic.time_syncing_device_time.setText(device_time)
 
     def set_log_settings(self):
         self.ring_manager.set_log_settings(
@@ -650,6 +650,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_protocol_info_success(self, result: CommonResult, protocol_info: Optional[str]):
         logger.info(f"on_protocol_info_success Result: {result}")
         logger.info(f"on_protocol_info_success Protocol info: {protocol_info}")
+
 
     def update_firmware(self):
         # Get the current file's path
