@@ -118,6 +118,7 @@ class DfuHandler:
         self._response_handler(rsp_packet)
 
     def _response_handler(self, pkt: Psoc6DfuResponsePacket):
+        print(f"DFU response: {pkt.status_code.name}")
         if pkt.status_code != Psoc6DfuResponsePacket.DfuStatusCode.success:
             logger.error(f"DFU response error: {pkt.status_code.name}, Disconnect device ...")
             asyncio.create_task(self.ble_manager.disconnect(self.client))
