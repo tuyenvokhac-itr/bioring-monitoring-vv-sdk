@@ -16,7 +16,6 @@ class RecordAccDataHandler:
                 callback.on_accel_recorded(device, accel_data)
 
         except  Exception as e:
-            pass
             for callback in record_data_callbacks:
                 callback.on_record_error(
                     device,

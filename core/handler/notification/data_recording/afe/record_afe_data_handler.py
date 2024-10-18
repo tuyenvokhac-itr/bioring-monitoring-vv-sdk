@@ -17,7 +17,7 @@ class RecordAfeDataHandler:
                 callback.on_ppg_recorded(device, ppg_data)
 
         except  Exception as e:
-            pass
+            print(e)
             for callback in record_data_callbacks:
                 callback.on_record_error(
                     device,

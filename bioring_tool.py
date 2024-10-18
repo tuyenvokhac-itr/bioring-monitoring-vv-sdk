@@ -8,10 +8,21 @@ from bleak import BleakClient
 from qasync import QEventLoop
 
 from ble.bt_device import BTDevice
+from core.enum.accel_full_scale_range import AccelFullScaleRange
+from core.enum.accel_sampling_rate import AccelSamplingRate
+from core.enum.ecg_ina_gain import EcgInaGain
+from core.enum.ecg_ina_range import EcgInaRange
 from core.enum.ecg_input_polarity import EcgInputPolarity
+from core.enum.ecg_lead_off_current_magnitude import EcgLeadOffCurrentMagnitude
+from core.enum.ecg_lead_off_current_polarity import EcgLeadOffCurrentPolarity
+from core.enum.ecg_lead_off_freq import EcgLeadOffFreq
+from core.enum.ecg_lead_off_mode import EcgLeadOffMode
+from core.enum.ecg_lead_off_voltage_threshold import EcgLeadOffVoltageThreshold
+from core.enum.ecg_pga_gain import EcgPgaGain
 from core.enum.ecg_sampling_rate import EcgSamplingRate
 from core.enum.log_level import LogLevel
 from core.enum.power_level import PowerLevel
+from core.enum.ppg_sampling_rate import PpgSamplingRate
 from core.enum.sensor_type import SensorType
 from core.models.device_info import DeviceInfo
 from core.models.device_status import DeviceStatus
@@ -56,25 +67,32 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         asyncio.set_event_loop(loop)
 
         self.window = GuiWrapper()
+        self.set_up_click_listener()
+        self.init_static_data()
+        self.window.show()
+
+        with loop:
+            loop.run_forever()
+
+    def set_up_click_listener(self):
+        # BLE connection
         self.window.uic.btn_start_scan.clicked.connect(self.start_scan)
         self.window.uic.btn_stop_scan.clicked.connect(self.stop_scan)
-        self.window.uic.scanned_list.itemClicked.connect(self._on_scanned_item_clicked)
+        self.window.uic.scanned_list.itemClicked.connect(self.on_scanned_item_clicked)
         self.window.uic.btn_connect.clicked.connect(self.connect)
+
         self.window.uic.btn_disconnect.clicked.connect(self.disconnect)
         self.window.uic.btn_get_bluetooth_state.clicked.connect(self.get_bluetooth_state)
-        self.window.uic.btn_all_settings.clicked.connect(self.get_all_settings)
 
-        # General
+        # Device info
         self.window.uic.btn_get_device_info.clicked.connect(self.get_device_info)
         self.window.uic.btn_get_device_status.clicked.connect(self.get_device_status)
 
-        # Others
-        # Self Test
+        # Self test
         self.window.uic.btn_enable_bist.clicked.connect(self.enable_bist)
         self.window.uic.btn_disable_bist.clicked.connect(self.disable_bist)
         self.window.uic.btn_get_bist.clicked.connect(self.get_bist)
         self.window.uic.btn_set_bist_interval.clicked.connect(self.set_bist_interval)
-
         self.window.uic.btn_get_post.clicked.connect(self.get_post)
 
         # Time syncing
@@ -86,74 +104,83 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.window.uic.btn_factory_reset.clicked.connect(self.factory_reset)
         self.window.uic.btn_reboot.clicked.connect(self.reboot)
 
-        # window = QTGuideWindow(self.close_event)
-        # window.scanBtn.clicked.connect(self.start_scan)
-        # window.stopBtn.clicked.connect(self.stop_scan)
-        # window.connectBtn.clicked.connect(self.connect)
+        # Data recording
+        self.window.uic.btn_get_thresholds.clicked.connect(self.get_record_samples_threshold)
+        self.window.uic.btn_start_record.clicked.connect(self.start_record)
+        self.window.uic.btn_stop_record.clicked.connect(self.stop_record)
+        self.window.uic.btn_get_record.clicked.connect(self.get_record)
 
-        # window.disconnectBtn.clicked.connect(self.disconnect)
-        # window.get_bluetooth_state.clicked.connect(self.get_bluetooth_state)
-        # window.set_bluetooth_settings.clicked.connect(self.set_bluetooth_settings)
-        #
-        # window.get_post.clicked.connect(self.get_post)
-        # window.get_bist.clicked.connect(self.get_bist)
-        # window.enable_bist.clicked.connect(self.enable_bist)
-        # window.disable_bist.clicked.connect(self.disable_bist)
-        # window.set_bist_interval.clicked.connect(self.set_bist_interval)
-        #
-        # window.start_record_ppg.clicked.connect(self.start_record_ppg)
-        # window.start_record_ecg.clicked.connect(self.start_record_ecg)
-        # window.start_record_acc.clicked.connect(self.start_record_acc)
-        # window.start_record_temp.clicked.connect(self.start_record_temp)
-        # window.stop_record_ecg.clicked.connect(self.stop_record_ecg)
-        # window.stop_record_ppg.clicked.connect(self.stop_record_ppg)
-        # window.stop_record_acc.clicked.connect(self.stop_record_acc)
-        # window.stop_record_temp.clicked.connect(self.stop_record_temp)
-        # window.get_record_sample.clicked.connect(self.get_record_samples_threshold)
-        # window.get_record_ppg.clicked.connect(self.get_record_ppg)
-        # window.get_record_ecg.clicked.connect(self.get_record_ecg)
-        # window.get_record_acc.clicked.connect(self.get_record_acc)
-        # window.get_record_temp.clicked.connect(self.get_record_temp)
-        #
-        # window.get_all_settings.clicked.connect(self.get_all_settings)
-        #
-        # window.getInfoBtn.clicked.connect(self.get_device_info)
-        # window.start_live_acc.clicked.connect(self.start_live_acc_data)
-        # window.stop_live_acc.clicked.connect(self.stop_live_acc_data)
-        # window.start_live_ecg.clicked.connect(self.start_live_ecg_data)
-        # window.stop_live_ecg.clicked.connect(self.stop_live_ecg_data)
-        # window.start_live_ppg.clicked.connect(self.start_live_ppg_data)
-        # window.stop_live_ppg.clicked.connect(self.stop_live_ppg_data)
-        # window.start_live_temp.clicked.connect(self.start_live_temp_data)
-        # window.stop_live_temp.clicked.connect(self.stop_live_temp_data)
-        #
-        # window.set_ppg_settings.clicked.connect(self.set_ppg_settings)
-        # window.set_ecg_settings.clicked.connect(self.set_ecg_settings)
-        # window.set_acc_settings.clicked.connect(self.set_acc_settings)
-        # window.reboot.clicked.connect(self.reboot)
-        # window.factory_reset.clicked.connect(self.factory_reset)
-        #
-        # window.set_time_sync.clicked.connect(self.set_time_sync)
-        # window.get_time_sync.clicked.connect(self.get_time_sync)
-        # window.set_log_settings.clicked.connect(self.set_log_settings)
-        #
-        # window.set_sleep_time.clicked.connect(self.set_sleep_time)
-        # window.get_device_status.clicked.connect(self.get_device_status)
-        # window.get_protocol_info.clicked.connect(self.get_protocol_info)
-        # window.update_firmware.clicked.connect(self.update_firmware)
+        # Settings
+        # ECG settings
+        self.window.uic.btn_save_ecg_settings.clicked.connect(self.set_ecg_settings)
 
-        # # Create the Bluetooth state receiver
-        # self.bt_receiver = BluetoothStateReceiver()
-        # self.bt_receiver.bluetoothStateChanged.connect(self.handle_bluetooth_state_change)
-        #
-        # # Start the Bluetooth listener thread
-        # self.bt_listener_thread = BluetoothListenerThread(self.bt_receiver.bluetoothStateChanged.emit)
-        # self.bt_listener_thread.start()
+        # ACCEL settings
+        self.window.uic.btn_save_accel_settings.clicked.connect(self.set_acc_settings)
 
-        self.window.show()
-        # Run the PyQt event loop alongside asyncio
-        with loop:
-            loop.run_forever()
+        # PPG settings
+        self.window.uic.btn_save_ppg_settings.clicked.connect(self.set_ppg_settings)
+
+        # Log settings
+        self.window.uic.btn_save_log_level.clicked.connect(self.set_log_settings)
+
+        # BLE settings
+        self.window.uic.btn_save_ble_settings.clicked.connect(self.set_bluetooth_settings)
+
+        # Get all settings
+        self.window.uic.btn_get_all_settings.clicked.connect(self.get_all_settings)
+
+    def init_static_data(self):
+        # Data recording
+        for sensor in SensorType:
+            self.window.uic.start_record_sensor_type.addItem(sensor.name, sensor)
+            self.window.uic.stop_record_sensor_type.addItem(sensor.name, sensor)
+            self.window.uic.get_record_sensor_type.addItem(sensor.name, sensor)
+
+        # ECG settings
+        for rate in EcgSamplingRate:
+            self.window.uic.box_ecg_settings_sampling_rate.addItem(rate.name, rate)
+
+        for gain in EcgPgaGain:
+            self.window.uic.box_ecg_settings_pga_gain.addItem(gain.name, gain)
+
+        for ina_gain in EcgInaGain:
+            self.window.uic.box_ecg_settings_ina_gain.addItem(ina_gain.name, ina_gain)
+
+        for ina_range in EcgInaRange:
+            self.window.uic.box_ecg_settings_ina_range.addItem(ina_range.name, ina_range)
+
+        for polarity in EcgInputPolarity:
+            self.window.uic.box_ecg_settings_input_polarity.addItem(polarity.name, polarity)
+
+        for lead_off_mode in EcgLeadOffMode:
+            self.window.uic.box_lead_off_settings_mode.addItem(lead_off_mode.name, lead_off_mode)
+
+        for current_polarity in EcgLeadOffCurrentPolarity:
+            self.window.uic.box_lead_off_settings_current_polarity.addItem(current_polarity.name, current_polarity)
+
+        for current_magnitude in EcgLeadOffCurrentMagnitude:
+            self.window.uic.box_lead_off_settings_current_magnitude.addItem(current_magnitude.name, current_magnitude)
+
+        for voltage_threshold in EcgLeadOffVoltageThreshold:
+            self.window.uic.box_lead_off_settings_current_threshold.addItem(voltage_threshold.name, voltage_threshold)
+
+        for lead_off_freq in EcgLeadOffFreq:
+            self.window.uic.box_lead_off_settings_frequency.addItem(lead_off_freq.name, lead_off_freq)
+
+        # ACCEL settings
+        for rate in AccelSamplingRate:
+            self.window.uic.box_accel_settings_sampling_rate.addItem(rate.name, rate)
+
+        for full_scale_range in AccelFullScaleRange:
+            self.window.uic.box_accel_settings_full_scale_range.addItem(full_scale_range.name, full_scale_range)
+
+        # PPG settings
+        for rate in PpgSamplingRate:
+            self.window.uic.box_ppg_settings_sampling_rate.addItem(rate.name, rate)
+
+        # BLE settings
+        for power_level in PowerLevel:
+            self.window.uic.box_ble_settings_tx_power_level.addItem(power_level.name, power_level)
 
     def close_event(self):
         # Stop the Bluetooth listener thread when closing the application
@@ -161,30 +188,7 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         # self.bt_listener_thread.stop()
         # self.bt_listener_thread.join()
 
-    def handle_bluetooth_state_change(self, state: str):
-        logger.info(f"Bluetooth state changed: {state}")
-
-    def _on_scanned_item_clicked(self, item: QListWidgetItem):
-        self.selected_scanned_device = item.data(QListItemRole.data.value)
-
-    def set_bluetooth_settings(self):
-        self.ring_manager.set_bluetooth_settings(
-            self.devices[0].address,
-            BTSettings(
-                adv_name="BioRing Hieu3",
-                adv_interval=318.5,
-                connection_interval_min=20.12,
-                connection_interval_max=20.9123456789,
-                slave_latency=3,
-                transmit_power_level=PowerLevel.POS_4,
-            ),
-            self.on_bluetooth_settings_set,
-        )
-
-    def on_bluetooth_settings_set(self, result: CommonResult):
-        logger.info(f"on_bluetooth_settings_set Result: {result}")
-
-    """ BLE actions"""
+    """ ******************************** BLE actions ******************************** """
 
     def start_scan(self):
         self.ring_manager.start_scan()
@@ -192,27 +196,28 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def stop_scan(self):
         self.ring_manager.stop_scan()
 
+    def on_scanned_item_clicked(self, item: QListWidgetItem):
+        self.selected_scanned_device = item.data(QListItemRole.data.value)
+
     def connect(self):
         if self.selected_scanned_device is not None:
             self.ring_manager.connect(self.selected_scanned_device.address, 10)
             self.connecting_device = self.selected_scanned_device
-            logger.info(f'connect to device: ${self.selected_scanned_device}')
+            logger.info(f'Connect to device: ${self.selected_scanned_device}')
             return
 
-        logger.info("No device selected")
+        logger.error("No device selected")
 
     def disconnect(self):
         self.ring_manager.disconnect(self.connected_client.address)
 
     def get_bluetooth_state(self):
         state = self.ring_manager.get_bluetooth_state()
-        logger.info(state)
         self.window.uic.bluetooth_state.setText("ON" if state else "OFF")
 
     """ BluetoothCallback """
 
     def on_scan_result(self, device: BTDevice):
-        logger.info(f"on_scan_result Device found: {device}")
         self.devices.append(device)
 
         item = QListWidgetItem()
@@ -222,17 +227,235 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         self.window.uic.scanned_list.addItem(item)
 
     def on_device_connected(self, device: BleakClient):
-        logger.info(f"on_device_connected Device connected: {device}")
         self.connected_client = device
         self.window.uic.connected_device_dropdown.addItem(f"{self.connecting_device.name} - {device.address}", device)
 
     def on_bluetooth_error(self, device: BTDevice, error: CommonError):
-        logger.info(f"on_bluetooth_error Error: {error}")
+        logger.info(f"Error: {error}")
 
     def on_bluetooth_state_changed(self, status: bool):
         pass
 
-    # Self test
+    """ ******************************* Settings ******************************* """
+
+    # ECG settings
+    def set_ecg_settings(self):
+        ecg_enabled = self.window.uic.ecg_settings_enabled.isChecked()
+        sampling_rate = self.window.uic.box_ecg_settings_sampling_rate.currentData()
+        pga_gain = self.window.uic.box_ecg_settings_pga_gain.currentData()
+        ina_gain = self.window.uic.box_ecg_settings_ina_gain.currentData()
+        ina_range = self.window.uic.box_ecg_settings_ina_range.currentData()
+        input_polarity = self.window.uic.box_ecg_settings_input_polarity.currentData()
+
+        lead_off_enabled = self.window.uic.lead_off_settings_enabled.isChecked()
+        lead_off_mode = self.window.uic.box_lead_off_settings_mode.currentData()
+        lead_off_current_polarity = self.window.uic.box_lead_off_settings_current_polarity.currentData()
+        lead_off_current_magnitude = self.window.uic.box_lead_off_settings_current_magnitude.currentData()
+        lead_off_voltage_threshold = self.window.uic.box_lead_off_settings_current_threshold.currentData()
+        lead_off_frequency = self.window.uic.box_lead_off_settings_frequency.currentData()
+
+        self.ring_manager.set_ecg_settings(
+            self.connected_client.address,
+            EcgSettings(
+                enable=ecg_enabled,
+                sampling_rate=sampling_rate,
+                pga_gain=pga_gain,
+                ina_gain=ina_gain,
+                ina_range=ina_range,
+                input_polarity=input_polarity,
+                lead_off_enable=lead_off_enabled,
+                lead_off_settings=LeadOffSettings(
+                    mode=lead_off_mode,
+                    current_polarity=lead_off_current_polarity,
+                    current_magnitude=lead_off_current_magnitude,
+                    voltage_threshold=lead_off_voltage_threshold,
+                    lead_off_frequency=lead_off_frequency,
+                )
+            ),
+            self.on_ecg_settings_set
+        )
+
+    def on_ecg_settings_set(self, result: CommonResult):
+        logger.info(f"Result: {result}")
+
+    # ACCEL settings
+    def set_acc_settings(self):
+        accel_enabled = self.window.uic.accel_settings_enabled.isChecked()
+        sampling_rate = self.window.uic.box_accel_settings_sampling_rate.currentData()
+        full_scale_range = self.window.uic.box_accel_settings_full_scale_range.currentData()
+
+        self.ring_manager.set_accel_settings(
+            self.devices[0].address,
+            AccelSettings(
+                enable=accel_enabled,
+                sampling_rate=sampling_rate,
+                full_scale_range=full_scale_range,
+            ),
+            self.on_acc_settings_set,
+        )
+
+    def on_acc_settings_set(self, result: CommonResult):
+        logger.info(f"Result: {result}")
+
+    # PPG settings
+    def set_ppg_settings(self):
+        ppg_enabled = self.window.uic.ppg_settings_enabled.isChecked()
+        red_led_enabled = self.window.uic.ppg_settings_red_led_enabled.isChecked()
+        ir_led_enabled = self.window.uic.ppg_settings_ir_led_enabled.isChecked()
+        red_led_current = float(self.window.uic.input_red_led_current.text())
+        ir_led_current = float(self.window.uic.input_ir_led_current.text())
+        sampling_rate = self.window.uic.box_ppg_settings_sampling_rate.currentData()
+
+        self.ring_manager.set_ppg_settings(
+            self.devices[0].address, PpgSettings(
+                enable=ppg_enabled,
+                enable_ir_led=ir_led_enabled,
+                enable_red_led=red_led_enabled,
+                red_led_current=red_led_current,
+                ir_led_current=ir_led_current,
+                sampling_rate=sampling_rate,
+            ),
+            self.on_ppg_settings_set
+        )
+
+    def on_ppg_settings_set(self, result: CommonResult):
+        logger.info(f"Result: {result}")
+
+    # Log settings
+    def set_log_settings(self):
+        log_error = self.window.uic.cbox_log_settings_error.isChecked()
+        log_warning = self.window.uic.cbox_log_settings_warning.isChecked()
+        log_info = self.window.uic.cbox_log_settings_info.isChecked()
+        log_debug = self.window.uic.cbox_log_settings_debug.isChecked()
+        log_enabled = self.window.uic.cbox_log_settings_enable.isChecked()
+
+        levels = []
+        if log_error:
+            levels.append(LogLevel.ERROR)
+        if log_warning:
+            levels.append(LogLevel.WARNING)
+        if log_info:
+            levels.append(LogLevel.INFO)
+        if log_debug:
+            levels.append(LogLevel.DEBUG)
+
+        self.ring_manager.set_log_settings(
+            self.devices[0].address,
+            LogSettings(enable=log_enabled, levels=levels),
+            self.on_log_settings_success
+        )
+
+    def on_log_settings_success(self, result: CommonResult):
+        logger.info(f"Result: {result}")
+
+    # BLE settings
+    def set_bluetooth_settings(self):
+        adv_name = self.window.uic.input_ble_settings_adv_name.text()
+        adv_interval = float(self.window.uic.input_ble_settings_adv_interval.text())
+        connection_interval_min = float(self.window.uic.input_ble_settings_conn_int_min.text())
+        connection_interval_max = float(self.window.uic.input_ble_settings_conn_int_max.text())
+        slave_latency = float(self.window.uic.input_ble_settings_slave_latency.text())
+        supervision_time_out = float(self.window.uic.input_ble_settings_supervision_time_out.text())
+        transmit_power_level = self.window.uic.box_ble_settings_tx_power_level.currentData()
+
+        self.ring_manager.set_bluetooth_settings(
+            self.devices[0].address,
+            BTSettings(
+                adv_name=adv_name,
+                adv_interval=adv_interval,
+                connection_interval_min=connection_interval_min,
+                connection_interval_max=connection_interval_max,
+                slave_latency=slave_latency,
+                supervision_timeout=supervision_time_out,
+                transmit_power_level=transmit_power_level,
+            ),
+            self.on_bluetooth_settings_set,
+        )
+
+    def on_bluetooth_settings_set(self, result: CommonResult):
+        logger.info(f"Result: {result}")
+
+    # Get all settings
+    def get_all_settings(self):
+        self.ring_manager.get_all_settings(self.connected_client.address, self.on_all_settings_received)
+
+    def on_all_settings_received(self, result: CommonResult, settings: Optional[DeviceSettings]):
+        if not result.is_success:
+            logger.error(f"Result: {result}")
+            return
+
+        # ECG settings
+        self.window.uic.ecg_settings_enabled.setChecked(settings.ecg_settings.enable)
+        ecg_settings_sampling_index = self.window.uic.box_ecg_settings_sampling_rate.findData(
+            settings.ecg_settings.sampling_rate)
+        self.window.uic.box_ecg_settings_sampling_rate.setCurrentIndex(ecg_settings_sampling_index)
+        ecg_settings_pga_gain_index = self.window.uic.box_ecg_settings_pga_gain.findData(settings.ecg_settings.pga_gain)
+        self.window.uic.box_ecg_settings_pga_gain.setCurrentIndex(ecg_settings_pga_gain_index)
+        ecg_settings_ina_gain_index = self.window.uic.box_ecg_settings_ina_gain.findData(settings.ecg_settings.ina_gain)
+        self.window.uic.box_ecg_settings_ina_gain.setCurrentIndex(ecg_settings_ina_gain_index)
+        ecg_settings_ina_range_index = self.window.uic.box_ecg_settings_ina_range.findData(
+            settings.ecg_settings.ina_range)
+        self.window.uic.box_ecg_settings_ina_range.setCurrentIndex(ecg_settings_ina_range_index)
+        ecg_settings_input_polarity_index = self.window.uic.box_ecg_settings_input_polarity.findData(
+            settings.ecg_settings.input_polarity)
+        self.window.uic.box_ecg_settings_input_polarity.setCurrentIndex(ecg_settings_input_polarity_index)
+
+        # Lead off settings
+        self.window.uic.lead_off_settings_enabled.setChecked(settings.ecg_settings.lead_off_enable)
+        lead_off_settings_mode_index = self.window.uic.box_lead_off_settings_mode.findData(
+            settings.ecg_settings.lead_off_settings.mode)
+        self.window.uic.box_lead_off_settings_mode.setCurrentIndex(lead_off_settings_mode_index)
+        lead_off_settings_current_polarity_index = self.window.uic.box_lead_off_settings_current_polarity.findData(
+            settings.ecg_settings.lead_off_settings.current_polarity)
+        self.window.uic.box_lead_off_settings_current_polarity.setCurrentIndex(lead_off_settings_current_polarity_index)
+        lead_off_settings_current_magnitude_index = self.window.uic.box_lead_off_settings_current_magnitude.findData(
+            settings.ecg_settings.lead_off_settings.current_magnitude)
+        self.window.uic.box_lead_off_settings_current_magnitude.setCurrentIndex(
+            lead_off_settings_current_magnitude_index)
+        lead_off_settings_voltage_threshold_index = self.window.uic.box_lead_off_settings_current_threshold.findData(
+            settings.ecg_settings.lead_off_settings.voltage_threshold)
+        self.window.uic.box_lead_off_settings_current_threshold.setCurrentIndex(
+            lead_off_settings_voltage_threshold_index)
+        lead_off_settings_frequency_index = self.window.uic.box_lead_off_settings_frequency.findData(
+            settings.ecg_settings.lead_off_settings.lead_off_frequency)
+        self.window.uic.box_lead_off_settings_frequency.setCurrentIndex(lead_off_settings_frequency_index)
+
+        # ACCEL settings
+        self.window.uic.accel_settings_enabled.setChecked(settings.accel_settings.enable)
+        accel_settings_sampling_rate_index = self.window.uic.box_accel_settings_sampling_rate.findData(
+            settings.accel_settings.sampling_rate)
+        self.window.uic.box_accel_settings_sampling_rate.setCurrentIndex(accel_settings_sampling_rate_index)
+        accel_settings_full_scale_range_index = self.window.uic.box_accel_settings_full_scale_range.findData(
+            settings.accel_settings.full_scale_range)
+        self.window.uic.box_accel_settings_full_scale_range.setCurrentIndex(accel_settings_full_scale_range_index)
+
+        # PPG settings
+        self.window.uic.ppg_settings_enabled.setChecked(settings.ppg_settings.enable)
+        self.window.uic.ppg_settings_red_led_enabled.setChecked(settings.ppg_settings.enable_red_led)
+        self.window.uic.ppg_settings_ir_led_enabled.setChecked(settings.ppg_settings.enable_ir_led)
+        self.window.uic.input_red_led_current.setText(str(settings.ppg_settings.red_led_current))
+        self.window.uic.input_ir_led_current.setText(str(settings.ppg_settings.ir_led_current))
+
+        # Log settings
+        self.window.uic.cbox_log_settings_enable.setChecked(settings.log_settings.enable)
+        self.window.uic.cbox_log_settings_error.setChecked(LogLevel.ERROR in settings.log_settings.levels)
+        self.window.uic.cbox_log_settings_warning.setChecked(LogLevel.WARNING in settings.log_settings.levels)
+        self.window.uic.cbox_log_settings_info.setChecked(LogLevel.INFO in settings.log_settings.levels)
+        self.window.uic.cbox_log_settings_debug.setChecked(LogLevel.DEBUG in settings.log_settings.levels)
+
+        # BLE settings
+        self.window.uic.input_ble_settings_adv_name.setText(settings.bluetooth_settings.adv_name)
+        self.window.uic.input_ble_settings_adv_interval.setText(str(settings.bluetooth_settings.adv_interval))
+        self.window.uic.input_ble_settings_conn_int_min.setText(str(settings.bluetooth_settings.connection_interval_min))
+        self.window.uic.input_ble_settings_conn_int_max.setText(str(settings.bluetooth_settings.connection_interval_max))
+        self.window.uic.input_ble_settings_slave_latency.setText(str(settings.bluetooth_settings.slave_latency))
+        self.window.uic.input_ble_settings_supervision_time_out.setText(str(settings.bluetooth_settings.supervision_timeout))
+        ble_settings_tx_power_level_index = self.window.uic.box_ble_settings_tx_power_level.findData(
+            settings.bluetooth_settings.transmit_power_level)
+        self.window.uic.box_ble_settings_tx_power_level.setCurrentIndex(ble_settings_tx_power_level_index)
+
+    """ Self test """
+
     def get_post(self):
         self.ring_manager.get_post(self.connected_client.address, self.on_post_result)
 
@@ -396,10 +619,16 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
         logger.info(f"[NT] Record finished: {sensor_type}, device: {device}")
 
     def on_accel_recorded(self, device: BTDevice, data: AccelData):
-        logger.info(f'device: {device}, data: {data}')
+        item = QListWidgetItem()
+        item.setData(QListItemRole.data.value, data)
+        item.setText(f"start_time:{data.start_time} - x:{data.x} - y:{data.y} - z:{data.z} - is_eot: {data.is_eot}")
+        self.window.uic.recorded_data_list.addItem(item)
 
     def on_ecg_recorded(self, device: BTDevice, data: EcgData):
-        logger.info(f'device: {device}, data: {data}')
+        item = QListWidgetItem()
+        item.setData(QListItemRole.data.value, data)
+        item.setText(f"start_time:{data.start_time} - ecg:{data.data} - is_eot: {data.is_eot}")
+        self.window.uic.recorded_data_list.addItem(item)
 
     def on_ppg_recorded(self, device: BTDevice, data: PpgData):
         logger.info(f'device: {device}, data: {data}')
@@ -410,18 +639,51 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_record_error(self, device: BTDevice, data: CommonError):
         logger.info(f'device: {device}, data: {data}')
 
-    def start_record_ppg(self):
-        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.PPG, self.on_start_record_ppg_success)
+    def start_record(self):
+        try:
+            sensor_type = self.window.uic.start_record_sensor_type.currentData()
+            samples = int(self.window.uic.input_samples.text())
+            match sensor_type:
+                case SensorType.PPG:
+                    self.start_record_ppg(samples)
+                case SensorType.ECG:
+                    self.start_record_ecg(samples)
+                case SensorType.ACCEL:
+                    self.start_record_acc(samples)
+                case SensorType.TEMP:
+                    self.start_record_temp(samples)
+                case _:
+                    pass
+        except Exception as e:
+            logger.error(f"Invalid samples input: {e}")
 
-    def start_record_ecg(self):
-        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.ECG, self.on_start_record_ecg_success)
+    def start_record_ppg(self, samples: int):
+        self.ring_manager.start_record(
+            self.connected_client.address,
+            samples, SensorType.PPG,
+            self.on_start_record_ppg_success
+        )
 
-    def start_record_acc(self):
-        self.ring_manager.start_record(self.devices[0].address, 100, SensorType.ACCEL, self.on_start_record_acc_success)
+    def start_record_ecg(self, samples: int):
+        self.ring_manager.start_record(
+            self.connected_client.address,
+            samples, SensorType.ECG,
+            self.on_start_record_ecg_success
+        )
 
-    def start_record_temp(self):
-        self.ring_manager.start_record(self.devices[0].address, 3000, SensorType.TEMP,
-                                       self.on_start_record_temp_success)
+    def start_record_acc(self, samples: int):
+        self.ring_manager.start_record(
+            self.connected_client.address,
+            samples, SensorType.ACCEL,
+            self.on_start_record_acc_success
+        )
+
+    def start_record_temp(self, samples: int):
+        self.ring_manager.start_record(
+            self.connected_client.address,
+            samples, SensorType.TEMP,
+            self.on_start_record_temp_success
+        )
 
     def on_start_record_ppg_success(self, result: CommonResult):
         logger.info(f"on_record_ppf_success Result: {result}")
@@ -435,112 +697,90 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_start_record_temp_success(self, result: CommonResult):
         logger.info(f"on_record_temp_success Result: {result}")
 
+    def stop_record(self):
+        sensor_type = self.window.uic.stop_record_sensor_type.currentData()
+
+        match sensor_type:
+            case SensorType.PPG:
+                self.stop_record_ppg()
+            case SensorType.ECG:
+                self.stop_record_ecg()
+            case SensorType.ACCEL:
+                self.stop_record_acc()
+            case SensorType.TEMP:
+                self.stop_record_temp()
+            case _:
+                pass
+
     def stop_record_ecg(self):
-        self.ring_manager.stop_record(self.devices[0].address, SensorType.ECG, self.on_stop_record_ecg_success)
+        self.ring_manager.stop_record(self.connected_client.address, SensorType.ECG, self.on_stop_record_ecg_success)
 
     def on_stop_record_ecg_success(self, result: CommonResult):
         logger.info(f"on_stop_record_ecg_success Result: {result}")
 
     def stop_record_ppg(self):
-        self.ring_manager.stop_record(self.devices[0].address, SensorType.PPG, self.on_stop_record_ppg_success)
+        self.ring_manager.stop_record(self.connected_client.address, SensorType.PPG, self.on_stop_record_ppg_success)
 
     def on_stop_record_ppg_success(self, result: CommonResult):
         logger.info(f"on_stop_record_ppg_success Result: {result}")
 
     def stop_record_acc(self):
-        self.ring_manager.stop_record(self.devices[0].address, SensorType.ACCEL, self.on_stop_record_acc_success)
+        self.ring_manager.stop_record(self.connected_client.address, SensorType.ACCEL, self.on_stop_record_acc_success)
 
     def on_stop_record_acc_success(self, result: CommonResult):
         logger.info(f"on_stop_record_acc_success Result: {result}")
 
     def stop_record_temp(self):
-        self.ring_manager.stop_record(self.devices[0].address, SensorType.TEMP, self.on_stop_record_temp_success)
+        self.ring_manager.stop_record(self.connected_client.address, SensorType.TEMP, self.on_stop_record_temp_success)
 
     def on_stop_record_temp_success(self, result: CommonResult):
         logger.info(f"on_stop_record_temp_success Result: {result}")
 
-    def get_record_ppg(self):
-        self.ring_manager.get_record(self.devices[0].address, SensorType.PPG, 0)
+    def get_record(self):
+        try:
+            sensor_type = self.window.uic.get_record_sensor_type.currentData()
+            start_index = int(self.window.uic.input_get_record_start_index.text())
+            match sensor_type:
+                case SensorType.PPG:
+                    self.get_record_ppg(start_index)
+                case SensorType.ECG:
+                    self.get_record_ecg(start_index)
+                case SensorType.ACCEL:
+                    self.get_record_acc(start_index)
+                case SensorType.TEMP:
+                    self.get_record_temp(start_index)
+                case _:
+                    pass
+        except Exception as e:
+            logger.error(f"Invalid start index input: {e}")
 
-    def get_record_ecg(self):
-        self.ring_manager.get_record(self.devices[0].address, SensorType.ECG, 0)
+    def get_record_ppg(self, start_index: int):
+        self.ring_manager.get_record(self.connected_client.address, SensorType.PPG, start_index)
 
-    def get_record_acc(self):
-        self.ring_manager.get_record(self.devices[0].address, SensorType.ACCEL, 0)
+    def get_record_ecg(self, start_index: int):
+        self.ring_manager.get_record(self.connected_client.address, SensorType.ECG, start_index)
 
-    def get_record_temp(self):
-        self.ring_manager.get_record(self.devices[0].address, SensorType.TEMP, 0)
+    def get_record_acc(self, start_index: int):
+        self.ring_manager.get_record(self.connected_client.address, SensorType.ACCEL, start_index)
+
+    def get_record_temp(self, start_index: int):
+        self.ring_manager.get_record(self.connected_client.address, SensorType.TEMP, start_index)
 
     def on_get_record_success(self, result: CommonResult):
         logger.info(f"on_get_record_success Result: {result}")
 
     def get_record_samples_threshold(self):
-        self.ring_manager.get_record_samples_threshold(self.devices[0].address, self.on_get_record_samples_threshold)
+        self.ring_manager.get_record_samples_threshold(self.connected_client.address,
+                                                       self.on_get_record_samples_threshold)
 
     def on_get_record_samples_threshold(self, result: CommonResult, samples_threshold: Optional[SamplesThreshold]):
-        logger.info(f"on_get_record_samples_threshold Result: {result}")
-        logger.info(f"on_get_record_samples_threshold Samples threshold: {samples_threshold}")
-
-    def get_all_settings(self):
-        self.ring_manager.get_all_settings(self.devices[0].address, self.on_all_settings_received)
-
-    def on_all_settings_received(self, result: CommonResult, settings: Optional[DeviceSettings]):
-        logger.info(f"on_all_settings_received Result: {result}")
-        logger.info(f"on_all_settings_received Settings: {settings}")
-
-    def set_ppg_settings(self):
-        self.ring_manager.set_ppg_settings(
-            self.devices[0].address, PpgSettings(
-                enable=False,
-                # enable_ir_led=False,
-                # enable_red_led=True,
-                # red_led_current=10,
-                # ir_led_current=10,
-                # sampling_rate=PpgSamplingRate.PPG_SAMPLE_RATE_128HZ,
-            ),
-            self.on_ppg_settings_set
-        )
-
-    def on_ppg_settings_set(self, result: CommonResult):
-        logger.info(f"on_ppg_settings_set Result: {result}")
-
-    def set_ecg_settings(self):
-        self.ring_manager.set_ecg_settings(
-            self.devices[0].address,
-            EcgSettings(
-                enable=True,
-                sampling_rate=EcgSamplingRate.ECG_SAMPLE_RATE_128HZ,
-                # ina_gain= EcgInaGain.INA_GAIN_0,
-                # ina_range= EcgInaRange.ECG_INA_GAIN_RGE_0,
-                # pga_gain= EcgPgaGain.PGA_GAIN_16,
-                input_polarity=EcgInputPolarity.ECG_INPUT_NON_INVERTED,
-                lead_off_enable=False,
-                lead_off_settings=LeadOffSettings(
-
-                    # mode= EcgLeadOffMode.ECG_LEAD_OFF_DC,
-                    # current_polarity= EcgLeadOffCurrentPolarity.ECG_LEAD_OFF_NON_INVERTED,
-                    # current_magnitude=EcgLeadOffCurrentMagnitude.ECG_LEAD_OFF_IMAG_0,
-                    # voltage_threshold=EcgLeadOffVoltageThreshold.ECG_LEAD_OFF_VOL_THRESH_25MV,
-                    # lead_off_frequency=EcgLeadOffFreq.ECG_LEAD_OFF_FREQ_DISABLE,
-                )
-            ),
-            self.on_ecg_settings_set
-        )
-
-    def on_ecg_settings_set(self, result: CommonResult):
-        logger.info(f"on_ppg_settings_set Result: {result}")
-
-    def set_acc_settings(self):
-        self.ring_manager.set_accel_settings(
-            self.devices[0].address,
-            AccelSettings(
-                enable=False,
-            ),
-            self.on_acc_settings_set,
-        )
-
-    def on_acc_settings_set(self, result: CommonResult):
-        logger.info(f"on_acc_settings_set Result: {result}")
+        if result.is_success:
+            self.window.uic.sample_max_acc.setText(str(samples_threshold.max_accel_samples))
+            self.window.uic.sample_max_ecg.setText(str(samples_threshold.max_ecg_samples))
+            self.window.uic.sample_max_ppg.setText(str(samples_threshold.max_ppg_samples))
+            self.window.uic.sample_max_temp.setText(str(samples_threshold.max_temp_samples))
+            return
+        logger.info(f"Result: {result}")
 
     def reboot(self):
         self.ring_manager.reboot(self.connected_client.address, self.on_reboot_success)
@@ -575,21 +815,6 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_time_sync_get_success(self, result: CommonResult, time: int):
         device_time = TimeUtil.from_epoch_to_ymdhms(time)
         self.window.uic.time_syncing_device_time.setText(device_time)
-
-    def set_log_settings(self):
-        self.ring_manager.set_log_settings(
-            self.devices[0].address, LogSettings(
-                enable=True,
-                levels=[
-                    LogLevel.INFO,
-                    LogLevel.ERROR,
-                    LogLevel.WARNING,
-                    LogLevel.DEBUG
-                ]
-            ), self.on_log_settings_success)
-
-    def on_log_settings_success(self, result: CommonResult):
-        logger.info(f"on_log_settings_success Result: {result}")
 
     def set_sleep_time(self):
         try:
@@ -650,7 +875,6 @@ class BioRingTool(BluetoothCallback, RecordDataCallback):
     def on_protocol_info_success(self, result: CommonResult, protocol_info: Optional[str]):
         logger.info(f"on_protocol_info_success Result: {result}")
         logger.info(f"on_protocol_info_success Protocol info: {protocol_info}")
-
 
     def update_firmware(self):
         # Get the current file's path

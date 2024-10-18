@@ -19,7 +19,7 @@ package BRP;
 /* Messages ----------------------------------------------------------------- */
 
 message ProtocolInfo {
-  required uint64 version = 1 [ default = 202410041550 ];  // YYYY-MM-DD-HH-MM
+  required uint64 version = 1 [ default = 202410141730 ];  // YYYY-MM-DD-HH-MM
 }
 
 message Packet {
@@ -438,10 +438,6 @@ enum ChargingError {
 }
 
 enum BleTxPowerLevel {
-  BLE_TX_POWER_LEVEL_NEG_20 = -20;
-  BLE_TX_POWER_LEVEL_NEG_16 = -16;
-  BLE_TX_POWER_LEVEL_NEG_12 = -12;
-  BLE_TX_POWER_LEVEL_NEG_6 = -6;
   BLE_TX_POWER_LEVEL_0 = 0;
   BLE_TX_POWER_LEVEL_4 = 4;
 }

@@ -16,7 +16,6 @@ class RecordTempDataHandler:
                 callback.on_temp_recorded(device, temp_data)
 
         except  Exception as e:
-            pass
             for callback in record_data_callbacks:
                 callback.on_record_error(
                     device,

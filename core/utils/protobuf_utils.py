@@ -18,6 +18,7 @@ from core.enum.log_level import LogLevel
 from core.enum.power_level import PowerLevel
 from core.enum.ppg_sampling_rate import PpgSamplingRate
 from core.enum.sensor_type import SensorType
+from core.models.raw_data.samples_threshold import SamplesThreshold
 
 
 class ProtobufUtils:
@@ -204,10 +205,6 @@ class ProtobufUtils:
     @staticmethod
     def to_power_level(brp_power_level: brp.BleTxPowerLevel) -> PowerLevel:
         mapping = {
-            brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_NEG_20: PowerLevel.NEG_20,
-            brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_NEG_16: PowerLevel.NEG_16,
-            brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_NEG_12: PowerLevel.NEG_12,
-            brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_NEG_6: PowerLevel.NEG_6,
             brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_0: PowerLevel.POS_0,
             brp.BleTxPowerLevel.BLE_TX_POWER_LEVEL_4: PowerLevel.POS_4,
         }
